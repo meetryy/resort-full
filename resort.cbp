@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="7_cvui_processing" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/7_cvui_processing" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-lglu32 -lopengl32" />
+					<Add option="-finput-charset=CP1251 -fexec-charset=CP866" />
+					<Add option="-fopenmp" />
+					<Add option="-Wunused-variable" />
+					<Add directory="D:/CodeBlocks/SFML-2.5.1/include" />
+					<Add directory="imgui" />
+				</Compiler>
+				<Linker>
+					<Add library="../../SFML-2.5.1/lib/libsfml-graphics-d.a" />
+					<Add library="../../SFML-2.5.1/lib/libsfml-system-d.a" />
+					<Add library="../../SFML-2.5.1/lib/libsfml-window-d.a" />
+					<Add library="../../mingw64/x86_64-w64-mingw32/lib/libgomp-1.dll" />
+					<Add library="../../mingw64/lib/gcc/x86_64-w64-mingw32/5.1.0/libgomp.a" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/7_cvui_processing" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-s" />
+					<Add option="-lglu32 -lopengl32" />
+					<Add option="-finput-charset=CP1251 -fexec-charset=CP866" />
+				</Compiler>
+				<Linker>
+					<Add library="../../SFML-2.5.1/lib/libsfml-graphics.a" />
+					<Add library="../../SFML-2.5.1/lib/libsfml-system.a" />
+					<Add library="../../SFML-2.5.1/lib/libsfml-window.a" />
+				</Linker>
+			</Target>
+			<Environment>
+				<Variable name="CV_VERSION" value="400" />
+			</Environment>
+		</Build>
+		<Compiler>
+			<Add directory="D:/CodeBlocks/opencv-master/build!/install/include" />
+		</Compiler>
+		<Linker>
+			<Add library="opencv_imgproc$(CV_VERSION).dll" />
+			<Add library="opencv_core$(CV_VERSION).dll" />
+			<Add library="opencv_highgui$(CV_VERSION).dll" />
+			<Add library="../../mingw64/x86_64-w64-mingw32/lib/libopengl32.a" />
+			<Add directory="D:/CodeBlocks/opencv-master/build!/lib" />
+			<Add directory="D:/CodeBlocks/opencv-master/build!/bin" />
+		</Linker>
+		<Unit filename="COM_port.cpp" />
+		<Unit filename="COM_port.h" />
+		<Unit filename="ImGuiFileDialog.cpp" />
+		<Unit filename="ImGuiFileDialog.h" />
+		<Unit filename="RS-232/rs232.h" />
+		<Unit filename="UI.h" />
+		<Unit filename="arnold_schwarzenegger.jpg" />
+		<Unit filename="bgsubcnt.cpp" />
+		<Unit filename="bgsubcnt.h" />
+		<Unit filename="cvui.h" />
+		<Unit filename="dirent_portable.h" />
+		<Unit filename="file.cpp" />
+		<Unit filename="file.h" />
+		<Unit filename="img.cpp" />
+		<Unit filename="img.h" />
+		<Unit filename="imgui/imgui-SFML.cpp" />
+		<Unit filename="imgui/imgui.cpp" />
+		<Unit filename="imgui/imgui_demo.cpp" />
+		<Unit filename="imgui/imgui_draw.cpp" />
+		<Unit filename="imgui/imgui_widgets.cpp" />
+		<Unit filename="imguifilesystem.cpp" />
+		<Unit filename="imguifilesystem.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="main.h" />
+		<Unit filename="mog.h" />
+		<Unit filename="newGUI.cpp" />
+		<Unit filename="newGUI.h" />
+		<Unit filename="real_dimensions.cpp" />
+		<Unit filename="real_dimensions.h" />
+		<Unit filename="rs232.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rs232.h" />
+		<Unit filename="spark.h" />
+		<Unit filename="variables1.h" />
+		<Unit filename="webcam.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

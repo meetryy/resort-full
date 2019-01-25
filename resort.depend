@@ -1,0 +1,2059 @@
+# depslib dependency file v1.0
+1544123023 source:d:\codeblocks\projects\resort\resort\bgsubcnt.cpp
+	"bgsubcnt.h"
+	<functional>
+
+1544123028 d:\codeblocks\projects\resort\resort\bgsubcnt.h
+	"opencv2/video.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\video.hpp
+	"opencv2/video/tracking.hpp"
+	"opencv2/video/background_segm.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\video\tracking.hpp
+	"opencv2/core.hpp"
+	"opencv2/imgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core.hpp
+	"opencv2/core/cvdef.h"
+	"opencv2/core/version.hpp"
+	"opencv2/core/base.hpp"
+	"opencv2/core/cvstd.hpp"
+	"opencv2/core/traits.hpp"
+	"opencv2/core/matx.hpp"
+	"opencv2/core/types.hpp"
+	"opencv2/core/mat.hpp"
+	"opencv2/core/persistence.hpp"
+	"opencv2/core/operations.hpp"
+	"opencv2/core/cvstd.inl.hpp"
+	"opencv2/core/utility.hpp"
+	"opencv2/core/optim.hpp"
+	"opencv2/core/ovx.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cvdef.h
+	"cvconfig.h"
+	<limits.h>
+	"opencv2/core/hal/interface.h"
+	"cv_cpu_dispatch.h"
+	<intrin.h>
+	<array>
+	<cstdint>
+	<stdint.h>
+	<stdint.h>
+	"opencv2/core/fast_math.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\hal\interface.h
+	<cstddef>
+	<stddef.h>
+	<stdbool.h>
+	<cstdint>
+	<stdint.h>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cv_cpu_dispatch.h
+	"cv_cpu_config.h"
+	"cv_cpu_helper.h"
+	<emmintrin.h>
+	<pmmintrin.h>
+	<tmmintrin.h>
+	<smmintrin.h>
+	<nmmintrin.h>
+	<nmmintrin.h>
+	<popcntintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<immintrin.h>
+	<immintrin.h>
+	<immintrin.h>
+	<immintrin.h>
+	<Intrin.h>
+	<arm_neon.h>
+	<arm_neon.h>
+	<arm_neon.h>
+	<altivec.h>
+	<emmintrin.h>
+	<Intrin.h>
+	<arm_neon.h>
+	<arm_neon.h>
+	<altivec.h>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cv_cpu_helper.h
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\fast_math.hpp
+	"opencv2/core/cvdef.h"
+	<emmintrin.h>
+	<cmath>
+	<fastmath.h>
+	<math.h>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\version.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\base.hpp
+	"opencv2/opencv_modules.hpp"
+	<climits>
+	<algorithm>
+	"opencv2/core/cvdef.h"
+	"opencv2/core/cvstd.hpp"
+	"opencv2/core/neon_utils.hpp"
+	"opencv2/core/vsx_utils.hpp"
+	"opencv2/core/check.hpp"
+
+1536087406 d:\codeblocks\opencv-master\build!\install\include\opencv2\opencv_modules.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cvstd.hpp
+	"opencv2/core/cvdef.h"
+	<cstddef>
+	<cstring>
+	<cctype>
+	<string>
+	<algorithm>
+	<utility>
+	<cstdlib>
+	<cmath>
+	"opencv2/core/ptr.inl.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\ptr.inl.hpp
+	<algorithm>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\neon_utils.hpp
+	"opencv2/core/cvdef.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\vsx_utils.hpp
+	"opencv2/core/cvdef.h"
+	<assert.h>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\check.hpp
+	<opencv2/core/base.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\traits.hpp
+	"opencv2/core/cvdef.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\matx.hpp
+	"opencv2/core/cvdef.h"
+	"opencv2/core/base.hpp"
+	"opencv2/core/traits.hpp"
+	"opencv2/core/saturate.hpp"
+	<initializer_list>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\saturate.hpp
+	"opencv2/core/cvdef.h"
+	"opencv2/core/fast_math.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\types.hpp
+	<climits>
+	<cfloat>
+	<vector>
+	<limits>
+	"opencv2/core/cvdef.h"
+	"opencv2/core/cvstd.hpp"
+	"opencv2/core/matx.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\mat.hpp
+	"opencv2/core/matx.hpp"
+	"opencv2/core/types.hpp"
+	"opencv2/core/bufferpool.hpp"
+	<type_traits>
+	"opencv2/core/mat.inl.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\bufferpool.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\mat.inl.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\persistence.hpp
+	"opencv2/core/types.hpp"
+	"opencv2/core/mat.hpp"
+	"opencv2/opencv.hpp"
+	<time.h>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\opencv.hpp
+	"opencv2/opencv_modules.hpp"
+	"opencv2/core.hpp"
+	"opencv2/calib3d.hpp"
+	"opencv2/features2d.hpp"
+	"opencv2/dnn.hpp"
+	"opencv2/flann.hpp"
+	"opencv2/highgui.hpp"
+	"opencv2/imgcodecs.hpp"
+	"opencv2/imgproc.hpp"
+	"opencv2/ml.hpp"
+	"opencv2/objdetect.hpp"
+	"opencv2/photo.hpp"
+	"opencv2/shape.hpp"
+	"opencv2/stitching.hpp"
+	"opencv2/superres.hpp"
+	"opencv2/video.hpp"
+	"opencv2/videoio.hpp"
+	"opencv2/videostab.hpp"
+	"opencv2/viz.hpp"
+	"opencv2/cudaarithm.hpp"
+	"opencv2/cudabgsegm.hpp"
+	"opencv2/cudacodec.hpp"
+	"opencv2/cudafeatures2d.hpp"
+	"opencv2/cudafilters.hpp"
+	"opencv2/cudaimgproc.hpp"
+	"opencv2/cudaobjdetect.hpp"
+	"opencv2/cudaoptflow.hpp"
+	"opencv2/cudastereo.hpp"
+	"opencv2/cudawarping.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\calib3d.hpp
+	"opencv2/core.hpp"
+	"opencv2/features2d.hpp"
+	"opencv2/core/affine.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\features2d.hpp
+	"opencv2/opencv_modules.hpp"
+	"opencv2/core.hpp"
+	"opencv2/flann/miniflann.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\miniflann.hpp
+	"opencv2/core.hpp"
+	"opencv2/flann/defines.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\defines.h
+	"config.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\config.h
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\affine.hpp
+	<opencv2/core.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\dnn.hpp
+	<opencv2/dnn/dnn.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\dnn\dnn.hpp
+	<vector>
+	<opencv2/core.hpp>
+	"../dnn/version.hpp"
+	<opencv2/dnn/dict.hpp>
+	<opencv2/dnn/layer.hpp>
+	<opencv2/dnn/dnn.inl.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\dnn\version.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\dnn\dict.hpp
+	<opencv2/core.hpp>
+	<map>
+	<ostream>
+	<opencv2/dnn/dnn.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\dnn\layer.hpp
+	<opencv2/dnn.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\dnn\dnn.inl.hpp
+	<opencv2/dnn.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann.hpp
+	"opencv2/core.hpp"
+	"opencv2/flann/miniflann.hpp"
+	"opencv2/flann/flann_base.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\flann_base.hpp
+	<vector>
+	<cassert>
+	<cstdio>
+	"general.h"
+	"matrix.h"
+	"params.h"
+	"saving.h"
+	"all_indices.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\general.h
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\matrix.h
+	<stdio.h>
+	"general.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\params.h
+	"any.h"
+	"general.h"
+	<iostream>
+	<map>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\any.h
+	"defines.h"
+	<stdexcept>
+	<ostream>
+	<typeinfo>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\saving.h
+	<cstring>
+	<vector>
+	"general.h"
+	"nn_index.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\nn_index.h
+	"general.h"
+	"matrix.h"
+	"result_set.h"
+	"params.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\result_set.h
+	<algorithm>
+	<cstring>
+	<iostream>
+	<limits>
+	<set>
+	<vector>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\all_indices.h
+	"general.h"
+	"nn_index.h"
+	"kdtree_index.h"
+	"kdtree_single_index.h"
+	"kmeans_index.h"
+	"composite_index.h"
+	"linear_index.h"
+	"hierarchical_clustering_index.h"
+	"lsh_index.h"
+	"autotuned_index.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\kdtree_index.h
+	<algorithm>
+	<map>
+	<cassert>
+	<cstring>
+	"general.h"
+	"nn_index.h"
+	"dynamic_bitset.h"
+	"matrix.h"
+	"result_set.h"
+	"heap.h"
+	"allocator.h"
+	"random.h"
+	"saving.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\dynamic_bitset.h
+	<boost/dynamic_bitset.hpp>
+	<limits.h>
+	"dist.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\dist.h
+	<cmath>
+	<cstdlib>
+	<string.h>
+	<stdint.h>
+	"defines.h"
+	<Intrin.h>
+	"arm_neon.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\heap.h
+	<algorithm>
+	<vector>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\allocator.h
+	<stdlib.h>
+	<stdio.h>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\random.h
+	<algorithm>
+	<cstdlib>
+	<vector>
+	"general.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\kdtree_single_index.h
+	<algorithm>
+	<map>
+	<cassert>
+	<cstring>
+	"general.h"
+	"nn_index.h"
+	"matrix.h"
+	"result_set.h"
+	"heap.h"
+	"allocator.h"
+	"random.h"
+	"saving.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\kmeans_index.h
+	<algorithm>
+	<map>
+	<cassert>
+	<limits>
+	<cmath>
+	"general.h"
+	"nn_index.h"
+	"dist.h"
+	"matrix.h"
+	"result_set.h"
+	"heap.h"
+	"allocator.h"
+	"random.h"
+	"saving.h"
+	"logger.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\logger.h
+	<stdio.h>
+	<stdarg.h>
+	"defines.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\composite_index.h
+	"general.h"
+	"nn_index.h"
+	"kdtree_index.h"
+	"kmeans_index.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\linear_index.h
+	"general.h"
+	"nn_index.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\hierarchical_clustering_index.h
+	<algorithm>
+	<map>
+	<cassert>
+	<limits>
+	<cmath>
+	"general.h"
+	"nn_index.h"
+	"dist.h"
+	"matrix.h"
+	"result_set.h"
+	"heap.h"
+	"allocator.h"
+	"random.h"
+	"saving.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\lsh_index.h
+	<algorithm>
+	<cassert>
+	<cstring>
+	<map>
+	<vector>
+	"general.h"
+	"nn_index.h"
+	"matrix.h"
+	"result_set.h"
+	"heap.h"
+	"lsh_table.h"
+	"allocator.h"
+	"random.h"
+	"saving.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\lsh_table.h
+	<algorithm>
+	<iostream>
+	<iomanip>
+	<limits.h>
+	<unordered_map>
+	<map>
+	<math.h>
+	<stddef.h>
+	"dynamic_bitset.h"
+	"matrix.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\autotuned_index.h
+	<sstream>
+	"general.h"
+	"nn_index.h"
+	"ground_truth.h"
+	"index_testing.h"
+	"sampling.h"
+	"kdtree_index.h"
+	"kdtree_single_index.h"
+	"kmeans_index.h"
+	"composite_index.h"
+	"linear_index.h"
+	"logger.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\ground_truth.h
+	"dist.h"
+	"matrix.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\index_testing.h
+	<cstring>
+	<cassert>
+	<cmath>
+	"matrix.h"
+	"nn_index.h"
+	"result_set.h"
+	"logger.h"
+	"timer.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\timer.h
+	<time.h>
+	"opencv2/core.hpp"
+	"opencv2/core/utility.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\utility.hpp
+	"opencv2/core.hpp"
+	<ostream>
+	<functional>
+	<mutex>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\flann\sampling.h
+	"matrix.h"
+	"random.h"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\highgui.hpp
+	"opencv2/core.hpp"
+	"opencv2/imgcodecs.hpp"
+	"opencv2/videoio.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\imgcodecs.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videoio.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\imgproc.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\ml.hpp
+	"opencv2/core.hpp"
+	<float.h>
+	<map>
+	<iostream>
+	<opencv2/ml/ml.inl.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\ml\ml.inl.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\objdetect.hpp
+	"opencv2/core.hpp"
+	"opencv2/objdetect/detection_based_tracker.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\objdetect\detection_based_tracker.hpp
+	<opencv2/core.hpp>
+	<vector>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\photo.hpp
+	"opencv2/core.hpp"
+	"opencv2/imgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\shape.hpp
+	"opencv2/shape/emdL1.hpp"
+	"opencv2/shape/shape_transformer.hpp"
+	"opencv2/shape/hist_cost.hpp"
+	"opencv2/shape/shape_distance.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\shape\emdl1.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\shape\shape_transformer.hpp
+	<vector>
+	"opencv2/core.hpp"
+	"opencv2/imgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\shape\hist_cost.hpp
+	"opencv2/imgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\shape\shape_distance.hpp
+	"opencv2/core.hpp"
+	"opencv2/shape/hist_cost.hpp"
+	"opencv2/shape/shape_transformer.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching.hpp
+	"opencv2/core.hpp"
+	"opencv2/features2d.hpp"
+	"opencv2/stitching/warpers.hpp"
+	"opencv2/stitching/detail/matchers.hpp"
+	"opencv2/stitching/detail/motion_estimators.hpp"
+	"opencv2/stitching/detail/exposure_compensate.hpp"
+	"opencv2/stitching/detail/seam_finders.hpp"
+	"opencv2/stitching/detail/blenders.hpp"
+	"opencv2/stitching/detail/camera.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\warpers.hpp
+	"opencv2/stitching/detail/warpers.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\warpers.hpp
+	"opencv2/core.hpp"
+	"opencv2/core/cuda.hpp"
+	"opencv2/imgproc.hpp"
+	"opencv2/opencv_modules.hpp"
+	"warpers_inl.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cuda.hpp
+	"opencv2/core.hpp"
+	"opencv2/core/cuda_types.hpp"
+	<opencv2/opencv.hpp>
+	"opencv2/core/cuda.inl.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cuda_types.hpp
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cuda.inl.hpp
+	"opencv2/core/cuda.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\warpers_inl.hpp
+	"opencv2/core.hpp"
+	"warpers.hpp"
+	<limits>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\matchers.hpp
+	"opencv2/core.hpp"
+	"opencv2/features2d.hpp"
+	"opencv2/opencv_modules.hpp"
+	"opencv2/xfeatures2d/cuda.hpp"
+
+1535684738 d:\codeblocks\opencv-master\build!\install\include\opencv2\xfeatures2d\cuda.hpp
+	"opencv2/core/cuda.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\motion_estimators.hpp
+	"opencv2/core.hpp"
+	"matchers.hpp"
+	"util.hpp"
+	"camera.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\util.hpp
+	<list>
+	"opencv2/core.hpp"
+	"util_inl.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\util_inl.hpp
+	<queue>
+	"opencv2/core.hpp"
+	"util.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\camera.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\exposure_compensate.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\seam_finders.hpp
+	<set>
+	"opencv2/core.hpp"
+	"opencv2/opencv_modules.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\stitching\detail\blenders.hpp
+	"opencv2/core.hpp"
+	"opencv2/core/cuda.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\superres.hpp
+	"opencv2/core.hpp"
+	"opencv2/superres/optical_flow.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\superres\optical_flow.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab.hpp
+	"opencv2/videostab/stabilizer.hpp"
+	"opencv2/videostab/ring_buffer.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\stabilizer.hpp
+	<vector>
+	<ctime>
+	"opencv2/core.hpp"
+	"opencv2/imgproc.hpp"
+	"opencv2/videostab/global_motion.hpp"
+	"opencv2/videostab/motion_stabilizing.hpp"
+	"opencv2/videostab/frame_source.hpp"
+	"opencv2/videostab/log.hpp"
+	"opencv2/videostab/inpainting.hpp"
+	"opencv2/videostab/deblurring.hpp"
+	"opencv2/videostab/wobble_suppression.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\global_motion.hpp
+	<vector>
+	<fstream>
+	"opencv2/core.hpp"
+	"opencv2/features2d.hpp"
+	"opencv2/opencv_modules.hpp"
+	"opencv2/videostab/optical_flow.hpp"
+	"opencv2/videostab/motion_core.hpp"
+	"opencv2/videostab/outlier_rejection.hpp"
+	"opencv2/cudaimgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\optical_flow.hpp
+	"opencv2/core.hpp"
+	"opencv2/opencv_modules.hpp"
+	"opencv2/cudaoptflow.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\motion_core.hpp
+	<cmath>
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\outlier_rejection.hpp
+	<vector>
+	"opencv2/core.hpp"
+	"opencv2/videostab/motion_core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\motion_stabilizing.hpp
+	<vector>
+	<utility>
+	"opencv2/core.hpp"
+	"opencv2/videostab/global_motion.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\frame_source.hpp
+	<vector>
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\log.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\inpainting.hpp
+	<vector>
+	"opencv2/core.hpp"
+	"opencv2/videostab/optical_flow.hpp"
+	"opencv2/videostab/fast_marching.hpp"
+	"opencv2/videostab/global_motion.hpp"
+	"opencv2/photo.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\fast_marching.hpp
+	<cmath>
+	<queue>
+	<algorithm>
+	"opencv2/core.hpp"
+	"fast_marching_inl.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\fast_marching_inl.hpp
+	"opencv2/videostab/fast_marching.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\deblurring.hpp
+	<vector>
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\wobble_suppression.hpp
+	<vector>
+	"opencv2/core.hpp"
+	"opencv2/core/cuda.hpp"
+	"opencv2/videostab/global_motion.hpp"
+	"opencv2/videostab/log.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\videostab\ring_buffer.hpp
+	<vector>
+	"opencv2/imgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\operations.hpp
+	<cstdio>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\cvstd.inl.hpp
+	<complex>
+	<ostream>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\optim.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\ovx.hpp
+	"cvdef.h"
+
+1544997613 d:\codeblocks\opencv-master\build!\install\include\opencv2\video\background_segm.hpp
+	"opencv2/core.hpp"
+
+1548455856 source:d:\codeblocks\projects\resort\resort\com_port.cpp
+	<iostream>
+	<fstream>
+	<stdexcept>
+	"rs232.h"
+	"COM_port.h"
+	"variables1.h"
+	"UI.h"
+	"rs232.h"
+	<Windows.h>
+	<stdlib.h>
+	<stdio.h>
+
+1501918064 d:\codeblocks\projects\resort\resort\rs232.h
+	<stdio.h>
+	<string.h>
+	<termios.h>
+	<sys/ioctl.h>
+	<unistd.h>
+	<fcntl.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<limits.h>
+	<sys/file.h>
+	<errno.h>
+	<windows.h>
+
+1536611859 d:\codeblocks\projects\resort\resort\com_port.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+
+1548455713 d:\codeblocks\projects\resort\resort\variables1.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\core\core.hpp
+	"opencv2/core.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\imgproc\imgproc.hpp
+	"opencv2/imgproc.hpp"
+
+1536038234 d:\codeblocks\opencv-master\build!\install\include\opencv2\highgui\highgui.hpp
+	"opencv2/highgui.hpp"
+
+1536939805 d:\codeblocks\projects\resort\resort\ui.h
+
+1548454095 source:d:\codeblocks\projects\resort\resort\file.cpp
+	<iostream>
+	<fstream>
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"variables1.h"
+	"file.h"
+	"main.h"
+	"UI.h"
+
+1546277320 d:\codeblocks\projects\resort\resort\file.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+
+1544896709 d:\codeblocks\projects\resort\resort\main.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<SFML/Graphics/Texture.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\texture.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Image.hpp>
+	<SFML/Window/GlResource.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\export.hpp
+	<SFML/Config.hpp>
+
+1539635488 d:\codeblocks\sfml-2.5.1\include\sfml\config.hpp
+	"TargetConditionals.h"
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\image.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<string>
+	<vector>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\color.hpp
+	<SFML/Graphics/Export.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\rect.hpp
+	<SFML/System/Vector2.hpp>
+	<algorithm>
+	<SFML/Graphics/Rect.inl>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\vector2.hpp
+	<SFML/System/Vector2.inl>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\vector2.inl
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\rect.inl
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\glresource.hpp
+	<SFML/Window/Export.hpp>
+	<SFML/System/NonCopyable.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\export.hpp
+	<SFML/Config.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\noncopyable.hpp
+	<SFML/System/Export.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\export.hpp
+	<SFML/Config.hpp>
+
+1548456212 source:d:\codeblocks\projects\resort\resort\img.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"opencv2/imgcodecs.hpp"
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	"bgsegm.hpp"
+	<opencv2/videoio.hpp>
+	<iostream>
+	<thread>
+	<windows.h>
+	<chrono>
+	"main.h"
+	"img.h"
+	"variables1.h"
+	"mog.h"
+	"real_dimensions.h"
+	"KalmanFilterTracker.h"
+	"bgsubcnt.h"
+	"omp.h"
+	"newGUI.h"
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+
+1535684738 d:\codeblocks\opencv-master\build!\install\include\opencv2\bgsegm.hpp
+	"opencv2/video.hpp"
+
+1545393534 d:\codeblocks\projects\resort\resort\img.h
+
+1544974581 d:\codeblocks\projects\resort\resort\mog.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+
+1537042147 d:\codeblocks\projects\resort\resort\real_dimensions.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+
+1384073090 d:\codeblocks\projects\resort\resort\kalmanfiltertracker.h
+	<iostream>
+	"opencv2/opencv.hpp"
+
+1545573356 d:\codeblocks\projects\resort\resort\newgui.h
+
+1543890888 d:\codeblocks\projects\resort\resort\imgui\imgui.h
+	"imconfig.h"
+	<float.h>
+	<stdarg.h>
+	<stddef.h>
+	<string.h>
+	<assert.h>
+	<stdint.h>
+	"imgui_user.h"
+
+1544824480 d:\codeblocks\projects\resort\resort\imgui\imconfig.h
+	<SFML/System/Vector2.hpp>
+	<SFML/Graphics/Color.hpp>
+
+1541498328 d:\codeblocks\projects\resort\resort\imgui\imgui-sfml.h
+	<SFML/System/Vector2.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/System/Time.hpp>
+	<SFML/Window/Joystick.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\time.hpp
+	<SFML/System/Export.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\joystick.hpp
+	<SFML/Window/Export.hpp>
+	<SFML/System/String.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\string.hpp
+	<SFML/System/Export.hpp>
+	<SFML/System/Utf.hpp>
+	<iterator>
+	<locale>
+	<string>
+	<SFML/System/String.inl>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\utf.hpp
+	<SFML/Config.hpp>
+	<algorithm>
+	<locale>
+	<string>
+	<cstdlib>
+	<SFML/System/Utf.inl>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\utf.inl
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\string.inl
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\renderwindow.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/RenderTarget.hpp>
+	<SFML/Graphics/Image.hpp>
+	<SFML/Window/Window.hpp>
+	<string>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\rendertarget.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/View.hpp>
+	<SFML/Graphics/Transform.hpp>
+	<SFML/Graphics/BlendMode.hpp>
+	<SFML/Graphics/RenderStates.hpp>
+	<SFML/Graphics/PrimitiveType.hpp>
+	<SFML/Graphics/Vertex.hpp>
+	<SFML/System/NonCopyable.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\view.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/Transform.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\transform.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\blendmode.hpp
+	<SFML/Graphics/Export.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\renderstates.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/BlendMode.hpp>
+	<SFML/Graphics/Transform.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\primitivetype.hpp
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\vertex.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\window.hpp
+	<SFML/Window/ContextSettings.hpp>
+	<SFML/Window/Cursor.hpp>
+	<SFML/Window/Export.hpp>
+	<SFML/Window/GlResource.hpp>
+	<SFML/Window/VideoMode.hpp>
+	<SFML/Window/WindowHandle.hpp>
+	<SFML/Window/WindowStyle.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/System/NonCopyable.hpp>
+	<SFML/System/String.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\contextsettings.hpp
+	<SFML/Config.hpp>
+
+1539635488 d:\codeblocks\sfml-2.5.1\include\sfml\window\cursor.hpp
+	<SFML/Window/Export.hpp>
+	<SFML/System/NonCopyable.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\videomode.hpp
+	<SFML/Window/Export.hpp>
+	<vector>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\windowhandle.hpp
+	<SFML/Config.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\windowstyle.hpp
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\clock.hpp
+	<SFML/System/Export.hpp>
+	<SFML/System/Time.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\event.hpp
+	<SFML/Config.hpp>
+	<SFML/Window/Joystick.hpp>
+	<SFML/Window/Keyboard.hpp>
+	<SFML/Window/Mouse.hpp>
+	<SFML/Window/Sensor.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\keyboard.hpp
+	<SFML/Window/Export.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\mouse.hpp
+	<SFML/Window/Export.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\sensor.hpp
+	<SFML/Window/Export.hpp>
+	<SFML/System/Vector3.hpp>
+	<SFML/System/Time.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\vector3.hpp
+	<SFML/System/Vector3.inl>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\vector3.inl
+
+1544898579 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\sprite.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Drawable.hpp>
+	<SFML/Graphics/Transformable.hpp>
+	<SFML/Graphics/Vertex.hpp>
+	<SFML/Graphics/Rect.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\drawable.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/RenderStates.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\transformable.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Transform.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\circleshape.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Shape.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\shape.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Drawable.hpp>
+	<SFML/Graphics/Transformable.hpp>
+	<SFML/Graphics/VertexArray.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\vertexarray.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Vertex.hpp>
+	<SFML/Graphics/PrimitiveType.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/Drawable.hpp>
+	<vector>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\graphics\rectangleshape.hpp
+	<SFML/Graphics/Export.hpp>
+	<SFML/Graphics/Shape.hpp>
+
+1544807012 source:d:\codeblocks\projects\resort\resort\imgui\imgui-sfml.cpp
+	"imgui-SFML.h"
+	"imgui.h"
+	<SFML/OpenGL.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/Graphics/RenderTarget.hpp>
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Window/Touch.hpp>
+	<SFML/Window/Window.hpp>
+	<cmath>
+	<cstddef>
+	<cassert>
+	<jni.h>
+	<android/native_activity.h>
+	<SFML/System/NativeActivity.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\opengl.hpp
+	<SFML/Config.hpp>
+	<windows.h>
+	<GL/gl.h>
+	<GLES/gl.h>
+	<GLES/glext.h>
+	<GL/gl.h>
+	<OpenGL/gl.h>
+	<OpenGLES/ES1/gl.h>
+	<OpenGLES/ES1/glext.h>
+	<GLES/gl.h>
+	<GLES/glext.h>
+	<GLES2/gl2platform.h>
+	<GLES2/gl2ext.h>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\window\touch.hpp
+	<SFML/Window/Export.hpp>
+	<SFML/System/Vector2.hpp>
+
+1525812018 d:\codeblocks\sfml-2.5.1\include\sfml\system\nativeactivity.hpp
+	<SFML/System/Export.hpp>
+
+1543890888 source:d:\codeblocks\projects\resort\resort\imgui\imgui.cpp
+	<stb_image.h>
+	"imgui.h"
+	"imgui_internal.h"
+	<ctype.h>
+	<stdio.h>
+	<stddef.h>
+	<stdint.h>
+	<Windows.h>
+	<windows.h>
+	<imm.h>
+	"imgui_user.inl"
+
+1543890888 d:\codeblocks\projects\resort\resort\imgui\imgui_internal.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<limits.h>
+	"imstb_textedit.h"
+
+1543890888 d:\codeblocks\projects\resort\resort\imgui\imstb_textedit.h
+	<string.h>
+
+1543890888 source:d:\codeblocks\projects\resort\resort\imgui\imgui_demo.cpp
+	"imgui.h"
+	<ctype.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdint.h>
+
+1543890888 source:d:\codeblocks\projects\resort\resort\imgui\imgui_draw.cpp
+	"imgui.h"
+	"imgui_internal.h"
+	<stdio.h>
+	<alloca.h>
+	<malloc.h>
+	<stdlib.h>
+	"imstb_rectpack.h"
+	"imstb_truetype.h"
+
+1543890888 d:\codeblocks\projects\resort\resort\imgui\imstb_rectpack.h
+	<stdlib.h>
+	<assert.h>
+
+1543890888 d:\codeblocks\projects\resort\resort\imgui\imstb_truetype.h
+	"stb_truetype.h"
+	<stdio.h>
+	"stb_truetype.h"
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	<string.h>
+
+1543890888 source:d:\codeblocks\projects\resort\resort\imgui\imgui_widgets.cpp
+	"imgui.h"
+	"imgui_internal.h"
+	<ctype.h>
+	<stddef.h>
+	<stdint.h>
+	"imstb_textedit.h"
+
+1544971424 source:d:\codeblocks\projects\resort\resort\imguifiledialog.cpp
+	"ImGuiFileDialog.h"
+	"imgui.h"
+	"dirent/dirent.h"
+	"imgui_internal.h"
+	<algorithm>
+
+1544829165 d:\codeblocks\projects\resort\resort\imguifiledialog.h
+	<vector>
+	<string>
+
+1544829205 d:\codeblocks\projects\resort\resort\dirent\dirent.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+
+1544971716 source:d:\codeblocks\projects\resort\resort\imguifilesystem.cpp
+	<windows.h>
+	<imgui.h>
+	<imgui_internal.h>
+	"imguifilesystem.h"
+	<shlobj.h>
+	<unistd.h>
+	<pwd.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+	"dirent_portable.h"
+	<sys/stat.h>
+	<ctype.h>
+	<string.h>
+	<stdlib.h>
+
+1544969088 d:\codeblocks\projects\resort\resort\imguifilesystem.h
+	"imguifilesystem.h"
+	<imgui.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+
+1544969084 d:\codeblocks\projects\resort\resort\dirent_portable.h
+	<dirent.h>
+	<stdio.h>
+	<stdarg.h>
+	<windef.h>
+	<winbase.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+	<limits.h>
+
+1548456482 source:d:\codeblocks\projects\resort\resort\main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/videoio.hpp>
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	<iostream>
+	<fstream>
+	<ctime>
+	<sstream>
+	<cstdlib>
+	<thread>
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+	"variables1.h"
+	"UI.h"
+	"main.h"
+	"file.h"
+	"img.h"
+	"rs232.h"
+	"COM_port.h"
+	"mog.h"
+	"real_dimensions.h"
+	"newGUI.h"
+	"ImGuiFileDialog.h"
+	"omp.h"
+
+1546352148 source:d:\codeblocks\projects\resort\resort\newgui.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<iostream>
+	<fstream>
+	<ctime>
+	<string>
+	<thread>
+	<mutex>
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	"variables1.h"
+	"main.h"
+	"file.h"
+	"img.h"
+	"rs232.h"
+	"COM_port.h"
+	"mog.h"
+	"real_dimensions.h"
+	"newGUI.h"
+	"imguifilesystem.h"
+
+1537042353 source:d:\codeblocks\projects\resort\resort\real_dimensions.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<thread>
+	"variables1.h"
+
+1511356394 source:d:\codeblocks\projects\resort\resort\rs232.c
+	"rs232.h"
+
+1544123023 source:d:\codeblocks\projects\resort\bgsubcnt.cpp
+	"bgsubcnt.h"
+	<functional>
+
+1544123028 d:\codeblocks\projects\resort\bgsubcnt.h
+	"opencv2/video.hpp"
+
+1548455856 source:d:\codeblocks\projects\resort\com_port.cpp
+	<iostream>
+	<fstream>
+	<stdexcept>
+	"rs232.h"
+	"COM_port.h"
+	"variables1.h"
+	"UI.h"
+	"rs232.h"
+	<Windows.h>
+	<stdlib.h>
+	<stdio.h>
+
+1501918064 d:\codeblocks\projects\resort\rs232.h
+	<stdio.h>
+	<string.h>
+	<termios.h>
+	<sys/ioctl.h>
+	<unistd.h>
+	<fcntl.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<limits.h>
+	<sys/file.h>
+	<errno.h>
+	<windows.h>
+
+1536611859 d:\codeblocks\projects\resort\com_port.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+
+1548455713 d:\codeblocks\projects\resort\variables1.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+
+1536939805 d:\codeblocks\projects\resort\ui.h
+
+1548454095 source:d:\codeblocks\projects\resort\file.cpp
+	<iostream>
+	<fstream>
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"variables1.h"
+	"file.h"
+	"main.h"
+	"UI.h"
+
+1546277320 d:\codeblocks\projects\resort\file.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+
+1544896709 d:\codeblocks\projects\resort\main.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<SFML/Graphics/Texture.hpp>
+
+1548456212 source:d:\codeblocks\projects\resort\img.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"opencv2/imgcodecs.hpp"
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	"bgsegm.hpp"
+	<opencv2/videoio.hpp>
+	<iostream>
+	<thread>
+	<windows.h>
+	<chrono>
+	"main.h"
+	"img.h"
+	"variables1.h"
+	"mog.h"
+	"real_dimensions.h"
+	"KalmanFilterTracker.h"
+	"bgsubcnt.h"
+	"omp.h"
+	"newGUI.h"
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+
+1545393534 d:\codeblocks\projects\resort\img.h
+
+1544974581 d:\codeblocks\projects\resort\mog.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+
+1537042147 d:\codeblocks\projects\resort\real_dimensions.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+
+1384073090 d:\codeblocks\projects\resort\kalmanfiltertracker.h
+	<iostream>
+	"opencv2/opencv.hpp"
+
+1545573356 d:\codeblocks\projects\resort\newgui.h
+
+1543890888 d:\codeblocks\projects\resort\imgui\imgui.h
+	"imconfig.h"
+	<float.h>
+	<stdarg.h>
+	<stddef.h>
+	<string.h>
+	<assert.h>
+	<stdint.h>
+	"imgui_user.h"
+
+1544824480 d:\codeblocks\projects\resort\imgui\imconfig.h
+	<SFML/System/Vector2.hpp>
+	<SFML/Graphics/Color.hpp>
+
+1541498328 d:\codeblocks\projects\resort\imgui\imgui-sfml.h
+	<SFML/System/Vector2.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/System/Time.hpp>
+	<SFML/Window/Joystick.hpp>
+
+1544807012 source:d:\codeblocks\projects\resort\imgui\imgui-sfml.cpp
+	"imgui-SFML.h"
+	"imgui.h"
+	<SFML/OpenGL.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/Graphics/RenderTarget.hpp>
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Window/Touch.hpp>
+	<SFML/Window/Window.hpp>
+	<cmath>
+	<cstddef>
+	<cassert>
+	<jni.h>
+	<android/native_activity.h>
+	<SFML/System/NativeActivity.hpp>
+
+1543890888 source:d:\codeblocks\projects\resort\imgui\imgui.cpp
+	<stb_image.h>
+	"imgui.h"
+	"imgui_internal.h"
+	<ctype.h>
+	<stdio.h>
+	<stddef.h>
+	<stdint.h>
+	<Windows.h>
+	<windows.h>
+	<imm.h>
+	"imgui_user.inl"
+
+1543890888 d:\codeblocks\projects\resort\imgui\imgui_internal.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<limits.h>
+	"imstb_textedit.h"
+
+1543890888 d:\codeblocks\projects\resort\imgui\imstb_textedit.h
+	<string.h>
+
+1543890888 source:d:\codeblocks\projects\resort\imgui\imgui_demo.cpp
+	"imgui.h"
+	<ctype.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdint.h>
+
+1543890888 source:d:\codeblocks\projects\resort\imgui\imgui_draw.cpp
+	"imgui.h"
+	"imgui_internal.h"
+	<stdio.h>
+	<alloca.h>
+	<malloc.h>
+	<stdlib.h>
+	"imstb_rectpack.h"
+	"imstb_truetype.h"
+
+1543890888 d:\codeblocks\projects\resort\imgui\imstb_rectpack.h
+	<stdlib.h>
+	<assert.h>
+
+1543890888 d:\codeblocks\projects\resort\imgui\imstb_truetype.h
+	"stb_truetype.h"
+	<stdio.h>
+	"stb_truetype.h"
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	<string.h>
+
+1543890888 source:d:\codeblocks\projects\resort\imgui\imgui_widgets.cpp
+	"imgui.h"
+	"imgui_internal.h"
+	<ctype.h>
+	<stddef.h>
+	<stdint.h>
+	"imstb_textedit.h"
+
+1544971424 source:d:\codeblocks\projects\resort\imguifiledialog.cpp
+	"ImGuiFileDialog.h"
+	"imgui.h"
+	"dirent/dirent.h"
+	"imgui_internal.h"
+	<algorithm>
+
+1544829165 d:\codeblocks\projects\resort\imguifiledialog.h
+	<vector>
+	<string>
+
+1544829205 d:\codeblocks\projects\resort\dirent\dirent.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+
+1544971716 source:d:\codeblocks\projects\resort\imguifilesystem.cpp
+	<windows.h>
+	<imgui.h>
+	<imgui_internal.h>
+	"imguifilesystem.h"
+	<shlobj.h>
+	<unistd.h>
+	<pwd.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+	"dirent_portable.h"
+	<sys/stat.h>
+	<ctype.h>
+	<string.h>
+	<stdlib.h>
+
+1544969088 d:\codeblocks\projects\resort\imguifilesystem.h
+	"imguifilesystem.h"
+	<imgui.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+
+1544969084 d:\codeblocks\projects\resort\dirent_portable.h
+	<dirent.h>
+	<stdio.h>
+	<stdarg.h>
+	<windef.h>
+	<winbase.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+	<limits.h>
+
+1548456482 source:d:\codeblocks\projects\resort\main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/videoio.hpp>
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	<iostream>
+	<fstream>
+	<ctime>
+	<sstream>
+	<cstdlib>
+	<thread>
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+	"variables1.h"
+	"UI.h"
+	"main.h"
+	"file.h"
+	"img.h"
+	"rs232.h"
+	"COM_port.h"
+	"mog.h"
+	"real_dimensions.h"
+	"newGUI.h"
+	"ImGuiFileDialog.h"
+	"omp.h"
+
+1546352148 source:d:\codeblocks\projects\resort\newgui.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<iostream>
+	<fstream>
+	<ctime>
+	<string>
+	<thread>
+	<mutex>
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	"variables1.h"
+	"main.h"
+	"file.h"
+	"img.h"
+	"rs232.h"
+	"COM_port.h"
+	"mog.h"
+	"real_dimensions.h"
+	"newGUI.h"
+	"imguifilesystem.h"
+
+1537042353 source:d:\codeblocks\projects\resort\real_dimensions.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<thread>
+	"variables1.h"
+
+1511356394 source:d:\codeblocks\projects\resort\rs232.c
+	"rs232.h"
+
+1544123023 source:d:\codeblocks\projects\resort-full\bgsubcnt.cpp
+	"bgsubcnt.h"
+	<functional>
+
+1544123028 d:\codeblocks\projects\resort-full\bgsubcnt.h
+	"opencv2/video.hpp"
+
+1548455856 source:d:\codeblocks\projects\resort-full\com_port.cpp
+	<iostream>
+	<fstream>
+	<stdexcept>
+	"rs232.h"
+	"COM_port.h"
+	"variables1.h"
+	"UI.h"
+	"rs232.h"
+	<Windows.h>
+	<stdlib.h>
+	<stdio.h>
+
+1501918064 d:\codeblocks\projects\resort-full\rs232.h
+	<stdio.h>
+	<string.h>
+	<termios.h>
+	<sys/ioctl.h>
+	<unistd.h>
+	<fcntl.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<limits.h>
+	<sys/file.h>
+	<errno.h>
+	<windows.h>
+
+1536611859 d:\codeblocks\projects\resort-full\com_port.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+
+1548455713 d:\codeblocks\projects\resort-full\variables1.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+
+1536939805 d:\codeblocks\projects\resort-full\ui.h
+
+1548454095 source:d:\codeblocks\projects\resort-full\file.cpp
+	<iostream>
+	<fstream>
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"variables1.h"
+	"file.h"
+	"main.h"
+	"UI.h"
+
+1546277320 d:\codeblocks\projects\resort-full\file.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+
+1544896709 d:\codeblocks\projects\resort-full\main.h
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<SFML/Graphics/Texture.hpp>
+
+1548456212 source:d:\codeblocks\projects\resort-full\img.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"opencv2/imgcodecs.hpp"
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	"bgsegm.hpp"
+	<opencv2/videoio.hpp>
+	<iostream>
+	<thread>
+	<windows.h>
+	<chrono>
+	"main.h"
+	"img.h"
+	"variables1.h"
+	"mog.h"
+	"real_dimensions.h"
+	"KalmanFilterTracker.h"
+	"bgsubcnt.h"
+	"omp.h"
+	"newGUI.h"
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+
+1545393534 d:\codeblocks\projects\resort-full\img.h
+
+1544974581 d:\codeblocks\projects\resort-full\mog.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+
+1537042147 d:\codeblocks\projects\resort-full\real_dimensions.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+
+1384073090 d:\codeblocks\projects\resort-full\kalmanfiltertracker.h
+	<iostream>
+	"opencv2/opencv.hpp"
+
+1545573356 d:\codeblocks\projects\resort-full\newgui.h
+
+1543890888 d:\codeblocks\projects\resort-full\imgui\imgui.h
+	"imconfig.h"
+	<float.h>
+	<stdarg.h>
+	<stddef.h>
+	<string.h>
+	<assert.h>
+	<stdint.h>
+	"imgui_user.h"
+
+1544824480 d:\codeblocks\projects\resort-full\imgui\imconfig.h
+	<SFML/System/Vector2.hpp>
+	<SFML/Graphics/Color.hpp>
+
+1541498328 d:\codeblocks\projects\resort-full\imgui\imgui-sfml.h
+	<SFML/System/Vector2.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/System/Time.hpp>
+	<SFML/Window/Joystick.hpp>
+
+1544807012 source:d:\codeblocks\projects\resort-full\imgui\imgui-sfml.cpp
+	"imgui-SFML.h"
+	"imgui.h"
+	<SFML/OpenGL.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/Graphics/RenderTarget.hpp>
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Window/Touch.hpp>
+	<SFML/Window/Window.hpp>
+	<cmath>
+	<cstddef>
+	<cassert>
+	<jni.h>
+	<android/native_activity.h>
+	<SFML/System/NativeActivity.hpp>
+
+1543890888 source:d:\codeblocks\projects\resort-full\imgui\imgui.cpp
+	<stb_image.h>
+	"imgui.h"
+	"imgui_internal.h"
+	<ctype.h>
+	<stdio.h>
+	<stddef.h>
+	<stdint.h>
+	<Windows.h>
+	<windows.h>
+	<imm.h>
+	"imgui_user.inl"
+
+1543890888 d:\codeblocks\projects\resort-full\imgui\imgui_internal.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<limits.h>
+	"imstb_textedit.h"
+
+1543890888 d:\codeblocks\projects\resort-full\imgui\imstb_textedit.h
+	<string.h>
+
+1543890888 source:d:\codeblocks\projects\resort-full\imgui\imgui_demo.cpp
+	"imgui.h"
+	<ctype.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdint.h>
+
+1543890888 source:d:\codeblocks\projects\resort-full\imgui\imgui_draw.cpp
+	"imgui.h"
+	"imgui_internal.h"
+	<stdio.h>
+	<alloca.h>
+	<malloc.h>
+	<stdlib.h>
+	"imstb_rectpack.h"
+	"imstb_truetype.h"
+
+1543890888 d:\codeblocks\projects\resort-full\imgui\imstb_rectpack.h
+	<stdlib.h>
+	<assert.h>
+
+1543890888 d:\codeblocks\projects\resort-full\imgui\imstb_truetype.h
+	"stb_truetype.h"
+	<stdio.h>
+	"stb_truetype.h"
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	<string.h>
+
+1543890888 source:d:\codeblocks\projects\resort-full\imgui\imgui_widgets.cpp
+	"imgui.h"
+	"imgui_internal.h"
+	<ctype.h>
+	<stddef.h>
+	<stdint.h>
+	"imstb_textedit.h"
+
+1544971424 source:d:\codeblocks\projects\resort-full\imguifiledialog.cpp
+	"ImGuiFileDialog.h"
+	"imgui.h"
+	"dirent/dirent.h"
+	"imgui_internal.h"
+	<algorithm>
+
+1544829165 d:\codeblocks\projects\resort-full\imguifiledialog.h
+	<vector>
+	<string>
+
+1544829205 d:\codeblocks\projects\resort-full\dirent\dirent.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+
+1544971716 source:d:\codeblocks\projects\resort-full\imguifilesystem.cpp
+	<windows.h>
+	<imgui.h>
+	<imgui_internal.h>
+	"imguifilesystem.h"
+	<shlobj.h>
+	<unistd.h>
+	<pwd.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+	"dirent_portable.h"
+	<sys/stat.h>
+	<ctype.h>
+	<string.h>
+	<stdlib.h>
+
+1544969088 d:\codeblocks\projects\resort-full\imguifilesystem.h
+	"imguifilesystem.h"
+	<imgui.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+
+1544969084 d:\codeblocks\projects\resort-full\dirent_portable.h
+	<dirent.h>
+	<stdio.h>
+	<stdarg.h>
+	<windef.h>
+	<winbase.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+	<limits.h>
+
+1546352148 source:d:\codeblocks\projects\resort-full\newgui.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<iostream>
+	<fstream>
+	<ctime>
+	<string>
+	<thread>
+	<mutex>
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	"variables1.h"
+	"main.h"
+	"file.h"
+	"img.h"
+	"rs232.h"
+	"COM_port.h"
+	"mog.h"
+	"real_dimensions.h"
+	"newGUI.h"
+	"imguifilesystem.h"
+
+1537042353 source:d:\codeblocks\projects\resort-full\real_dimensions.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	<fstream>
+	<stdexcept>
+	<thread>
+	"variables1.h"
+
+1511356394 source:d:\codeblocks\projects\resort-full\rs232.c
+	"rs232.h"
+

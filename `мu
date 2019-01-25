@@ -1,0 +1,39 @@
+#input
+capture_run=1;
+input_correction_on=0;
+hsv_input_correction=[90, 0, 0, 0];
+
+#edge detection
+canny_blur_value=2;
+canny_thresh_value=84;
+use_scharr=1;
+scharr_thresh_value=410;
+
+#contours
+min_bbox_area=248;
+max_bbox_area=5000;
+morph_mask=0;
+input_correction_on=0;
+morph_size=3;
+
+#color
+good_color_rgb=[204, 252, 59.5, 0];
+color_tolerance_rgb=[117.25, 115.5, 132.25, 0];
+good_color_hsv=[83, 194, 252, 0];
+color_tolerance_hsv=[18.5, 63, 64, 0];
+good_colorspace=0;
+
+#output
+show_contours=1;
+show_centers=1;
+show_bboxes=0;
+show_avgcolor=1;
+show_area=1;
+show_bboxes=0;
+show_fill_avgcolor=0;
+show_fill_contcolor=0;
+
+#com port
+com_connected=0;
+com_port_number=0;
+com_speed=57600;
