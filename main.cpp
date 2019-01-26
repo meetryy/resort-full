@@ -39,15 +39,17 @@
 using namespace cv;
 using namespace std;
 
-bool    freeze_frame;
-
 void    comport_thread(void);
 void    image_thread(void);
 void    ProcessImg(void);
 
-bool    fullscreen = 0;
+
 bool    FullscreenChanged =0;
 sf::Window window;
+
+V_t V;
+
+const string WindowName = "ReSort v0.1 01.2019";
 
 void LoadFont(void);
 int main(int argc, const char *argv[])
@@ -55,8 +57,11 @@ int main(int argc, const char *argv[])
     //========= GUI INITIALIZATION ==============
     long ScreenW=sf::VideoMode::getDesktopMode().width;
     long ScreenH=sf::VideoMode::getDesktopMode().height;
-    sf::RenderWindow window(sf::VideoMode(ScreenW, ScreenH), "ReSort v0.1 01.2019");//,sf::Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(ScreenW, ScreenH), WindowName);//,sf::Style::Fullscreen);
     window.setFramerateLimit(50);
+    V.Info.ConsoleDestination = 1;
+    V.UI.Fullscreen = 0;
+    SetWin[W_SELF_LOG].show = 1;
 
     ImGui::SFML::Init(window, false);
     LoadFont();
@@ -75,7 +80,7 @@ int main(int argc, const char *argv[])
 
     list_COM();
 
-    capture_run = 0;
+    V.Input.CaptureRun = 0;
 
     //thread t1(comport_thread);
 
@@ -92,16 +97,17 @@ int main(int argc, const char *argv[])
             ImGui::SFML::ProcessEvent(event);
             if (event.type == sf::Event::Closed) {window.close();}
             if (event.type == sf::Event::KeyPressed){
-                if (event.key.code == sf::Keyboard::F12) {fullscreen = !fullscreen; FullscreenChanged = 1;}
+                if (event.key.code == sf::Keyboard::F12) {V.UI.Fullscreen = !V.UI.Fullscreen; FullscreenChanged = 1;}
             }
          }
 
         if(FullscreenChanged){
                 window.close();
-                if (fullscreen) window.create(sf::VideoMode(ScreenW, ScreenH), "ImGui + SFML = <3",sf::Style::Fullscreen);
-                        else    window.create(sf::VideoMode(ScreenW, ScreenH), "ImGui + SFML = <3");
+                if (V.UI.Fullscreen) window.create(sf::VideoMode(ScreenW, ScreenH), WindowName,sf::Style::Fullscreen);
+                        else    window.create(sf::VideoMode(ScreenW, ScreenH), WindowName);
                 window.setFramerateLimit(60);
                 FullscreenChanged=0;
+                ConsoleOut(u8"ИНТЕРФЕЙС: Полноэкранный режим переключен");
             }
 
         ImGui::SFML::Update(window, deltaClock.restart());
@@ -119,7 +125,7 @@ void comport_thread(void){
     while(1){
         //std::cout << "task1 says:";
         //cv::waitKey(100);
-        //if (com_connected) {handshake_COM();}
+        //if (V.ComPort.Connected) {handshake_COM();}
     }
 }
 
@@ -148,6 +154,7 @@ void LoadFont(void){
 
     ImGui::SFML::UpdateFontTexture(); // important call: updates font texture
     ImGui::GetIO().Fonts->Fonts[0]->AddRemapChar(0xCF, 0x043F);
+    ConsoleOut(u8"ИНТЕРФЕЙС: Закгрузка шрифтов завершена");
 }
 
 

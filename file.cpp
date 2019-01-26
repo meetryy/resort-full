@@ -8,6 +8,7 @@
 #include "file.h"
 #include "main.h"
 #include "UI.h"
+#include "newGUI.h"
 
 using namespace cv;
 using namespace std;
@@ -56,124 +57,129 @@ void ReadConfig(string filename){
     ifstream in;            // Create an input file stream.
     in.open(filename);
     if (!in) {
-        cout << "settings file not found\n";
+        ConsoleOut(u8"ОШИБКА: Указанный файл конфигурации не найден!");
         //ShowError("settings file not found!");
         //err = 1; //openWindow(ERROR_WINDOW_NAME);
     }
     //else {closeWindow(ERROR_WINDOW_NAME);}
-    string str;
-    getline(in, str);  // Get the frist line from the file, if any.
-    while ( in ) {  // Continue if the line was sucessfully read.
-        if (str.find("#") == string::npos){
-            //input
-            //ProcessLineBool(str, &capture_run, "capture_run");
-            //ProcessLineBool(str, &input_correction_on, "input_correction_on");
-            //ProcessLineScalar(str, &hsv_input_correction, "hsv_input_correction");
+    else
+    {
+        ConsoleOut(u8"ФАЙЛ: Файл конфигурации найден");
+        string str;
+        getline(in, str);  // Get the frist line from the file, if any.
+        while (in) {  // Continue if the line was sucessfully read.
+            if (str.find("#") == string::npos){
+                //input
+                //ProcessLineBool(str, &V.Input.CaptureRun, "V.Input.CaptureRun");
+                //ProcessLineBool(str, &input_correction_on, "input_correction_on");
+                //ProcessLineScalar(str, &hsv_input_correction, "hsv_input_correction");
 
-            //ProcessLineDouble(str, &cut_up, "cut_up");
-            //ProcessLineDouble(str, &cut_down, "cut_down");
-            //ProcessLineDouble(str, &cut_left, "cut_left");
-            //ProcessLineDouble(str, &cut_right, "cut_right");
-            ProcessLineFloat(str, &cam_fps, "cam_fps");
+                //ProcessLineDouble(str, &cut_up, "cut_up");
+                //ProcessLineDouble(str, &cut_down, "cut_down");
+                //ProcessLineDouble(str, &cut_left, "cut_left");
+                //ProcessLineDouble(str, &cut_right, "cut_right");
+                ProcessLineFloat(str, &V.Cam.FPS, "V.Cam.FPS");
 
-            //edge detection
-            ProcessLineInt(str, &canny_blur_value, "canny_blur_value");
-            ProcessLineInt(str, &canny_thresh_value1, "canny_thresh_value1");
-            ProcessLineInt(str, &canny_thresh_value2, "canny_thresh_value2");
-            ProcessLineBool(str, &use_scharr, "use_scharr");
-            ProcessLineLong(str, &scharr_thresh_value, "scharr_thresh_value");
-            ProcessLineInt(str, &contour_current_algo, "contour_current_algo");
+                //edge detection
+                ProcessLineInt(str, &V.Edge.BlurValue, "V.Edge.BlurValue");
+                ProcessLineInt(str, &V.Edge.CannyThresh1, "V.Edge.CannyThresh1");
+                ProcessLineInt(str, &V.Edge.CannyThresh2, "V.Edge.CannyThresh2");
+                ProcessLineBool(str, &V.Edge.UseScharr, "V.Edge.UseScharr");
+                ProcessLineLong(str, &V.Edge.ScharrThresh, "V.Edge.ScharrThresh");
+                ProcessLineInt(str, &V.Contours.CurrentAlgo, "V.Contours.CurrentAlgo");
 
-            //contours
-            ProcessLineFloat(str, &min_bbox_area, "min_bbox_area");
-            ProcessLineFloat(str, &max_bbox_area, "max_bbox_area");
-            ProcessLineBool(str, &morph_mask, "morph_mask");
-            ProcessLineInt(str, &morph_size, "morph_size");
+                //contours
+                ProcessLineFloat(str, &V.Contours.MinBBoxArea, "V.Contours.MinBBoxArea");
+                ProcessLineFloat(str, &V.Contours.MaxBBoxArea, "V.Contours.MaxBBoxArea");
+                ProcessLineBool(str, &V.Contours.morph_mask, "V.Contours.morph_mask");
+                ProcessLineInt(str, &V.Morph.Size, "V.Morph.Size");
 
 
-            //color
-            ProcessLineScalar(str, &good_color_rgb, "good_color_rgb");
-            ProcessLineScalar(str, &color_tolerance_rgb, "color_tolerance_rgb");
-            ProcessLineScalar(str, &good_color_hsv, "good_color_hsv");
-            ProcessLineScalar(str, &color_tolerance_hsv, "color_tolerance_hsv");
-            ProcessLineBool(str, &good_colorspace, "good_colorspace");
+                //color
+                ProcessLineScalar(str, &V.Color.GoodRGB, "V.Color.GoodRGB");
+                ProcessLineScalar(str, &V.Color.ToleranceRGB, "V.Color.ToleranceRGB");
+                ProcessLineScalar(str, &V.Color.GoodHSV, "V.Color.GoodHSV");
+                ProcessLineScalar(str, &V.Color.ToleranceHSV, "V.Color.ToleranceHSV");
+                ProcessLineBool(str, &V.Color.GoodSpace, "V.Color.GoodSpace");
 
-            //output
-            ProcessLineBool(str, &show_contours, "show_contours");
-            ProcessLineBool(str, &show_centers, "show_centers");
-            ProcessLineBool(str, &show_bboxes, "show_bboxes");
-            ProcessLineBool(str, &show_avgcolor, "show_avgcolor");
-            ProcessLineBool(str, &show_area, "show_area");
-            ProcessLineBool(str, &show_fill_avgcolor, "show_fill_avgcolor");
-            ProcessLineBool(str, &show_fill_contcolor, "show_fill_contcolor");
+                //output
+                ProcessLineBool(str, &V.Show.Contours, "V.Show.Contours");
+                ProcessLineBool(str, &V.Show.Centers, "V.Show.Centers");
+                ProcessLineBool(str, &V.Show.BBoxes, "V.Show.BBoxes");
+                ProcessLineBool(str, &V.Show.AvgColor, "V.Show.AvgColor");
+                ProcessLineBool(str, &V.Show.Area, "V.Show.Area");
+                ProcessLineBool(str, &V.Show.FillAvg, "V.Show.FillAvg");
+                ProcessLineBool(str, &V.Show.FilContour, "V.Show.FilContour");
 
-            //com port
-            ProcessLineBool(str, &com_connected, "com_connected");
-            ProcessLineInt(str, &com_port_number, "com_port_number");
-            ProcessLineLong(str, &com_speed, "com_speed");
+                //com port
+                ProcessLineBool(str, &V.ComPort.Connected, "V.ComPort.Connected");
+                ProcessLineInt(str, &V.ComPort.Number, "V.ComPort.Number");
+                ProcessLineLong(str, &V.ComPort.Speed, "V.ComPort.Speed");
 
-            //mog
-            ProcessLineInt(str, &bs_mog_history, "bs_mog_history");
-            ProcessLineInt(str, &bs_mog_mixtures, "bs_mog_mixtures");
-            ProcessLineFloat(str, &bs_mog_backratio, "bs_mog_backratio");
-            ProcessLineFloat(str, &bs_mog_noisesigma, "bs_mog_noisesigma");
-            ProcessLineFloat(str, &bs_mog_lrate, "bs_mog_lrate");
-            ProcessLineBool(str, &bs_mog_learning, "bs_mog_learning");
+                //mog
+                ProcessLineInt(str, &V.BS.MOG.History, "V.BS.MOG.History");
+                ProcessLineInt(str, &V.BS.MOG.Mixtures, "V.BS.MOG.Mixtures");
+                ProcessLineFloat(str, &V.BS.MOG.BackRatio, "V.BS.MOG.BackRatio");
+                ProcessLineFloat(str, &V.BS.MOG.NoiseSigma, "V.BS.MOG.NoiseSigma");
+                ProcessLineFloat(str, &V.BS.MOG.LRate, "V.BS.MOG.LRate");
+                ProcessLineBool(str, &V.BS.MOG.Learning, "V.BS.MOG.Learning");
 
-            //mog2
-            ProcessLineInt(str, &bs_mog2_history, "bs_mog2_history");
-            ProcessLineFloat(str, &bs_mog2_thresh, "bs_mog2_thresh");
-            ProcessLineBool(str, &bs_mog2_shadows, "bs_mog2_shadows");
-            ProcessLineBool(str, &bs_mog2_learning, "bs_mog2_learning");
+                //mog2
+                ProcessLineInt(str, &V.BS.MOG2.History, "V.BS.MOG2.History");
+                ProcessLineFloat(str, &V.BS.MOG2.Thresh, "V.BS.MOG2.Thresh");
+                ProcessLineBool(str, &V.BS.MOG2.DetectShadows, "V.BS.MOG2.DetectShadows");
+                ProcessLineBool(str, &V.BS.MOG2.Learning, "V.BS.MOG2.Learning");
 
-            //knn
-            ProcessLineInt(str, &bs_knn_history, "bs_knn_history");
-            ProcessLineFloat(str, &bs_knn_thresh, "bs_knn_thresh");
-            ProcessLineBool(str, &bs_knn_shadows, "bs_knn_shadows");
-            ProcessLineBool(str, &bs_knn_learning, "bs_knn_learning");
+                //knn
+                //ProcessLineInt(str, &bs_knn_history, "bs_knn_history");
+                //ProcessLineFloat(str, &bs_knn_thresh, "bs_knn_thresh");
+                //ProcessLineBool(str, &bs_knn_shadows, "bs_knn_shadows");
+                //ProcessLineBool(str, &bs_knn_learning, "bs_knn_learning");
 
-            //cnt
-            ProcessLineInt(str, &bs_cnt_min_pix_stability, "bs_cnt_min_pix_stability");
-            ProcessLineInt(str, &bs_cnt_max_pix_stability, "bs_cnt_max_pix_stability");
-            ProcessLineBool(str, &bs_cnt_use_history, "bs_cnt_use_history");
-            ProcessLineBool(str, &bs_cnt_isparallel, "bs_cnt_isparallel");
-            ProcessLineInt(str, &bs_cnt_fps, "bs_cnt_fps");
+                //cnt
+                ProcessLineInt(str, &V.BS.CNT.MinPixStability, "V.BS.CNT.MinPixStability");
+                ProcessLineInt(str, &V.BS.CNT.MaxPixStability, "V.BS.CNT.MaxPixStability");
+                ProcessLineBool(str, &V.BS.CNT.UseHistory, "V.BS.CNT.UseHistory");
+                ProcessLineBool(str, &V.BS.CNT.IsParallel, "V.BS.CNT.IsParallel");
+                ProcessLineInt(str, &V.BS.CNT.FPS, "V.BS.CNT.FPS");
 
-            //gsoc
-            ProcessLineInt(str, &bs_gsoc_mc, "bs_gsoc_mc");
-            ProcessLineInt(str, &bs_gsoc_samples, "bs_gsoc_samples");
-            ProcessLineFloat(str, &bs_gsoc_reprate, "bs_gsoc_reprate");
-            ProcessLineFloat(str, &bs_gsoc_proprate, "bs_gsoc_proprate");
-            ProcessLineInt(str, &bs_gsoc_hits_thresh, "bs_gsoc_hits_thresh");
-            ProcessLineFloat(str, &bs_gsoc_alpha, "bs_gsoc_alpha");
-            ProcessLineFloat(str, &bs_gsoc_beta, "bs_gsoc_beta");
-            ProcessLineFloat(str, &bs_gsoc_bs_decay, "bs_gsoc_bs_decay");
-            ProcessLineFloat(str, &bs_gsoc_bs_mul, "bs_gsoc_bs_mul");
-            ProcessLineFloat(str, &bs_gsoc_noise_bg, "bs_gsoc_noise_bg");
-            ProcessLineFloat(str, &bs_gsoc_noise_fg, "bs_gsoc_noise_fg");
-            ProcessLineBool(str, &bs_gsoc_learning, "bs_gsoc_learning");
+                //gsoc
+                //ProcessLineInt(str, &bs_gsoc_mc, "bs_gsoc_mc");
+                //ProcessLineInt(str, &bs_gsoc_samples, "bs_gsoc_samples");
+                //ProcessLineFloat(str, &bs_gsoc_reprate, "bs_gsoc_reprate");
+                //ProcessLineFloat(str, &bs_gsoc_proprate, "bs_gsoc_proprate");
+                //ProcessLineInt(str, &bs_gsoc_hits_thresh, "bs_gsoc_hits_thresh");
+                //ProcessLineFloat(str, &bs_gsoc_alpha, "bs_gsoc_alpha");
+                //ProcessLineFloat(str, &bs_gsoc_beta, "bs_gsoc_beta");
+                //ProcessLineFloat(str, &bs_gsoc_bs_decay, "bs_gsoc_bs_decay");
+                //ProcessLineFloat(str, &bs_gsoc_bs_mul, "bs_gsoc_bs_mul");
+                //ProcessLineFloat(str, &bs_gsoc_noise_bg, "bs_gsoc_noise_bg");
+                //ProcessLineFloat(str, &bs_gsoc_noise_fg, "bs_gsoc_noise_fg");
+                //ProcessLineBool(str, &bs_gsoc_learning, "bs_gsoc_learning");
 
-            //com camera
-            ProcessLineInt(str, &cam_number, "cam_number");
-            ProcessLineLong(str, &cam_width, "cam_width");
-            ProcessLineLong(str, &cam_height, "cam_height");
-            ProcessLineInt(str, &cam_gain, "cam_gain");
-            ProcessLineInt(str, &cam_contrast, "cam_contrast");
-            ProcessLineInt(str, &cam_brightness, "cam_brightness");
-            ProcessLineInt(str, &cam_exposure, "cam_exposure");
-            ProcessLineInt(str, &cam_saturation, "cam_saturation");
-            ProcessLineInt(str, &cam_hue, "cam_hue");
+                //com camera
+                ProcessLineInt(str, &V.Cam.Number, "V.Cam.Number");
+                ProcessLineLong(str, &V.Cam.Width, "V.Cam.Width");
+                ProcessLineLong(str, &V.Cam.Height, "V.Cam.Height");
+                ProcessLineInt(str, &V.Cam.Gain, "V.Cam.Gain");
+                ProcessLineInt(str, &V.Cam.Contrast, "V.Cam.Contrast");
+                ProcessLineInt(str, &V.Cam.Brightness, "V.Cam.Brightness");
+                ProcessLineInt(str, &V.Cam.Exposure, "V.Cam.Exposure");
+                ProcessLineInt(str, &V.Cam.Saturation, "V.Cam.Saturation");
+                ProcessLineInt(str, &V.Cam.Hue, "V.Cam.Hue");
 
-            //misc
-            ProcessLineLong(str, &pix_per_100mm, "pix_per_100mm");
-            ProcessLineInt(str, &morpho_type, "morpho_type");
-            ProcessLineInt(str, &contour_current_algo, "contour_current_algo");
-            ProcessLineInt(str, &bs_current_algo, "bs_current_algo");
-            ProcessLineInt(str, &blur_before_mog, "blur_before_mog");
-            ProcessLineBool(str, &fullscreen, "fullscreen");
+                //misc
+                ProcessLineLong(str, &pix_per_100mm, "pix_per_100mm");
+                ProcessLineInt(str, &V.Morph.Type, "V.Morph.Type");
+                ProcessLineInt(str, &V.Contours.CurrentAlgo, "V.Contours.CurrentAlgo");
+                ProcessLineInt(str, &V.BS.CurrentAlgo, "V.BS.CurrentAlgo");
+                ProcessLineInt(str, &V.BS.BlurBeforeMog, "V.BS.BlurBeforeMog");
+                ProcessLineBool(str, &V.UI.Fullscreen, "V.UI.Fullscreen");
 
+            }
+            getline(in, str);   // Try to get another line.
         }
-        getline(in, str);   // Try to get another line.
+        ConsoleOut(u8"ФАЙЛ: Загрузка конфигурации завершена");
     }
 }
 
@@ -187,8 +193,8 @@ int ProcessLineLong(string str, long *parameter, string paramname){
         //cout << paramname << " = " << *parameter << endl;
         to_return = RESULT_OK;
         //cout << paramname << " found in line" << endl;
+        //ConsoleOut("%s = %lu", paramname, parameter);
     }
-    //else {cout << paramname << " NOT found in line" << endl;}
     return to_return;
 }
 
@@ -296,11 +302,10 @@ int ProcessLineScalar(string str, Scalar *parameter, string paramname){
 void SaveConfig(string filename){
     ofstream file;
     file.open(filename,  fstream::out);
-
-       cout<<"settings.ini file not found!" << endl;
+    ConsoleOut(u8"ФАЙЛ: Начинаем запись конфигурации");
 
     file << "# input\n";
-    file << "capture_run=" << capture_run <<";\n";
+    file << "V.Input.CaptureRun=" << V.Input.CaptureRun <<";\n";
 
     file << "input_correction_on=" << input_correction_on <<";\n";
     file << "hsv_input_correction=" << hsv_input_correction <<";\n";
@@ -311,65 +316,66 @@ void SaveConfig(string filename){
 
     file << "\n";
     file << "# edge detection\n";
-    file << "canny_blur_value=" << canny_blur_value <<";\n";
-    file << "canny_thresh_value1=" << canny_thresh_value1 <<";\n";
-    file << "canny_thresh_value2=" << canny_thresh_value2 <<";\n";
-    file << "contour_current_algo=" << contour_current_algo <<";\n";
-    file << "use_scharr=" << use_scharr <<";\n";
-    file << "scharr_thresh_value=" << scharr_thresh_value <<";\n";
+    file << "V.Edge.BlurValue=" << V.Edge.BlurValue <<";\n";
+    file << "V.Edge.CannyThresh1=" << V.Edge.CannyThresh1 <<";\n";
+    file << "V.Edge.CannyThresh2=" << V.Edge.CannyThresh2 <<";\n";
+    file << "V.Contours.CurrentAlgo=" << V.Contours.CurrentAlgo <<";\n";
+    file << "V.Edge.UseScharr=" << V.Edge.UseScharr <<";\n";
+    file << "V.Edge.ScharrThresh=" << V.Edge.ScharrThresh <<";\n";
 
     file << "\n";
     file << "# contours\n";
-    file << "min_bbox_area=" << min_bbox_area <<";\n";
-    file << "max_bbox_area=" << max_bbox_area <<";\n";
-    file << "morph_mask=" << morph_mask <<";\n";
+    file << "V.Contours.MinBBoxArea=" << V.Contours.MinBBoxArea <<";\n";
+    file << "V.Contours.MaxBBoxArea=" << V.Contours.MaxBBoxArea <<";\n";
+    file << "V.Contours.morph_mask=" << V.Contours.morph_mask <<";\n";
     file << "input_correction_on=" << input_correction_on <<";\n";
-    file << "morph_size=" << morph_size <<";\n";
+    file << "V.Morph.Size=" << V.Morph.Size <<";\n";
 
     file << "\n";
     file << "# color\n";
-    file << "good_color_rgb=" << good_color_rgb <<";\n";
-    file << "color_tolerance_rgb=" << color_tolerance_rgb <<";\n";
-    file << "good_color_hsv=" << good_color_hsv <<";\n";
-    file << "color_tolerance_hsv=" << color_tolerance_hsv <<";\n";
-    file << "good_colorspace=" << good_colorspace <<";\n";
+    file << "V.Color.GoodRGB=" << V.Color.GoodRGB <<";\n";
+    file << "V.Color.ToleranceRGB=" << V.Color.ToleranceRGB <<";\n";
+    file << "V.Color.GoodHSV=" << V.Color.GoodHSV <<";\n";
+    file << "V.Color.ToleranceHSV=" << V.Color.ToleranceHSV <<";\n";
+    file << "V.Color.GoodSpace=" << V.Color.GoodSpace <<";\n";
 
     file << "\n";
     file << "# output\n";
-    file << "show_contours=" << show_contours <<";\n";
-    file << "show_centers=" << show_centers <<";\n";
-    file << "show_bboxes=" << show_bboxes <<";\n";
-    file << "show_avgcolor=" << show_avgcolor <<";\n";
-    file << "show_area=" << show_area <<";\n";
-    file << "show_bboxes=" << show_bboxes <<";\n";
-    file << "show_fill_avgcolor=" << show_fill_avgcolor <<";\n";
-    file << "show_fill_contcolor=" << show_fill_contcolor <<";\n";
+    file << "V.Show.Contours=" << V.Show.Contours <<";\n";
+    file << "V.Show.Centers=" << V.Show.Centers <<";\n";
+    file << "V.Show.BBoxes=" << V.Show.BBoxes <<";\n";
+    file << "V.Show.AvgColor=" << V.Show.AvgColor <<";\n";
+    file << "V.Show.Area=" << V.Show.Area <<";\n";
+    file << "V.Show.BBoxes=" << V.Show.BBoxes <<";\n";
+    file << "V.Show.FillAvg=" << V.Show.FillAvg <<";\n";
+    file << "V.Show.FilContour=" << V.Show.FilContour <<";\n";
 
     file << "\n";
     file << "# com port\n";
-    file << "com_connected=" << com_connected <<";\n";
-    file << "com_port_number=" << com_port_number <<";\n";
-    file << "com_speed=" << com_speed <<";\n";
+    file << "V.ComPort.Connected=" << V.ComPort.Connected <<";\n";
+    file << "V.ComPort.Number=" << V.ComPort.Number <<";\n";
+    file << "V.ComPort.Speed=" << V.ComPort.Speed <<";\n";
 
     file << "\n";
     file << "# mog\n";
-    file << "bs_current_algo=" << bs_current_algo <<";\n";
+    file << "V.BS.CurrentAlgo=" << V.BS.CurrentAlgo <<";\n";
+    file << "V.BS.BlurBeforeMog=" << V.BS.BlurBeforeMog <<";\n";
 
-    file << "bs_mog_lrate=" << bs_mog_lrate <<";\n";
-    file << "bs_mog_lrate=" << bs_mog_lrate <<";\n";
-    file << "bs_mog_lrate=" << bs_mog_lrate <<";\n";
-    file << "bs_mog_lrate=" << bs_mog_lrate <<";\n";
-    file << "bs_mog_lrate=" << bs_mog_lrate <<";\n";
-    file << "bs_mog_lrate=" << bs_mog_lrate <<";\n";
+    file << "V.BS.MOG.BackRatio=" << V.BS.MOG.BackRatio <<";\n";
+    file << "V.BS.MOG.History=" << V.BS.MOG.History <<";\n";
+    file << "V.BS.MOG.Learning=" << V.BS.MOG.Learning <<";\n";
+    file << "V.BS.MOG.LRate=" << V.BS.MOG.LRate <<";\n";
+    file << "V.BS.MOG.Mixtures=" << V.BS.MOG.Mixtures <<";\n";
+    file << "V.BS.MOG.NoiseSigma=" << V.BS.MOG.NoiseSigma <<";\n";
 
 
     file << "\n";
     file << "# mog2\n";
-    file << "bs_mog2_history=" << bs_mog2_history <<";\n";
-    file << "bs_mog2_thresh=" << bs_mog2_thresh <<";\n";
-    file << "bs_mog2_shadows=" << bs_mog2_shadows <<";\n";
-    file << "bs_mog2_learning=" << bs_mog2_learning <<";\n";
-    file << "bs_mog2_lrate=" << bs_mog2_lrate <<";\n";
+    file << "V.BS.MOG2.History=" << V.BS.MOG2.History <<";\n";
+    file << "V.BS.MOG2.Thresh=" << V.BS.MOG2.Thresh <<";\n";
+    file << "V.BS.MOG2.DetectShadows=" << V.BS.MOG2.DetectShadows <<";\n";
+    file << "V.BS.MOG2.Learning=" << V.BS.MOG2.Learning <<";\n";
+    file << "V.BS.MOG2.LRate=" << V.BS.MOG2.LRate <<";\n";
 
     file << "\n";
     file << "# knn\n";
@@ -381,13 +387,13 @@ void SaveConfig(string filename){
 
     file << "\n";
     file << "# cnt\n";
-    file << "bs_cnt_min_pix_stability=" << bs_cnt_min_pix_stability <<";\n";
-    file << "bs_cnt_max_pix_stability=" << bs_cnt_max_pix_stability <<";\n";
-    file << "bs_cnt_use_history=" << bs_cnt_use_history <<";\n";
-    file << "bs_cnt_isparallel=" << bs_cnt_isparallel <<";\n";
-    file << "bs_cnt_fps=" << bs_cnt_fps <<";\n";
-    file << "bs_cnt_learning=" << bs_cnt_learning <<";\n";
-    file << "bs_cnt_lrate=" << bs_cnt_lrate <<";\n";
+    file << "V.BS.CNT.MinPixStability=" << V.BS.CNT.MinPixStability <<";\n";
+    file << "V.BS.CNT.MaxPixStability=" << V.BS.CNT.MaxPixStability <<";\n";
+    file << "V.BS.CNT.UseHistory=" << V.BS.CNT.UseHistory <<";\n";
+    file << "V.BS.CNT.IsParallel=" << V.BS.CNT.IsParallel <<";\n";
+    file << "V.BS.CNT.FPS=" << V.BS.CNT.FPS <<";\n";
+    file << "V.BS.CNT.Learning=" << V.BS.CNT.Learning <<";\n";
+    file << "V.BS.CNT.LRate=" << V.BS.CNT.LRate <<";\n";
 
 
     file << "\n";
@@ -407,48 +413,25 @@ void SaveConfig(string filename){
 
     file << "\n";
     file << "# camera\n";
-    file << "cam_number=" << cam_number <<";\n";
-    file << "cam_width=" << cam_width <<";\n";
-    file << "cam_height=" << cam_height <<";\n";
-    file << "cam_gain=" << cam_gain <<";\n";
-    file << "cam_contrast=" << cam_contrast <<";\n";
-    file << "cam_brightness=" << cam_brightness <<";\n";
-    file << "cam_saturation=" << cam_saturation <<";\n";
-    file << "cam_exposure=" << cam_exposure <<";\n";
-    file << "cam_hue=" << cam_hue <<";\n";
-    file << "cam_fps=" << cam_fps <<";\n";
+    file << "V.Cam.Number=" << V.Cam.Number <<";\n";
+    file << "V.Cam.Width=" << V.Cam.Width <<";\n";
+    file << "V.Cam.Height=" << V.Cam.Height <<";\n";
+    file << "V.Cam.Gain=" << V.Cam.Gain <<";\n";
+    file << "V.Cam.Contrast=" << V.Cam.Contrast <<";\n";
+    file << "V.Cam.Brightness=" << V.Cam.Brightness <<";\n";
+    file << "V.Cam.Saturation=" << V.Cam.Saturation <<";\n";
+    file << "V.Cam.Exposure=" << V.Cam.Exposure <<";\n";
+    file << "V.Cam.Hue=" << V.Cam.Hue <<";\n";
+    file << "V.Cam.FPS=" << V.Cam.FPS <<";\n";
 
 
     file << "\n";
     file << "# misc\n";
     file << "pix_per_100mm=" << pix_per_100mm <<";\n";
-    file << "morpho_type=" << morpho_type <<";\n";
-    file << "contour_current_algo=" << contour_current_algo <<";\n";
-    file << "bs_current_algo=" << bs_current_algo <<";\n";
-    file << "blur_before_mog=" << blur_before_mog <<";\n";
-    file << "fullscreen=" << fullscreen <<";\n";
+    file << "V.Morph.Type=" << V.Morph.Type <<";\n";
+    file << "V.Contours.CurrentAlgo=" << V.Contours.CurrentAlgo <<";\n";
+
+    file << "V.UI.Fullscreen=" << V.UI.Fullscreen <<";\n";
     file.close();
+    ConsoleOut(u8"ФАЙЛ: Сохранение конфигурации завершено");
 }
-
-void CfgLoad(int cfg_file_number){
-    char buff[32];
-    std::string str(buff);
-
-    sprintf(buff, "settings%d.ini", cfg_file_number);
-    std::cout << buff  <<std::endl;
-    ReadConfig(str);
-}
-
-void CfgSave(int cfg_file_number){
-    char buff[32];
-    std::string str(buff);
-
-    sprintf(buff, "settings%d.ini", cfg_file_number);
-    std::cout << buff  <<std::endl;
-    SaveConfig(str);
-}
-
-
-
-
-

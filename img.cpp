@@ -43,48 +43,16 @@ float avg_time = 0;
 int ScalarInRange (Scalar input, Scalar compare_to, Scalar delta, bool useHSV);
 cv::Scalar BGR2HSV(cv::Scalar inBGR);
 
-bool capture_run;
+
 bool input_correction_on;
 cv::Scalar hsv_input_correction;
 int show_frame;
-int canny_blur_value;
-int canny_thresh_value1;
-int canny_thresh_value2;
-bool use_scharr;
-long scharr_thresh_value;
-float min_bbox_area;
-float max_bbox_area;
-bool morph_mask;
-int morph_size;
-cv::Scalar good_color_rgb;
-cv::Scalar color_tolerance_rgb;
-cv::Scalar good_color_hsv;
-cv::Scalar color_tolerance_hsv;
-bool    good_colorspace;
-bool    show_contours;
-bool    show_centers;
-bool    show_bboxes;
-bool    show_avgcolor;
-bool    show_area;
-bool    show_diameter;
-bool    show_fill_avgcolor;
-bool     show_fill_contcolor;
-bool    com_connected;
-int     com_port_number;
-long    com_speed;
+
+
 long    info_total_contours;
 long    useful_contours;
 long    good_contours;
 
-int     bs_cnt_min_pix_stability;
-int     bs_cnt_max_pix_stability;
-bool    bs_cnt_use_history;
-bool    bs_cnt_isparallel;
-int     bs_cnt_fps;
-int     bs_mog2_history;
-float   bs_mog2_thresh;
-bool    bs_mog2_shadows;
-bool    bs_mog2_learning;
 int     bs_knn_history;
 float   bs_knn_thresh;
 bool    bs_knn_shadows;
@@ -101,40 +69,14 @@ float   bs_gsoc_bs_mul;
 float   bs_gsoc_noise_bg;
 float   bs_gsoc_noise_fg;
 bool    bs_gsoc_learning;
-int     bs_mog_history;
-int     bs_mog_mixtures;
-float   bs_mog_backratio;
-float   bs_mog_noisesigma ;
-bool    bs_mog_learning;
-float   bs_cnt_lrate;
 float   bs_knn_lrate;
-float   bs_mog2_lrate;
-float   bs_mog_lrate;
 float   bs_gsoc_lrate;
-bool    bs_cnt_learning;
 
 bool    ColorOK =0;
 bool    video_recording = 0;
-int     morpho_type=0;
-
-int     cam_number;
-long    cam_width;
-long    cam_height;
-int     cam_gain;
-int     cam_contrast;
-int     cam_brightness;
-int     cam_exposure;
-int     cam_saturation;
-int     cam_hue;
-float   cam_fps;
-int     input_source = SOURCE_CAM;
 
 bool    capture_file = 0;
 bool    show_particle_number = 0;
-
-int     bs_current_algo = BS_MOG;
-int     contour_current_algo;
-int     blur_before_mog = 3;
 
 int     show_mat_upd_counter = 0;
 int     show_mat_upd_target = 2;
@@ -148,10 +90,7 @@ int fps_average = 20;
 
 float   time1;
 float   time2;
-float   info_s_per_frame;
-float   info_s_per_frame_accumulated;
-float   info_fps;
-long    fps_avg_counter = 0;
+//V.Info.fps_avg_counter;
 
 
 sf::Clock FPS_Clock;
@@ -162,20 +101,20 @@ void FPS_Routine(void){
     FPS_Clock.restart();
 
     fps_accumulated += 1.f / elapsed1.asSeconds();
-    fps_avg_counter++;
-    if (fps_avg_counter >= fps_average){
-        info_fps = fps_accumulated / fps_average;
+    V.Info.fps_avg_counter++;
+    if (V.Info.fps_avg_counter >= fps_average){
+        V.Info.FPS = fps_accumulated / fps_average;
         fps_accumulated = 0;
-        fps_avg_counter = 0;
+        V.Info.fps_avg_counter = 0;
     }
 
 }
 
 void BS_Init(int bs_algo){
-    if (bs_algo==BS_MOG){BackSubtractor = cv::bgsegm::createBackgroundSubtractorMOG(bs_mog_history,bs_mog_mixtures,bs_mog_backratio,bs_mog_noisesigma);}
-    if (bs_algo==BS_MOG2){BackSubtractor = cv::createBackgroundSubtractorMOG2(bs_mog2_history,bs_mog2_thresh,bs_mog2_shadows);}
+    if (bs_algo==BS_MOG){BackSubtractor = cv::bgsegm::createBackgroundSubtractorMOG(V.BS.MOG.History,V.BS.MOG.Mixtures,V.BS.MOG.BackRatio,V.BS.MOG.NoiseSigma);}
+    if (bs_algo==BS_MOG2){BackSubtractor = cv::createBackgroundSubtractorMOG2(V.BS.MOG2.History,V.BS.MOG2.Thresh,V.BS.MOG2.DetectShadows);}
     if (bs_algo==BS_CNT){
-            BackSubtractor = cv::bgsubcnt::createBackgroundSubtractorCNT(bs_cnt_min_pix_stability, bs_cnt_use_history, bs_cnt_max_pix_stability*bs_cnt_fps, bs_cnt_isparallel);}
+            BackSubtractor = cv::bgsubcnt::createBackgroundSubtractorCNT(V.BS.CNT.MinPixStability, V.BS.CNT.UseHistory, V.BS.CNT.MaxPixStability*V.BS.CNT.FPS, V.BS.CNT.IsParallel);}
     if (bs_algo==BS_KNN){BackSubtractor = createBackgroundSubtractorKNN(bs_knn_history,bs_knn_thresh,bs_knn_shadows);}
     if (bs_algo==BS_GSOC){BackSubtractor = cv::bgsegm::createBackgroundSubtractorGSOC(bs_gsoc_mc,
                                                                                       bs_gsoc_samples,
@@ -189,7 +128,8 @@ void BS_Init(int bs_algo){
                                                                                       bs_gsoc_noise_bg,
                                                                                       bs_gsoc_noise_fg);}
 
-    bs_current_algo = bs_algo;
+    V.BS.CurrentAlgo = bs_algo;
+    ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Алгоритм вычитания фона инициализирован");
 }
 
 Mat img_in;
@@ -217,51 +157,53 @@ omp_init_lock(&img_output_lock);
 omp_init_lock(&max_cont_lock);
 omp_init_lock(&img_wholemask_lock);
 
+ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
+
 while (1)
 {
-    if (capture_run)
+    if (V.Input.CaptureRun)
     {
-
         FPS_Routine();
 
-        if (!freeze_frame && !capture_file) {camera >> img_in;}
-        if (capture_file) {
+        if (!V.Input.FreezeFrame && !V.Input.Source) {camera >> img_in;}
+        if (V.Input.Source) {
                 //camera.release();
                 videocapture >> img_in;
                 if (img_in.empty()) {videocapture.set(CAP_PROP_POS_FRAMES, 0); videocapture >> img_in;}
         }
 
+        if (!img_in.empty()){
         img_wholemask = Mat::zeros(img_in.size(), CV_8UC3);
         Mat img_output_temp = img_in.clone();
         cv::Mat img_gray;
         cv::cvtColor(img_in, img_gray, cv::COLOR_BGR2GRAY);
-        blur(img_gray, img_gray, Size(blur_before_mog,blur_before_mog));
+        blur(img_gray, img_gray, Size(V.BS.BlurBeforeMog,V.BS.BlurBeforeMog));
 
-        switch (bs_current_algo)
+        switch (V.BS.CurrentAlgo)
         {
-            case BS_MOG:    {BackSubtractor->apply(img_gray, img_mog_output, bs_mog_lrate*bs_mog_learning); break;}
-            case BS_MOG2:   {BackSubtractor->apply(img_gray, img_mog_output, bs_mog2_lrate*bs_mog2_learning); break;}
-            case BS_CNT:    {BackSubtractor->apply(img_gray, img_mog_output, bs_cnt_lrate*bs_cnt_learning); break;}
+            case BS_MOG:    {BackSubtractor->apply(img_gray, img_mog_output, V.BS.MOG.LRate*V.BS.MOG.Learning); break;}
+            case BS_MOG2:   {BackSubtractor->apply(img_gray, img_mog_output, V.BS.MOG2.LRate*V.BS.MOG2.Learning); break;}
+            case BS_CNT:    {BackSubtractor->apply(img_gray, img_mog_output, V.BS.CNT.LRate*V.BS.CNT.Learning); break;}
             case BS_KNN:    {BackSubtractor->apply(img_gray, img_mog_output, bs_knn_learning*bs_knn_lrate); break;}
             case BS_GSOC:   {BackSubtractor->apply(img_gray, img_mog_output, bs_gsoc_lrate); break;}
 
         }
 
-        blur(img_mog_output, img_mog_output, Size((int)canny_blur_value,(int)canny_blur_value) );
+        blur(img_mog_output, img_mog_output, Size((int)V.Edge.BlurValue,(int)V.Edge.BlurValue) );
 
-        if (contour_current_algo){
+        if (V.Contours.CurrentAlgo){
             Mat dx, dy;
             Scharr(img_mog_output,dx,CV_16S,1,0);
             Scharr(img_mog_output,dy,CV_16S,0,1);
-            Canny( dx, dy, img_canny_output, canny_thresh_value1, canny_thresh_value1*3);
+            Canny( dx, dy, img_canny_output, V.Edge.CannyThresh1, V.Edge.CannyThresh1*3);
         }
 
-        else{Canny(img_mog_output, img_canny_output, canny_thresh_value1, canny_thresh_value2 );}
+        else{Canny(img_mog_output, img_canny_output, V.Edge.CannyThresh1, V.Edge.CannyThresh2 );}
 
         static int type;
-        if (morpho_type==MORPH_CURRENT_RECT){type=cv::MORPH_RECT;}
-        else if (morpho_type==MORPH_CURRENT_CROSS){type=cv::MORPH_CROSS;}
-        else if (morpho_type==MORPH_CURRENT_ELLIPSE){type=cv::MORPH_ELLIPSE;}
+        if (V.Morph.Type==MORPH_CURRENT_RECT){type=cv::MORPH_RECT;}
+        else if (V.Morph.Type==MORPH_CURRENT_CROSS){type=cv::MORPH_CROSS;}
+        else if (V.Morph.Type==MORPH_CURRENT_ELLIPSE){type=cv::MORPH_ELLIPSE;}
 
         vector<vector<Point> >  contours;
         vector<Vec4i>           hierarchy;
@@ -269,7 +211,7 @@ while (1)
         vector<vector<Point> >  contours_poly(contours.size());
         vector<Rect>            boundRect(contours.size() );
 
-        cv::Mat element = cv::getStructuringElement(type, cv::Size( morph_size + 1, morph_size+1 ), cv::Point( morph_size, morph_size ) );
+        cv::Mat element = cv::getStructuringElement(type, cv::Size( V.Morph.Size + 1, V.Morph.Size+1 ), cv::Point( V.Morph.Size, V.Morph.Size ) );
         cv::morphologyEx(img_canny_output, img_morph_out, cv::MORPH_CLOSE, element);
         cv::findContours(img_morph_out, contours, hierarchy,cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
@@ -289,7 +231,7 @@ while (1)
             vector<Moments> mu(contours.size());
             vector<Point2f> centers( contours.size() );
 
-            if ((contourArea(contours[i]) > min_bbox_area)&&(contourArea(contours[i]) < max_bbox_area)){
+            if ((contourArea(contours[i]) > V.Contours.MinBBoxArea)&&(contourArea(contours[i]) < V.Contours.MaxBBoxArea)){
                 //useful_contours++;
 
                 mu[i] = moments(contours[i], false);
@@ -309,8 +251,8 @@ while (1)
                 Scalar avg_color = Scalar(mean(img_roi)) / PartOfColor;
 
                 int ColorsMatch;
-                if (good_colorspace == BGR){ColorsMatch = ScalarInRange(avg_color, good_color_rgb, color_tolerance_rgb, 0);}
-                else{ColorsMatch = ScalarInRange(BGR2HSV(avg_color), good_color_hsv, color_tolerance_hsv, 1);}
+                if (V.Color.GoodSpace == BGR){ColorsMatch = ScalarInRange(avg_color, V.Color.GoodRGB, V.Color.ToleranceRGB, 0);}
+                else{ColorsMatch = ScalarInRange(BGR2HSV(avg_color), V.Color.GoodHSV, V.Color.ToleranceHSV, 1);}
 
                 ColorOK = (ColorsMatch >= 3 );
                 good_contours += ColorOK;
@@ -318,15 +260,15 @@ while (1)
                 Scalar contourcolor = Scalar(0, (0+255*ColorOK), 255-(255*ColorOK)) ;
                 Scalar textcolor = Scalar(0, (0+255*!ColorOK), 255-(255*!ColorOK)) ;
 
-                if (show_fill_avgcolor&&!show_fill_contcolor){cv::drawContours(img_output_temp, contours, i, avg_color, cv::FILLED);}
-                if (show_fill_contcolor&&!show_fill_avgcolor){cv::drawContours(img_output_temp, contours, i, contourcolor, cv::FILLED);}
-                if (show_contours){drawContours(img_output_temp, contours, (int)i, contourcolor, 2, LINE_4, hierarchy, 0);}
+                if (V.Show.FillAvg&&!V.Show.FilContour){cv::drawContours(img_output_temp, contours, i, avg_color, cv::FILLED);}
+                if (V.Show.FilContour&&!V.Show.FillAvg){cv::drawContours(img_output_temp, contours, i, contourcolor, cv::FILLED);}
+                if (V.Show.Contours){drawContours(img_output_temp, contours, (int)i, contourcolor, 2, LINE_4, hierarchy, 0);}
                 if (show_particle_number){sprintf(str,"%u", (int)i); putText(img_output_temp, str, Point(X,Y), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-                if (show_area){ sprintf(str,"%.0f mm2", pix2mm((long)(contourArea(contours[i])))); putText(img_output_temp, str, Point(X,Y+14), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-                if (show_avgcolor){ sprintf(str,"%.0f;%.0f;%.0f", avg_color[2], avg_color[1],avg_color[0]); putText(img_output_temp, str, Point(X,Y+28), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-                if (show_diameter){ sprintf(str,"d=%.1f mm", pix2mm(diameter)); putText(img_output_temp, str, Point(X,Y+42), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-                if (show_bboxes){rectangle(img_output_temp,boundingRect(contours[i]).tl(), boundingRect(contours[i]).br(), Scalar(255,0,0), 1, 4, 0 );}
-                if (show_centers){circle(img_output_temp, mc[i], 2, 255, -1, 8, 0 );}
+                if (V.Show.Area){ sprintf(str,"%.0f mm2", pix2mm((long)(contourArea(contours[i])))); putText(img_output_temp, str, Point(X,Y+14), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
+                if (V.Show.AvgColor){ sprintf(str,"%.0f;%.0f;%.0f", avg_color[2], avg_color[1],avg_color[0]); putText(img_output_temp, str, Point(X,Y+28), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
+                if (V.Show.Diameter){ sprintf(str,"d=%.1f mm", pix2mm(diameter)); putText(img_output_temp, str, Point(X,Y+42), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
+                if (V.Show.BBoxes){rectangle(img_output_temp,boundingRect(contours[i]).tl(), boundingRect(contours[i]).br(), Scalar(255,0,0), 1, 4, 0 );}
+                if (V.Show.Centers){circle(img_output_temp, mc[i], 2, 255, -1, 8, 0 );}
                 }
         }
 
@@ -350,6 +292,7 @@ while (1)
     else
     {
         Sleep(100);
+    }
     }
 
 }
@@ -449,14 +392,13 @@ cv::Scalar BGR2HSV(cv::Scalar inBGR){
 }
 
 void cam_open(void){
-    camera.open(cam_number);
+    camera.open(V.Cam.Number);
     camera.set(cv::CAP_PROP_FOURCC ,cv::VideoWriter::fourcc('M', 'J', 'P', 'G') );
-    camera.set(cv::CAP_PROP_FPS, cam_fps);
-    camera.set(cv::CAP_PROP_FRAME_WIDTH, cam_width);
-    camera.set(cv::CAP_PROP_FRAME_HEIGHT, cam_height);
+    camera.set(cv::CAP_PROP_FPS, V.Cam.FPS);
+    camera.set(cv::CAP_PROP_FRAME_WIDTH, V.Cam.Width);
+    camera.set(cv::CAP_PROP_FRAME_HEIGHT, V.Cam.Height);
 
     cam_update();
-
     std::cout << "CAP_PROP_CONTRAST " << camera.get(CAP_PROP_CONTRAST) << endl;
     std::cout << "CAP_PROP_GAIN " << camera.get(CAP_PROP_GAIN) << endl;
     std::cout << "CAP_PROP_BRIGHTNESS " << camera.get(CAP_PROP_BRIGHTNESS) << endl;
@@ -464,22 +406,46 @@ void cam_open(void){
     std::cout << "CAP_PROP_SATURATION " << camera.get(CAP_PROP_SATURATION) << endl;
     std::cout << "CAP_PROP_FPS " << camera.get(CAP_PROP_FPS) << endl;
 
-    camera >> img_in;
-    if (camera.isOpened()) {capture_run =1;}
+    if (camera.isOpened())
+    {
+        ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Камера открыта");
+        V.Input.CaptureRun = 1;
+        camera >> img_in;
+    }
 }
 
 void cam_close(void){
+    V.Input.CaptureRun = 0;
     camera.release();
-    if (!camera.isOpened()) { capture_run = 0; }
+    //if (!camera.isOpened()) {  }
 }
 
+void video_close(void){
+    V.Input.CaptureRun = 0;
+    videocapture.release();
+    //if (!videocapture.isOpened()) {}
+}
+
+void video_open(void){
+    videocapture.open("test_video.avi");
+    if (videocapture.isOpened()) {V.Input.CaptureRun = 1;}
+}
+
+
 void cam_update(void){
-    camera.set(cv::CAP_PROP_CONTRAST , cam_contrast);
-    camera.set(cv::CAP_PROP_GAIN, cam_gain);
-    camera.set(cv::CAP_PROP_BRIGHTNESS ,cam_brightness);
-    camera.set(cv::CAP_PROP_SATURATION ,cam_saturation);
-    camera.set(cv::CAP_PROP_EXPOSURE ,cam_exposure);
-    //camera.set(cv::CAP_PROP_GAMMA   ,cam_hue);
+    if (camera.isOpened()){
+        camera.set(cv::CAP_PROP_CONTRAST , V.Cam.Contrast);
+        camera.set(cv::CAP_PROP_GAIN, V.Cam.Gain);
+        camera.set(cv::CAP_PROP_BRIGHTNESS ,V.Cam.Brightness);
+        camera.set(cv::CAP_PROP_SATURATION ,V.Cam.Saturation);
+        camera.set(cv::CAP_PROP_EXPOSURE ,V.Cam.Exposure);
+        //camera.set(cv::CAP_PROP_GAMMA   ,V.Cam.Hue);
+        ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Параметры камеры обновлены");
+    }
+    else{
+        ConsoleOut(u8"ОШИБКА: Камера закрыта!");
+    }
+
 }
 
 void start_video_rec(void){
@@ -497,14 +463,16 @@ void start_video_rec(void){
     oVideoWriter.open(buf, cv::VideoWriter::fourcc('M','J','P','G'), 50, frameSize, true); //initialize the VideoWriter object
 
     if ( !oVideoWriter.isOpened() ) {
-        cout << "ERROR: Failed to write the video" << endl;
+        ConsoleOut(u8"ОШИБКА: Невозможно открыть поток для записи");
    }
-   else{video_recording = 1;}
+   else{ConsoleOut(u8"ЗАПИСЬ: Запись видео начата");
+        video_recording = 1;}
 }
 
 void stop_video_rec(void){
     if (oVideoWriter.isOpened() ){
     oVideoWriter.release();
+    ConsoleOut(u8"ЗАПИСЬ: Запись видео остановлена");
     video_recording = 0;
    }
 }
@@ -562,7 +530,7 @@ void stop_video_rec(void){
         case SHOW_INPUT:    {if(!img_in.empty()){imshow("Image",img_in);}; break;}
         case SHOW_CANNY:    {if(!img_canny_output.empty()){imshow("Image",img_canny_output);}; break;}
         case SHOW_MASK:     {if(!img_wholemask.empty()){imshow("Image",img_wholemask);}; break;}
-        case SHOW_OUTPUT:   {   sprintf(str,"%2.1f FPS", info_fps);
+        case SHOW_OUTPUT:   {   sprintf(str,"%2.1f FPS", V.Info.FPS);
                                 putText(img_output, str, Point(20,30), FONT_HERSHEY_SIMPLEX  , 0.4, Scalar(255,255,255), 1);
                                 sprintf(str,"%d contours", info_total_contours);
                                 putText(img_output, str, Point(20,45), FONT_HERSHEY_SIMPLEX  , 0.4, Scalar(255,255,255), 1);
@@ -581,7 +549,7 @@ void ProcessImg(void){
     img_wholemask = Mat::zeros(img.size(), CV_8UC3);
 
     // capture from cam
-    if (capture_run && !freeze_frame && !capture_file) {camera >> img_in;}
+    if (V.Input.CaptureRun && !V.Input.FreezeFrame && !capture_file) {camera >> img_in;}
 
     // capture from file
     if (capture_file) {
@@ -595,17 +563,17 @@ void ProcessImg(void){
 
     cv::Mat img_gray;
     cv::cvtColor(img, img_gray, cv::COLOR_BGR2GRAY);
-    blur(img_gray, img_gray, Size(blur_before_mog,blur_before_mog));
+    blur(img_gray, img_gray, Size(V.BS.BlurBeforeMog,V.BS.BlurBeforeMog));
 
-    if (bs_current_algo==BS_MOG) {BackSubtractor->apply(img_gray, img_mog_output, bs_mog_lrate*mog_learning);}
-    if (bs_current_algo==BS_MOG2){BackSubtractor->apply(img_gray, img_mog_output, bs_mog2_lrate*bs_mog2_learning);}
-    if (bs_current_algo==BS_CNT) {BackSubtractor->apply(img_gray, img_mog_output, bs_cnt_lrate*bs_cnt_learning);}
-    if (bs_current_algo==BS_KNN) {BackSubtractor->apply(img_gray, img_mog_output, bs_knn_learning*bs_knn_lrate);}
-    if (bs_current_algo==BS_GSOC) {BackSubtractor->apply(img_gray,img_mog_output, bs_gsoc_lrate);}
+    if (V.BS.CurrentAlgo==BS_MOG) {BackSubtractor->apply(img_gray, img_mog_output, V.BS.MOG.LRate*mog_learning);}
+    if (V.BS.CurrentAlgo==BS_MOG2){BackSubtractor->apply(img_gray, img_mog_output, V.BS.MOG2.LRate*V.BS.MOG2.Learning);}
+    if (V.BS.CurrentAlgo==BS_CNT) {BackSubtractor->apply(img_gray, img_mog_output, V.BS.CNT.LRate*V.BS.CNT.Learning);}
+    if (V.BS.CurrentAlgo==BS_KNN) {BackSubtractor->apply(img_gray, img_mog_output, bs_knn_learning*bs_knn_lrate);}
+    if (V.BS.CurrentAlgo==BS_GSOC) {BackSubtractor->apply(img_gray,img_mog_output, bs_gsoc_lrate);}
 
-    blur(img_mog_output, img_mog_output, Size((int)canny_blur_value,(int)canny_blur_value) );
+    blur(img_mog_output, img_mog_output, Size((int)V.Edge.BlurValue,(int)V.Edge.BlurValue) );
 
-    if (contour_current_algo){
+    if (V.Contours.CurrentAlgo){
         Mat dx, dy;
         Scharr(img_mog_output,dx,CV_16S,1,0);
         Scharr(img_mog_output,dy,CV_16S,0,1);
@@ -615,11 +583,11 @@ void ProcessImg(void){
     else{Canny(img_mog_output, img_canny_output, canny_thresh_value, canny_thresh_value*2 );}
 
     static int type;
-    if (morpho_type==MORPH_CURRENT_RECT){type=cv::MORPH_RECT;}
-    else if (morpho_type==MORPH_CURRENT_CROSS){type=cv::MORPH_CROSS;}
-    else if (morpho_type==MORPH_CURRENT_ELLIPSE){type=cv::MORPH_ELLIPSE;}
+    if (V.Morph.Type==MORPH_CURRENT_RECT){type=cv::MORPH_RECT;}
+    else if (V.Morph.Type==MORPH_CURRENT_CROSS){type=cv::MORPH_CROSS;}
+    else if (V.Morph.Type==MORPH_CURRENT_ELLIPSE){type=cv::MORPH_ELLIPSE;}
 
-    cv::Mat element = cv::getStructuringElement(type, cv::Size( morph_size + 1, morph_size+1 ), cv::Point( morph_size, morph_size ) );
+    cv::Mat element = cv::getStructuringElement(type, cv::Size( V.Morph.Size + 1, V.Morph.Size+1 ), cv::Point( V.Morph.Size, V.Morph.Size ) );
     cv::morphologyEx(img_canny_output, img_morph_out, cv::MORPH_CLOSE, element);
     cv::findContours(img_morph_out, contours, hierarchy,cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
@@ -643,7 +611,7 @@ void ProcessImg(void){
         vector<Moments> mu(contours.size());
         vector<Point2f> centers( contours.size() );
 
-        if ((contourArea(contours[i]) > min_bbox_area)&&(contourArea(contours[i]) < max_bbox_area)){
+        if ((contourArea(contours[i]) > V.Contours.MinBBoxArea)&&(contourArea(contours[i]) < V.Contours.MaxBBoxArea)){
         useful_contours++;
 
         mu[i] = moments(contours[i], false);
@@ -661,7 +629,7 @@ void ProcessImg(void){
         Scalar avg_color = Scalar(mean(img_roi)) / PartOfColor;
 /*
         int ColorsMatch;
-        if (good_colorspace == BGR){ColorsMatch = ScalarInRange(avg_color, good_color_rgb, color_tolerance_rgb, 0);}
+        if (V.Color.GoodSpace == BGR){ColorsMatch = ScalarInRange(avg_color, V.Color.GoodRGB, V.Color.ToleranceRGB, 0);}
         else{
             Mat img_roi_hsv;
             cvtColor(img_roi,img_roi_hsv,COLOR_BGR2HSV);
@@ -672,7 +640,7 @@ void ProcessImg(void){
             Vec3b hsvout=tempHSV.at<Vec3b>(0,0);
 
             Scalar avg_color_hsv = hsvout;
-            ColorsMatch = ScalarInRange(avg_color_hsv, good_color_hsv, color_tolerance_hsv ,1);
+            ColorsMatch = ScalarInRange(avg_color_hsv, V.Color.GoodHSV, V.Color.ToleranceHSV ,1);
         }
 
     ColorOK = (ColorsMatch >= 2 );
@@ -684,14 +652,14 @@ void ProcessImg(void){
     Scalar textcolor = Scalar(0, (0+255*!ColorOK), 255-(255*!ColorOK)) ;
 
     if (show_particle_number){sprintf(str,"%u", (int)i); putText(img_output, str, Point(X,Y), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-    if (show_area){ sprintf(str,"%.0f mm2", pix2mm((long)(contourArea(contours[i])))); putText(img_output, str, Point(X,Y+14), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-    if (show_avgcolor){ sprintf(str,"%.0f;%.0f;%.0f", avg_color[2], avg_color[1],avg_color[0]); putText(img_output, str, Point(X,Y+28), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-    if (show_diameter){ sprintf(str,"d=%.1f mm", pix2mm(diameter)); putText(img_output, str, Point(X,Y+42), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
-    if (show_bboxes){rectangle(img_output,boundingRect(contours[i]).tl(), boundingRect(contours[i]).br(), Scalar(255,0,0), 1, 4, 0 );}
-    if (show_centers){circle(img_output, mc[i], 2, 255, -1, 8, 0 );}
-    if (show_contours){drawContours(img_output, contours, (int)i, contourcolor, 2, LINE_4, hierarchy, 0);}
-    if (show_fill_avgcolor){ cv::drawContours(img_output, contours, i, avg_color, cv::FILLED);}
-    if (show_fill_contcolor){ cv::drawContours(img_output, contours, i, contourcolor, cv::FILLED);}
+    if (V.Show.Area){ sprintf(str,"%.0f mm2", pix2mm((long)(contourArea(contours[i])))); putText(img_output, str, Point(X,Y+14), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
+    if (V.Show.AvgColor){ sprintf(str,"%.0f;%.0f;%.0f", avg_color[2], avg_color[1],avg_color[0]); putText(img_output, str, Point(X,Y+28), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
+    if (V.Show.Diameter){ sprintf(str,"d=%.1f mm", pix2mm(diameter)); putText(img_output, str, Point(X,Y+42), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
+    if (V.Show.BBoxes){rectangle(img_output,boundingRect(contours[i]).tl(), boundingRect(contours[i]).br(), Scalar(255,0,0), 1, 4, 0 );}
+    if (V.Show.Centers){circle(img_output, mc[i], 2, 255, -1, 8, 0 );}
+    if (V.Show.Contours){drawContours(img_output, contours, (int)i, contourcolor, 2, LINE_4, hierarchy, 0);}
+    if (V.Show.FillAvg){ cv::drawContours(img_output, contours, i, avg_color, cv::FILLED);}
+    if (V.Show.FilContour){ cv::drawContours(img_output, contours, i, contourcolor, cv::FILLED);}
 
     }
 

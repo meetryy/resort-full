@@ -79,8 +79,8 @@ struct V_t{
         bool Diameter;
         bool FillAvg;
         bool FilContour;
-        int     MatUpdCounter;
-        int     MatUpdTarget;
+        int  MatUpdCounter;
+        int  MatUpdTarget;
     };
     Show_t Show;
 
@@ -105,7 +105,7 @@ struct V_t{
         MOG_t MOG;
 
         struct MOG2_t{
-            int     Mixtures;
+            int     History;
             float   Thresh;
             bool    DetectShadows;
             bool    Learning;
@@ -136,6 +136,7 @@ struct V_t{
         long    TotalContours;
         long    UsefulContours;
         int     FPSAverage;
+        bool    ConsoleDestination;
     };
     Info_t Info;
 
@@ -145,69 +146,23 @@ struct V_t{
     UI_t UI;
 
 };
-extern V_t V;
 
+extern struct V_t V;
 
 //input
-extern bool capture_run;
-extern bool freeze_frame;
-extern int  input_source;
 extern bool input_correction_on;
 extern  cv::Scalar hsv_input_correction;
-extern  int     cam_number;
-extern  long    cam_width;
-extern  long    cam_height;
-extern  int     cam_gain;
-extern  int     cam_contrast;
-extern  int     cam_brightness;
-extern  int     cam_exposure;
-extern  int     cam_hue;
-extern  int     cam_saturation;
-extern float    cam_fps;
 
 //edge detection
-extern int canny_blur_value;
-extern int canny_thresh_value1;
-extern int canny_thresh_value2;
-extern bool use_scharr;
-extern long scharr_thresh_value;
-
 //contours
-extern float min_bbox_area;
-extern float max_bbox_area;
-extern bool morph_mask;
-extern int morph_size;
-extern bool wide_area_range;
-
 //color
-extern cv::Scalar good_color_rgb;
-extern cv::Scalar color_tolerance_rgb;
-extern cv::Scalar good_color_hsv;
-extern cv::Scalar color_tolerance_hsv;
-extern bool good_colorspace;
-
 //output
-extern bool show_contours;
-extern bool show_centers;
-extern bool show_bboxes;
-extern bool show_avgcolor;
-extern bool show_area;
-extern bool show_diameter;
-extern bool show_fill_avgcolor;
-extern bool show_fill_contcolor;
-
 //com port
-extern bool com_connected;
-extern int  com_port_number;
-extern long com_speed;
+
 
 //info
 extern float   time1;
 extern float   time2;
-extern float   info_s_per_frame;
-extern float   info_s_per_frame_accumulated;
-extern float   info_fps;
-extern long    fps_avg_counter;
 
 extern long info_total_contours;
 extern long useful_contours;
@@ -215,32 +170,11 @@ extern long useful_contours;
 
 ///////////////////////
 
-extern  int     bs_mog_history;
-extern  int     bs_mog_mixtures;
-extern  float   bs_mog_backratio;
-extern  float   bs_mog_noisesigma;
-extern  bool    bs_mog_learning;
-extern  float   bs_mog_lrate;
-
-extern  int     bs_mog2_history;
-extern  float   bs_mog2_thresh;
-extern  bool    bs_mog2_shadows;
-extern  bool    bs_mog2_learning;
-extern  float   bs_mog2_lrate;
-
 extern  int     bs_knn_history;
 extern  float   bs_knn_thresh;
 extern  bool    bs_knn_shadows;
 extern  bool    bs_knn_learning;
 extern  float   bs_knn_lrate;
-
-extern  int     bs_cnt_min_pix_stability;
-extern  int     bs_cnt_max_pix_stability;
-extern  int     bs_cnt_fps;
-extern  bool    bs_cnt_use_history;
-extern  bool    bs_cnt_isparallel;
-extern  float   bs_cnt_lrate;
-extern  bool    bs_cnt_learning;
 
 extern  int     bs_gsoc_mc;
 extern  int     bs_gsoc_samples;
@@ -256,12 +190,6 @@ extern  float   bs_gsoc_noise_fg;
 extern  bool    bs_gsoc_learning;
 extern  float   bs_gsoc_lrate;
 
-extern  int     bs_current_algo;
-extern  int     morpho_type;
-extern  int     contour_current_algo;
-
-extern  int     blur_before_mog;
-extern bool     fullscreen;
 extern  long    pix_per_100mm;
 
 extern bool     video_recording;
@@ -277,9 +205,6 @@ extern bool     draw_ruler;
 extern bool     capture_file;
 extern bool     show_quad;
 extern bool     show_particle_number;
-
-
-extern bool fullscreen;
 
 extern int show_mat_upd_counter;
 extern int show_mat_upd_target;

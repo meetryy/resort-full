@@ -3,22 +3,22 @@
 
 // Message to the person tempted to delete this file when integrating Dear ImGui into their code base:
 // Do NOT remove this file from your project! Think again! It is the most useful reference code that you and other coders
-// will want to refer to and call. Have the ImGui::ShowDemoWindow() function wired in an always-available debug menu of 
-// your game/app! Removing this file from your project is hindering access to documentation for everyone in your team, 
+// will want to refer to and call. Have the ImGui::ShowDemoWindow() function wired in an always-available debug menu of
+// your game/app! Removing this file from your project is hindering access to documentation for everyone in your team,
 // likely leading you to poorer usage of the library.
 // Everything in this file will be stripped out by the linker if you don't call ImGui::ShowDemoWindow().
-// If you want to link core Dear ImGui in your shipped builds but want an easy guarantee that the demo will not be linked, 
+// If you want to link core Dear ImGui in your shipped builds but want an easy guarantee that the demo will not be linked,
 // you can setup your imconfig.h with #define IMGUI_DISABLE_DEMO_WINDOWS and those functions will be empty.
 // In other situation, whenever you have Dear ImGui available you probably want this to be available for reference.
 // Thank you,
 // -Your beloved friend, imgui_demo.cpp (that you won't delete)
 
-// Message to beginner C/C++ programmers about the meaning of the 'static' keyword: 
-// In this demo code, we frequently we use 'static' variables inside functions. A static variable persist across calls, so it is 
-// essentially like a global variable but declared inside the scope of the function. We do this as a way to gather code and data 
+// Message to beginner C/C++ programmers about the meaning of the 'static' keyword:
+// In this demo code, we frequently we use 'static' variables inside functions. A static variable persist across calls, so it is
+// essentially like a global variable but declared inside the scope of the function. We do this as a way to gather code and data
 // in the same place, to make the demo source code faster to read, faster to write, and smaller in size.
 // It also happens to be a convenient way of storing simple UI related information as long as your function doesn't need to be reentrant
-// or used in threads. This might be a pattern you will want to use in your code, but most of the real data you would be editing is 
+// or used in threads. This might be a pattern you will want to use in your code, but most of the real data you would be editing is
 // likely going to be stored outside your functions.
 
 /*
@@ -182,7 +182,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
 
     if (show_app_main_menu_bar)       ShowExampleAppMainMenuBar();
     if (show_app_console)             ShowExampleAppConsole(&show_app_console);
-    if (show_app_log)                 ShowExampleAppLog(&show_app_log);
+//if (show_app_log)                 ShowExampleAppLog(&show_app_log);
     if (show_app_layout)              ShowExampleAppLayout(&show_app_layout);
     if (show_app_property_editor)     ShowExampleAppPropertyEditor(&show_app_property_editor);
     if (show_app_long_text)           ShowExampleAppLongText(&show_app_long_text);
@@ -409,7 +409,7 @@ static void ShowDemoWindowWidgets()
         // Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
         for (int i = 0; i < 7; i++)
         {
-            if (i > 0) 
+            if (i > 0)
                 ImGui::SameLine();
             ImGui::PushID(i);
             ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i/7.0f, 0.6f, 0.6f));
@@ -902,7 +902,7 @@ static void ShowDemoWindowWidgets()
 
     if (ImGui::TreeNode("Multi-line Text Input"))
     {
-        // Note: we are using a fixed-sized buffer for simplicity here. See ImGuiInputTextFlags_CallbackResize 
+        // Note: we are using a fixed-sized buffer for simplicity here. See ImGuiInputTextFlags_CallbackResize
         // and the code in misc/cpp/imgui_stdlib.h for how to setup InputText() for dynamically resizing strings.
         static bool read_only = false;
         static char text[1024*16] =
@@ -1139,15 +1139,15 @@ static void ShowDemoWindowWidgets()
     if (ImGui::TreeNode("Data Types"))
     {
         // The DragScalar/InputScalar/SliderScalar functions allow various data types: signed/unsigned int/long long and float/double
-        // To avoid polluting the public API with all possible combinations, we use the ImGuiDataType enum to pass the type, 
-        // and passing all arguments by address. 
+        // To avoid polluting the public API with all possible combinations, we use the ImGuiDataType enum to pass the type,
+        // and passing all arguments by address.
         // This is the reason the test code below creates local variables to hold "zero" "one" etc. for each types.
-        // In practice, if you frequently use a given type that is not covered by the normal API entry points, you can wrap it 
-        // yourself inside a 1 line function which can take typed argument as value instead of void*, and then pass their address 
+        // In practice, if you frequently use a given type that is not covered by the normal API entry points, you can wrap it
+        // yourself inside a 1 line function which can take typed argument as value instead of void*, and then pass their address
         // to the generic function. For example:
-        //   bool MySliderU64(const char *label, u64* value, u64 min = 0, u64 max = 0, const char* format = "%lld") 
-        //   { 
-        //      return SliderScalar(label, ImGuiDataType_U64, value, &min, &max, format); 
+        //   bool MySliderU64(const char *label, u64* value, u64 min = 0, u64 max = 0, const char* format = "%lld")
+        //   {
+        //      return SliderScalar(label, ImGuiDataType_U64, value, &min, &max, format);
         //   }
 
         // Limits (as helper variables that we can take the address of)
@@ -1342,7 +1342,7 @@ static void ShowDemoWindowWidgets()
             static int mode = 0;
             if (ImGui::RadioButton("Copy", mode == Mode_Copy)) { mode = Mode_Copy; } ImGui::SameLine();
             if (ImGui::RadioButton("Move", mode == Mode_Move)) { mode = Mode_Move; } ImGui::SameLine();
-            if (ImGui::RadioButton("Swap", mode == Mode_Swap)) { mode = Mode_Swap; } 
+            if (ImGui::RadioButton("Swap", mode == Mode_Swap)) { mode = Mode_Swap; }
             static const char* names[9] = { "Bobby", "Beatrice", "Betty", "Brianna", "Barry", "Bernard", "Bibi", "Blaine", "Bryn" };
             for (int n = 0; n < IM_ARRAYSIZE(names); n++)
             {
@@ -1487,7 +1487,7 @@ static void ShowDemoWindowWidgets()
         if (embed_all_inside_a_child_window)
             ImGui::EndChild();
 
-        // Calling IsItemHovered() after begin returns the hovered status of the title bar. 
+        // Calling IsItemHovered() after begin returns the hovered status of the title bar.
         // This is useful in particular if you want to create a context menu (with BeginPopupContextItem) associated to the title bar of a window.
         static bool test_window = false;
         ImGui::Checkbox("Hovered/Active tests after Begin() for title bar testing", &test_window);
@@ -1918,7 +1918,7 @@ static void ShowDemoWindowPopups()
     //   if (ImGui::Button("Open")) ImGui::OpenPopup("MyPopup"); if (ImGui::BeginPopup("MyPopup") { [...] EndPopup(); }
 
     // With popups we have to go through a library call (here OpenPopup) to manipulate the visibility state.
-    // This may be a bit confusing at first but it should quickly make sense. Follow on the examples below. 
+    // This may be a bit confusing at first but it should quickly make sense. Follow on the examples below.
 
     if (ImGui::TreeNode("Popups"))
     {
@@ -2014,7 +2014,7 @@ static void ShowDemoWindowPopups()
         ImGui::Text("(You can also right-click me to the same popup as above.)");
         ImGui::OpenPopupOnItemClick("item context menu", 1);
 
-        // When used after an item that has an ID (here the Button), we can skip providing an ID to BeginPopupContextItem(). 
+        // When used after an item that has an ID (here the Button), we can skip providing an ID to BeginPopupContextItem().
         // BeginPopupContextItem() will use the last item ID as the popup ID.
         // In addition here, we want to include your editable label inside the button label. We use the ### operator to override the ID (read FAQ about ID for details)
         static char name[32] = "Label1";
@@ -3240,96 +3240,6 @@ static void ShowExampleAppConsole(bool* p_open)
 {
     static ExampleAppConsole console;
     console.Draw("Example: Console", p_open);
-}
-
-//-----------------------------------------------------------------------------
-// [SECTION] Example App: Debug Log / ShowExampleAppLog()
-//-----------------------------------------------------------------------------
-
-// Usage:
-//  static ExampleAppLog my_log;
-//  my_log.AddLog("Hello %d world\n", 123);
-//  my_log.Draw("title");
-struct ExampleAppLog
-{
-    ImGuiTextBuffer     Buf;
-    ImGuiTextFilter     Filter;
-    ImVector<int>       LineOffsets;        // Index to lines offset
-    bool                ScrollToBottom;
-
-    void    Clear()     { Buf.clear(); LineOffsets.clear(); }
-
-    void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
-    {
-        int old_size = Buf.size();
-        va_list args;
-        va_start(args, fmt);
-        Buf.appendfv(fmt, args);
-        va_end(args);
-        for (int new_size = Buf.size(); old_size < new_size; old_size++)
-            if (Buf[old_size] == '\n')
-                LineOffsets.push_back(old_size);
-        ScrollToBottom = true;
-    }
-
-    void    Draw(const char* title, bool* p_open = NULL)
-    {
-        ImGui::SetNextWindowSize(ImVec2(500,400), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin(title, p_open))
-        {
-            ImGui::End();
-            return;
-        }
-        if (ImGui::Button("Clear")) Clear();
-        ImGui::SameLine();
-        bool copy = ImGui::Button("Copy");
-        ImGui::SameLine();
-        Filter.Draw("Filter", -100.0f);
-        ImGui::Separator();
-        ImGui::BeginChild("scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
-        if (copy) ImGui::LogToClipboard();
-
-        if (Filter.IsActive())
-        {
-            const char* buf_begin = Buf.begin();
-            const char* line = buf_begin;
-            for (int line_no = 0; line != NULL; line_no++)
-            {
-                const char* line_end = (line_no < LineOffsets.Size) ? buf_begin + LineOffsets[line_no] : NULL;
-                if (Filter.PassFilter(line, line_end))
-                    ImGui::TextUnformatted(line, line_end);
-                line = line_end && line_end[1] ? line_end + 1 : NULL;
-            }
-        }
-        else
-        {
-            ImGui::TextUnformatted(Buf.begin());
-        }
-
-        if (ScrollToBottom)
-            ImGui::SetScrollHereY(1.0f);
-        ScrollToBottom = false;
-        ImGui::EndChild();
-        ImGui::End();
-    }
-};
-
-// Demonstrate creating a simple log window with basic filtering.
-static void ShowExampleAppLog(bool* p_open)
-{
-    static ExampleAppLog log;
-
-    // Demo: add random items (unless Ctrl is held)
-    static double last_time = -1.0;
-    double time = ImGui::GetTime();
-    if (time - last_time >= 0.20f && !ImGui::GetIO().KeyCtrl)
-    {
-        const char* random_words[] = { "system", "info", "warning", "error", "fatal", "notice", "log" };
-        log.AddLog("[%s] Hello, time is %.1f, frame count is %d\n", random_words[rand() % IM_ARRAYSIZE(random_words)], time, ImGui::GetFrameCount());
-        last_time = time;
-    }
-
-    log.Draw("Example: Log", p_open);
 }
 
 //-----------------------------------------------------------------------------

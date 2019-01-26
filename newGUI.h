@@ -7,6 +7,7 @@ enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, 
 void Draw_ImGui(void);
 void GUI_Fill_Textures(void);
 void GUI_VarInit(void);
+void ConsoleOut (std::string InString);
 
 struct mat_window_t{
     bool show;

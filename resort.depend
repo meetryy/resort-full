@@ -1725,14 +1725,14 @@
 1544123028 d:\codeblocks\projects\resort-full\bgsubcnt.h
 	"opencv2/video.hpp"
 
-1548455856 source:d:\codeblocks\projects\resort-full\com_port.cpp
+1548541062 source:d:\codeblocks\projects\resort-full\com_port.cpp
 	<iostream>
 	<fstream>
 	<stdexcept>
 	"rs232.h"
 	"COM_port.h"
 	"variables1.h"
-	"UI.h"
+	"newGUI.h"
 	"rs232.h"
 	<Windows.h>
 	<stdlib.h>
@@ -1757,14 +1757,14 @@
 	<fstream>
 	<stdexcept>
 
-1548455713 d:\codeblocks\projects\resort-full\variables1.h
+1548537133 d:\codeblocks\projects\resort-full\variables1.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
 
 1536939805 d:\codeblocks\projects\resort-full\ui.h
 
-1548454095 source:d:\codeblocks\projects\resort-full\file.cpp
+1548540698 source:d:\codeblocks\projects\resort-full\file.cpp
 	<iostream>
 	<fstream>
 	<opencv2/core/core.hpp>
@@ -1774,6 +1774,7 @@
 	"file.h"
 	"main.h"
 	"UI.h"
+	"newGUI.h"
 
 1546277320 d:\codeblocks\projects\resort-full\file.h
 	<iostream>
@@ -1783,7 +1784,7 @@
 	<opencv2/highgui/highgui.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 
-1544896709 d:\codeblocks\projects\resort-full\main.h
+1548531499 d:\codeblocks\projects\resort-full\main.h
 	<iostream>
 	<fstream>
 	<stdexcept>
@@ -1792,7 +1793,7 @@
 	<opencv2/imgproc/imgproc.hpp>
 	<SFML/Graphics/Texture.hpp>
 
-1548456212 source:d:\codeblocks\projects\resort-full\img.cpp
+1548541933 source:d:\codeblocks\projects\resort-full\img.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -1824,7 +1825,7 @@
 	<SFML/Graphics/CircleShape.hpp>
 	<SFML/Graphics/RectangleShape.hpp>
 
-1545393534 d:\codeblocks\projects\resort-full\img.h
+1548541532 d:\codeblocks\projects\resort-full\img.h
 
 1544974581 d:\codeblocks\projects\resort-full\mog.h
 	<opencv2/core/core.hpp>
@@ -1839,7 +1840,7 @@
 	<iostream>
 	"opencv2/opencv.hpp"
 
-1545573356 d:\codeblocks\projects\resort-full\newgui.h
+1548538537 d:\codeblocks\projects\resort-full\newgui.h
 
 1543890888 d:\codeblocks\projects\resort-full\imgui\imgui.h
 	"imconfig.h"
@@ -1904,7 +1905,7 @@
 1543890888 d:\codeblocks\projects\resort-full\imgui\imstb_textedit.h
 	<string.h>
 
-1543890888 source:d:\codeblocks\projects\resort-full\imgui\imgui_demo.cpp
+1548537133 source:d:\codeblocks\projects\resort-full\imgui\imgui_demo.cpp
 	"imgui.h"
 	<ctype.h>
 	<limits.h>
@@ -2016,7 +2017,7 @@
 	<errno.h>
 	<limits.h>
 
-1546352148 source:d:\codeblocks\projects\resort-full\newgui.cpp
+1548541752 source:d:\codeblocks\projects\resort-full\newgui.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<iostream>
@@ -2056,4 +2057,39 @@
 
 1511356394 source:d:\codeblocks\projects\resort-full\rs232.c
 	"rs232.h"
+
+1548540204 source:d:\codeblocks\projects\resort-full\main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/videoio.hpp>
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	<iostream>
+	<fstream>
+	<ctime>
+	<sstream>
+	<cstdlib>
+	<thread>
+	"imgui.h"
+	"imgui-SFML.h"
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+	"variables1.h"
+	"UI.h"
+	"main.h"
+	"file.h"
+	"img.h"
+	"rs232.h"
+	"COM_port.h"
+	"mog.h"
+	"real_dimensions.h"
+	"newGUI.h"
+	"ImGuiFileDialog.h"
+	"omp.h"
 

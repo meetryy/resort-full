@@ -29,12 +29,14 @@
 //#include "ImGuiFileDialog.h"
 #include "imguifilesystem.h"
 
+using namespace std;
+
 void GUI_FileDialogue(void);
 std::string FilePath(void);
 
 static int test_int = 0;
 
-bool wide_area_range = 1;
+//V.Contours.WideAreaRange = 1;
 
 float col[3]={0.0};
 bool* p_open;
@@ -104,7 +106,8 @@ struct ExampleAppLog
         ImGui::SameLine();
         bool copy = ImGui::Button(u8"Копировать");
         ImGui::SameLine();
-        Filter.Draw("Filter", -100.0f);
+        Filter.Draw(u8"Фильтр", -100.0f);
+        ImGui::Checkbox(u8"Вывод сюда (иначе в cout)", &V.Info.ConsoleDestination);
         ImGui::Separator();
         ImGui::BeginChild("scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
         if (copy) ImGui::LogToClipboard();
@@ -136,7 +139,45 @@ struct ExampleAppLog
 
 static ExampleAppLog GUI_Log;
 
+void ConsoleOut (string InString){
+    time_t now;
+    char the_date[32];
+    the_date[0] = '\0';
+    now = time(NULL);
+    strftime(the_date, 32, "%H-%M-%S", gmtime(&now));
+    if (V.Info.ConsoleDestination){
+    GUI_Log.AddLog("%s: %s\n", the_date, InString.c_str());
+    }
+    else{
+        cout << the_date << " " << InString <<endl;
+    }
+}
+
 static bool browseButtonPressed;
+
+ImVec4 ColorOn = ImColor(0.0f,1.0f,0.0f,1.0f);
+ImVec4 ColorOff = ImColor(1.0f,0.0f,0.0f,1.0f);
+
+void StatedText(string Input, bool state){
+    if (state) {
+        ImGui::PushStyleColor(ImGuiCol_Text, ColorOn);
+    }
+    else{
+        ImGui::PushStyleColor(ImGuiCol_Text, ColorOff);
+    }
+    ImGui::BulletText(Input.c_str());
+    ImGui::PopStyleColor();
+}
+
+void MenuBarStateList(void){
+        StatedText(u8"Камера", V.Input.CaptureRun);
+        ImGui::Separator();
+        StatedText(u8"Комуникация", V.Input.CaptureRun);
+        ImGui::Separator();
+        StatedText(u8"Сепарация", V.Input.CaptureRun);
+        ImGui::Separator();
+
+}
 
 void Draw_ImGui(void){
     //ImGui::StyleColorsLight();
@@ -184,7 +225,7 @@ void Draw_ImGui(void){
         if (ImGui::BeginMenu(u8"Настройки программы")){
                 ImGui::MenuItem(u8"Внешний вид", "", &SetWin[W_SELF_COLORS].show);
                 ImGui::MenuItem(u8"Консоль", "", &SetWin[W_SELF_LOG].show);
-                if(ImGui::MenuItem(u8"Полный экран", NULL, &fullscreen)){FullscreenChanged=1;}
+                if(ImGui::MenuItem(u8"Полный экран", NULL, &V.UI.Fullscreen)){FullscreenChanged=1;}
                 //ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
                 //ImGui::InputFloat("Input", &f, 0.1f);
                 //ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
@@ -196,7 +237,7 @@ void Draw_ImGui(void){
         ImGui::Text("GUI %.1f FPS",ImGui::GetIO().Framerate);
 
         ImGui::Separator();
-        ImGui::Text(u8"Обработка %.1f FPS", info_fps);
+        ImGui::Text(u8"Обработка %.1f FPS", V.Info.FPS);
 
 
         static time_t now;
@@ -207,6 +248,7 @@ void Draw_ImGui(void){
         ImGui::Separator();
         ImGui::Text("%s", time_buff);
 
+        MenuBarStateList();
 
         SameLine(GetWindowWidth()-140);
         ImGui::Text("ReSort v0.1 12.2018");
@@ -232,21 +274,21 @@ void Draw_ImGui(void){
                     if(i == W_MAT_OUT){
                         if (ImGui::BeginMenuBar()){
                             if (ImGui::BeginMenu(u8"Показать")){
-                                    ImGui::MenuItem(u8"Контуры", "", &show_contours);
-                                    ImGui::MenuItem(u8"Центры", "", &show_centers);
-                                    ImGui::MenuItem(u8"Коробки", "", &show_bboxes);
-                                    ImGui::MenuItem(u8"Средний цвет", "", &show_avgcolor);
-                                    ImGui::MenuItem(u8"Диаметр", "", &show_diameter);
-                                    ImGui::MenuItem(u8"Площадь", "", &show_area);
-                                    ImGui::MenuItem(u8"Заполнить средним цветом", "", &show_fill_avgcolor);
-                                    ImGui::MenuItem(u8"Заполнить результатом", "", &show_fill_contcolor);
+                                    ImGui::MenuItem(u8"Контуры", "", &V.Show.Contours);
+                                    ImGui::MenuItem(u8"Центры", "", &V.Show.Centers);
+                                    ImGui::MenuItem(u8"Коробки", "", &V.Show.BBoxes);
+                                    ImGui::MenuItem(u8"Средний цвет", "", &V.Show.AvgColor);
+                                    ImGui::MenuItem(u8"Диаметр", "", &V.Show.Diameter);
+                                    ImGui::MenuItem(u8"Площадь", "", &V.Show.Area);
+                                    ImGui::MenuItem(u8"Заполнить средним цветом", "", &V.Show.FillAvg);
+                                    ImGui::MenuItem(u8"Заполнить результатом", "", &V.Show.FilContour);
                                 ImGui::EndMenu();
                             }
                         ImGui::EndMenuBar();
                         }
                     }
-                    if (capture_file){ImGui::Image(texture[i], ImVec2(640,360));}
-                    else {ImGui::Image(texture[i], ImVec2(cam_width,cam_height));}
+                    if (V.Input.Source){ImGui::Image(texture[i], ImVec2(640,360));}
+                    else {ImGui::Image(texture[i], ImVec2(V.Cam.Width,V.Cam.Height));}
 
                 ImGui::End();
 
@@ -288,50 +330,56 @@ if (SetWin[W_SET_FILE].show){
 
 
 
+
+
+
+
 //==================== SETTINGS WINDOWS ==========================================
 
-
+    //ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    //ImDrawList::AddCircleFilled(ImVec2(250.0f, 250.0f), 10.0f, ImColor(255.0f,0.4f,0.4f,1.0f), 64);
 
     if (SetWin[W_SET_IN].show){
         ImGui::Begin(SetWin[W_SET_IN].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::Combo(u8"Источник", &input_source, u8"Камера\0Видео\0\0");
+            ImGui::Combo(u8"Источник", &V.Input.Source, u8"Камера\0Видео\0\0");
             ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
             ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &show_mat_upd_target,  0, 127);
             ShowHelpMarker(u8"Может ускорить быстродействие");
-            if (input_source == 0){
-                ImGui::InputInt(u8"Номер камеры", &cam_number);
+
+            if (V.Input.Source == 0){
+                ImGui::InputInt(u8"Номер камеры", &V.Cam.Number);
                 const char* reso[] = { "320x240", "640x480", "800x600", "1024x768", "1280x720"};
                 const long  resol[] = {320,240,640,480,800,600,1024,768,1280,720};
                 static int reso_curr = 0;
 
                 if(ImGui::Combo(u8"Разрешение", &reso_curr, reso, IM_ARRAYSIZE(reso))){
-                    cam_width  = resol[reso_curr*2];
-                    cam_height = resol[reso_curr*2+1];
+                    V.Cam.Width  = resol[reso_curr*2];
+                    V.Cam.Height = resol[reso_curr*2+1];
                     cam_open();
                 }
                 ShowHelpMarker(u8"Чем меньше, тем быстрее");
 
-                if  (!capture_run) {if (ImGui::Button(u8"Открыть поток")) {cam_open(); capture_run = 1;}}
-                else                {if (ImGui::Button(u8"Закрыть поток")) {capture_run = 0;}}
-                if (ImGui::SliderFloat(u8"Скорость", &cam_fps,  5.0, 400.0,"%1.2f")) cam_update();
+                if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток")) {cam_open();}}
+                else                {if (ImGui::Button(u8"Закрыть поток")) {V.Input.CaptureRun = 0;}}
+                if (ImGui::SliderFloat(u8"Скорость", &V.Cam.FPS,  5.0, 400.0,"%1.2f")) cam_update();
                 ShowHelpMarker(u8"Поддерживаются не все скорости\nВозможная скорость зависит от экспозиции");
-                if (ImGui::SliderInt(u8"Усиление", &cam_gain,  0, 127)) cam_update();
+                if (ImGui::SliderInt(u8"Усиление", &V.Cam.Gain,  0, 127)) cam_update();
                 ShowHelpMarker(u8"Устанавливать наименьшее значение во избежание шума");
-                if (ImGui::SliderInt(u8"Контраст", &cam_contrast,  0, 127)) cam_update();
-                if (ImGui::SliderInt(u8"Экспозиция", &cam_exposure,  -5, 0)) cam_update();
+                if (ImGui::SliderInt(u8"Контраст", &V.Cam.Contrast,  0, 127)) cam_update();
+                if (ImGui::SliderInt(u8"Экспозиция", &V.Cam.Exposure,  -5, 0)) cam_update();
                 ShowHelpMarker(u8"Обратно пропорциональна к скорости");
-                if (ImGui::SliderInt(u8"Насыщенность", &cam_saturation,  0, 127)) cam_update();
-                ImGui::Checkbox(u8"Стоп-кадр", &freeze_frame);
+                if (ImGui::SliderInt(u8"Насыщенность", &V.Cam.Saturation,  0, 127)) cam_update();
+                ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
             }
-            if (input_source == 1){
+            if (V.Input.Source == 1){
                 //ImGui::InputText(u8"Имя файла", test_text, 64);
                 //if (ImGui::Button(u8"Открыть файл")) {}
                 //if (ImGui::Button(u8"Пауза")){}
                 //ImGui::SameLine();
                 //if (ImGui::Button(u8"Сначала")){}
-                capture_file = input_source;
-                if  (!capture_run) {if (ImGui::Button(u8"Открыть поток")) {capture_run = 1;}}
-                else                {if (ImGui::Button(u8"Закрыть поток")) {capture_run = 0;}}
+                capture_file = V.Input.Source;
+                if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток")) {video_open();}}
+                else                {if (ImGui::Button(u8"Закрыть поток")) {video_close();}}
 
             }
         ImGui::End();
@@ -339,44 +387,44 @@ if (SetWin[W_SET_FILE].show){
 
     if (SetWin[W_SET_BG].show){
         ImGui::Begin(SetWin[W_SET_BG].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            if(ImGui::Combo(u8"Алгоритм", &bs_current_algo, u8"MOG\0MOG2\0CNT\0KNN\0GSOC\0\0")){BS_Init(bs_current_algo);}
+            if(ImGui::Combo(u8"Алгоритм", &V.BS.CurrentAlgo, u8"MOG\0MOG2\0CNT\0KNN\0GSOC\0\0")){BS_Init(V.BS.CurrentAlgo);}
             ShowHelpMarker(u8"MOG и MOG2 не нагружают просеоор, но не очень точы\nCNT наиболее быстрый, но снижает быстродействие");
-            ImGui::SliderInt(u8"Предварительное размытие", &blur_before_mog,  1, 10);
+            ImGui::SliderInt(u8"Предварительное размытие", &V.BS.BlurBeforeMog,  1, 10);
             ShowHelpMarker(u8"Помогает избавиться от шелухи в маске вычитания фона");
-            if (bs_current_algo==BS_MOG){
-                ImGui::Checkbox(u8"Обучение", &bs_mog_learning);
-                ImGui::SliderInt(u8"История", &bs_mog_history,  1, 300);
-                ImGui::SliderInt(u8"Преобразований", &bs_mog_mixtures,  1, 10);
-                ImGui::SliderFloat(u8"Background ratio", &bs_mog_backratio, 0.01f, 0.99f, "%1.2f");
-                ImGui::SliderFloat(u8"Скорость обучения", &bs_mog_lrate, 0.01f, 0.99f, "%1.2f");
-                ImGui::SliderFloat(u8"Noise sigma", &bs_mog_noisesigma, 0.0f, 1.0f, "%1.2f");
+            if (V.BS.CurrentAlgo==BS_MOG){
+                ImGui::Checkbox(u8"Обучение", &V.BS.MOG.Learning);
+                ImGui::SliderInt(u8"История", &V.BS.MOG.History,  1, 300);
+                ImGui::SliderInt(u8"Преобразований", &V.BS.MOG.Mixtures,  1, 10);
+                ImGui::SliderFloat(u8"Background ratio", &V.BS.MOG.BackRatio, 0.01f, 0.99f, "%1.2f");
+                ImGui::SliderFloat(u8"Скорость обучения", &V.BS.MOG.LRate, 0.01f, 0.99f, "%1.2f");
+                ImGui::SliderFloat(u8"Noise sigma", &V.BS.MOG.NoiseSigma, 0.0f, 1.0f, "%1.2f");
 
             }
-            if (bs_current_algo==BS_MOG2){
-                ImGui::Checkbox(u8"Обучение", &bs_mog2_learning);
-                ImGui::SliderInt(u8"История", &bs_mog2_history,  1, 300);
-                ImGui::SliderFloat(u8"Порог", &bs_mog2_thresh, 0.1f, 200.0f, "%1.1f");
-                ImGui::SliderFloat(u8"Скорость обучения", &bs_mog2_lrate, 0.01f, 0.99f, "%1.2f");
-                ImGui::Checkbox(u8"Искать тени", &bs_mog2_shadows);
+            if (V.BS.CurrentAlgo==BS_MOG2){
+                ImGui::Checkbox(u8"Обучение", &V.BS.MOG2.Learning);
+                ImGui::SliderInt(u8"История", &V.BS.MOG2.History,  1, 300);
+                ImGui::SliderFloat(u8"Порог", &V.BS.MOG2.Thresh, 0.1f, 200.0f, "%1.1f");
+                ImGui::SliderFloat(u8"Скорость обучения", &V.BS.MOG2.LRate, 0.01f, 0.99f, "%1.2f");
+                ImGui::Checkbox(u8"Искать тени", &V.BS.MOG2.DetectShadows);
 
             }
-            if (bs_current_algo==BS_CNT){
-                ImGui::Checkbox(u8"Обучение", &bs_cnt_learning);
+            if (V.BS.CurrentAlgo==BS_CNT){
+                ImGui::Checkbox(u8"Обучение", &V.BS.CNT.Learning);
                 ShowHelpMarker(u8"Должно всегда быть включено");
-                ImGui::SliderInt(u8"Мин. стабильных кадров", &bs_cnt_min_pix_stability,  1, 200);
+                ImGui::SliderInt(u8"Мин. стабильных кадров", &V.BS.CNT.MinPixStability,  1, 200);
                 ShowHelpMarker(u8"Через сколько кадров пиксель считается фоновым");
-                ImGui::SliderInt(u8"Макс. стабильных кадров", &bs_cnt_max_pix_stability,  1, 200);
+                ImGui::SliderInt(u8"Макс. стабильных кадров", &V.BS.CNT.MaxPixStability,  1, 200);
                 ShowHelpMarker(u8"Максимальный рейтинг пикселя в истории");
-                ImGui::SliderInt(u8"Кадров/сек", &bs_cnt_fps,  1, 100);
+                ImGui::SliderInt(u8"Кадров/сек", &V.BS.CNT.FPS,  1, 100);
                 ShowHelpMarker(u8"Целевая скорость камеры");
-                ImGui::Checkbox(u8"Использовать историю", &bs_cnt_use_history);
-                ImGui::Checkbox(u8"Работать параллельно", &bs_cnt_isparallel);
+                ImGui::Checkbox(u8"Использовать историю", &V.BS.CNT.UseHistory);
+                ImGui::Checkbox(u8"Работать параллельно", &V.BS.CNT.IsParallel);
                 ShowHelpMarker(u8"Иногда ускоряет, иногда бесполезно");
-                ImGui::SliderFloat(u8"Скорость обучения", &bs_cnt_lrate, 0.01f, 0.99f, "%1.2f");
+                ImGui::SliderFloat(u8"Скорость обучения", &V.BS.CNT.LRate, 0.01f, 0.99f, "%1.2f");
                 ShowHelpMarker(u8"Скорость работы алгоритма");
 
             }
-            if (bs_current_algo==BS_KNN){
+            if (V.BS.CurrentAlgo==BS_KNN){
                 ImGui::Checkbox(u8"Обучение", &bs_knn_learning);
                 ImGui::SliderInt(u8"История", &bs_knn_history,  1, 300);
                 ImGui::SliderFloat(u8"Порог", &bs_knn_thresh, 0.0f, 1.0f, "%1.2f");
@@ -385,7 +433,7 @@ if (SetWin[W_SET_FILE].show){
 
             }
 
-            if (bs_current_algo==BS_GSOC){
+            if (V.BS.CurrentAlgo==BS_GSOC){
                 ImGui::Checkbox(u8"Обучение", &bs_gsoc_learning);
                 ImGui::SliderFloat(u8"Скорость обучения", &bs_gsoc_lrate, 0.01f, 0.99f, "%1.2f");
                 ImGui::SliderInt(u8"Компенсация движения камеры", &bs_gsoc_mc,  0, 1);
@@ -404,7 +452,7 @@ if (SetWin[W_SET_FILE].show){
 
             }
 
-             if (ImGui::Button(u8"Применить настройки")) {BS_Init(bs_current_algo);}
+             if (ImGui::Button(u8"Применить настройки")) {BS_Init(V.BS.CurrentAlgo);}
             ShowHelpMarker(u8"Некоторые настройки не применяются автоматически");
 
         ImGui::End();
@@ -412,19 +460,19 @@ if (SetWin[W_SET_FILE].show){
 
     if (SetWin[W_SET_CONTOUR].show){
         ImGui::Begin(SetWin[W_SET_CONTOUR].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::Combo(u8"Алгоритм", &contour_current_algo, u8"Canny\0Scharr\0\0");
-            if (contour_current_algo==0){
-                use_scharr=0;
-                ImGui::SliderInt(u8"Размытие", &canny_blur_value,  1, 5);
+            ImGui::Combo(u8"Алгоритм", &V.Contours.CurrentAlgo, u8"Canny\0Scharr\0\0");
+            if (V.Contours.CurrentAlgo==0){
+                V.Edge.UseScharr=0;
+                ImGui::SliderInt(u8"Размытие", &V.Edge.BlurValue,  1, 5);
                 ShowHelpMarker(u8"Предварительное размытие помогает избавиться от мусора\nНечётные значения работают лучше");
-                ImGui::SliderInt(u8"Порог 1", &canny_thresh_value1, 1, 500);
-                ImGui::SliderInt(u8"Порог 2", &canny_thresh_value2, 1, 500);
+                ImGui::SliderInt(u8"Порог 1", &V.Edge.CannyThresh1, 1, 500);
+                ImGui::SliderInt(u8"Порог 2", &V.Edge.CannyThresh2, 1, 500);
                 ShowHelpMarker(u8"По усолчанию порог 2 примерно в два раза больше порога 1");
             }
 
-            if (contour_current_algo==1){
+            if (V.Contours.CurrentAlgo==1){
                 ImGui::Text(u8"добавить сюда настройки Щарра!");
-                use_scharr=1;
+                V.Edge.UseScharr=1;
                 //ImGui::SliderInt(u8"Размытие", &test_int,  1, 2);
                 //ImGui::InputFloat(u8"Порог", &f, 1,2, .1f);
             }
@@ -433,62 +481,62 @@ if (SetWin[W_SET_FILE].show){
 
     if (SetWin[W_SET_MASK].show){
         ImGui::Begin(SetWin[W_SET_MASK].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::SliderFloat(u8"Минимальная площадь рамки", &min_bbox_area,  0.0f, 100.0f+wide_area_range*10000.0f, "%.0f");
-            ImGui::SliderFloat(u8"Максимальная площадь рамки", &max_bbox_area,  0.0f, 10000.0f+wide_area_range*20000.0f, "%.0f");
+            ImGui::SliderFloat(u8"Минимальная площадь рамки", &V.Contours.MinBBoxArea,  0.0f, 100.0f+V.Contours.WideAreaRange*10000.0f, "%.0f");
+            ImGui::SliderFloat(u8"Максимальная площадь рамки", &V.Contours.MaxBBoxArea,  0.0f, 10000.0f+V.Contours.WideAreaRange*20000.0f, "%.0f");
             ShowHelpMarker(u8"Размеры частиц, подлежащих обработке");
-            ImGui::Checkbox(u8"Расширенные пределы площади", &wide_area_range);
-            ImGui::Combo(u8"Тип морфо преобразования", &morpho_type, u8"RECT\0ELLIPSE\0CROSS\0\0");
+            ImGui::Checkbox(u8"Расширенные пределы площади", &V.Contours.WideAreaRange);
+            ImGui::Combo(u8"Тип морфо преобразования", &V.Morph.Type, u8"RECT\0ELLIPSE\0CROSS\0\0");
             ShowHelpMarker(u8"Вид корневого элемента морфологического преобразования\nRECT самый быстрый, ELLIPSE немного медленнее, но более реалистичный");
-            ImGui::SliderInt(u8"Размер зерна", &morph_size,  1, 10);
+            ImGui::SliderInt(u8"Размер зерна", &V.Morph.Size,  1, 10);
             ShowHelpMarker(u8"Размер корневого элемента морфологического преобразования\nМаленький работает более тонко, большой /""залепляет/"" маску грубее");
         ImGui::End();
     }
 
     if (SetWin[W_SET_COLOR].show){
         ImGui::Begin(SetWin[W_SET_COLOR].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            static float tolh = (float)color_tolerance_hsv.val[0];
-            static float tols = (float)color_tolerance_hsv.val[1];
-            static float tolv = (float)color_tolerance_hsv.val[2];
+            static float tolh = (float)V.Color.ToleranceHSV.val[0];
+            static float tols = (float)V.Color.ToleranceHSV.val[1];
+            static float tolv = (float)V.Color.ToleranceHSV.val[2];
 
-            static float tolr = (float)color_tolerance_rgb.val[2];
-            static float tolg = (float)color_tolerance_rgb.val[1];
-            static float tolb = (float)color_tolerance_rgb.val[0];
+            static float tolr = (float)V.Color.ToleranceRGB.val[2];
+            static float tolg = (float)V.Color.ToleranceRGB.val[1];
+            static float tolb = (float)V.Color.ToleranceRGB.val[0];
 
             if(ImGui::ColorPicker3(u8"Правильный цвет", (float*)&test_color)){
                 float hue, saturation, value;
                 ImGui::ColorConvertRGBtoHSV(test_color[0], test_color[1], test_color[2], hue, saturation, value);
-                good_color_hsv.val[0] = hue*180.0;
-                good_color_hsv.val[1] = saturation*255.0;
-                good_color_hsv.val[2] = value*255.0;
-                good_color_rgb.val[2] = test_color[0]*255.0;
-                good_color_rgb.val[1] = test_color[1]*255.0;
-                good_color_rgb.val[0] = test_color[2]*255.0;
+                V.Color.GoodHSV.val[0] = hue*180.0;
+                V.Color.GoodHSV.val[1] = saturation*255.0;
+                V.Color.GoodHSV.val[2] = value*255.0;
+                V.Color.GoodRGB.val[2] = test_color[0]*255.0;
+                V.Color.GoodRGB.val[1] = test_color[1]*255.0;
+                V.Color.GoodRGB.val[0] = test_color[2]*255.0;
             }
 
-            ImGui::Checkbox(u8"Цветовое пространство допуска", &good_colorspace);
+            ImGui::Checkbox(u8"Цветовое пространство допуска", &V.Color.GoodSpace);
             ShowHelpMarker(u8"Использовать HSV или RGB допуск");
-            if(good_colorspace){
-                if (ImGui::SliderFloat(u8"Допуск H", &tolh, 0.0f, 180.0f, "%3.1f"))   color_tolerance_hsv.val[0] = (double)tolh;
-                if (ImGui::SliderFloat(u8"Допуск S", &tols, 0.0f, 255.0f, "%3.1f"))   color_tolerance_hsv.val[1] = (double)tols;
-                if (ImGui::SliderFloat(u8"Допуск V", &tolv, 0.0f, 255.0f, "%3.1f"))   color_tolerance_hsv.val[2] = (double)tolv;
+            if(V.Color.GoodSpace){
+                if (ImGui::SliderFloat(u8"Допуск H", &tolh, 0.0f, 180.0f, "%3.1f"))   V.Color.ToleranceHSV.val[0] = (double)tolh;
+                if (ImGui::SliderFloat(u8"Допуск S", &tols, 0.0f, 255.0f, "%3.1f"))   V.Color.ToleranceHSV.val[1] = (double)tols;
+                if (ImGui::SliderFloat(u8"Допуск V", &tolv, 0.0f, 255.0f, "%3.1f"))   V.Color.ToleranceHSV.val[2] = (double)tolv;
             }
             else {
-                if (ImGui::SliderFloat(u8"Допуск R", &tolr, 0.0f, 180.0f, "%3.1f"))   color_tolerance_rgb.val[2] = (double)tolr;
-                if (ImGui::SliderFloat(u8"Допуск G", &tolg, 0.0f, 255.0f, "%3.1f"))   color_tolerance_rgb.val[1] = (double)tolg;
-                if (ImGui::SliderFloat(u8"Допуск B", &tolb, 0.0f, 255.0f, "%3.1f"))   color_tolerance_rgb.val[0] = (double)tolb;
+                if (ImGui::SliderFloat(u8"Допуск R", &tolr, 0.0f, 180.0f, "%3.1f"))   V.Color.ToleranceRGB.val[2] = (double)tolr;
+                if (ImGui::SliderFloat(u8"Допуск G", &tolg, 0.0f, 255.0f, "%3.1f"))   V.Color.ToleranceRGB.val[1] = (double)tolg;
+                if (ImGui::SliderFloat(u8"Допуск B", &tolb, 0.0f, 255.0f, "%3.1f"))   V.Color.ToleranceRGB.val[0] = (double)tolb;
             }
         ImGui::End();
     }
 
     if (SetWin[W_SET_OUT].show){
         ImGui::Begin(SetWin[W_SET_OUT].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::Checkbox(u8"Контуры", &show_contours);
-            ImGui::Checkbox(u8"Центры", &show_centers);
-            ImGui::Checkbox(u8"Коробки", &show_bboxes);
-            ImGui::Checkbox(u8"Площадь", &show_area);
-            ImGui::Checkbox(u8"Диаметр", &show_diameter);
-            ImGui::Checkbox(u8"Залить средним цветом", &show_fill_avgcolor);
-            ImGui::Checkbox(u8"Залить результатом", &show_fill_contcolor);
+            ImGui::Checkbox(u8"Контуры", &V.Show.Contours);
+            ImGui::Checkbox(u8"Центры", &V.Show.Centers);
+            ImGui::Checkbox(u8"Коробки", &V.Show.BBoxes);
+            ImGui::Checkbox(u8"Площадь", &V.Show.Area);
+            ImGui::Checkbox(u8"Диаметр", &V.Show.Diameter);
+            ImGui::Checkbox(u8"Залить средним цветом", &V.Show.FillAvg);
+            ImGui::Checkbox(u8"Залить результатом", &V.Show.FilContour);
         ImGui::End();
     }
 
@@ -512,8 +560,8 @@ if (SetWin[W_SET_FILE].show){
 
             static int speed_current = 0;
             ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds));
-            com_speed = com_speeds[speed_current];
-            if(!com_connected){if (ImGui::Button(u8"Подключиться")){open_COM(com_selected);}}
+            V.ComPort.Speed = com_speeds[speed_current];
+            if(!V.ComPort.Connected){if (ImGui::Button(u8"Подключиться")){open_COM(com_selected);}}
             else                {if (ImGui::Button(u8"Отключиться")){close_COM(com_selected);}}
 
         ImGui::End();
@@ -553,7 +601,7 @@ if (SetWin[W_SET_FILE].show){
                 if (refresh_time == 0.0f) refresh_time = ImGui::GetTime();
                 while (refresh_time < ImGui::GetTime()) // Create dummy data at fixed 60 hz rate for the demo
                 {
-                    fps_values[values_offset] = info_fps;
+                    fps_values[values_offset] = V.Info.FPS;
                     contours_values[values_offset] = (float)info_total_contours;
                     good_contours_values[values_offset] = (float)good_contours;
 
@@ -562,7 +610,7 @@ if (SetWin[W_SET_FILE].show){
                 }
             ImGui::Spacing();
                 char fps_buf[8];
-                sprintf(fps_buf,"%2.1f",  info_fps);
+                sprintf(fps_buf,"%2.1f",  V.Info.FPS);
                 ImGui::PlotLines("FPS", fps_values, IM_ARRAYSIZE(fps_values), values_offset, fps_buf, 0.0f, *std::max_element(std::begin(fps_values), std::end(fps_values)), ImVec2(0,80));
             ImGui::Spacing();
                 char cont_buf[8];
@@ -574,7 +622,7 @@ if (SetWin[W_SET_FILE].show){
                 ImGui::PlotLines(u8"Полезных контуров", good_contours_values, IM_ARRAYSIZE(good_contours_values), values_offset, useful_cont_buf, 0.0f, 70.0f, ImVec2(0,80));
             ImGui::Spacing();
             ImGui::SliderInt(u8"Усреднять FPS обработки", &fps_average,  1, 127);
-            //ImGui::Checkbox(u8"Стоп-кадр", &freeze_frame);
+            //ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
 
         ImGui::End();
     }

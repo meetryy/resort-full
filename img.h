@@ -22,6 +22,7 @@ void cam_update(void);
 void start_video_rec(void);
 void stop_video_rec(void);
 void video_open(void);
+void video_close(void);
 
 void ImgProcessor (void);
 void BS_Init(int bs_algo);
