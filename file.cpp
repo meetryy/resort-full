@@ -6,26 +6,13 @@
 
 #include "variables1.h"
 #include "file.h"
-#include "main.h"
-#include "UI.h"
+#include "img.h"
 #include "newGUI.h"
 
 using namespace cv;
 using namespace std;
 
-void ReadConfig(void);
-int ProcessLineLong(string str, long *parameter, string paramname);
-int ProcessLineBool(string str, bool *parameter, string paramname);
-int ProcessLineScalar(string str, Scalar *parameter, string paramname);
-int ProcessLineInt(string str, int *parameter, string paramname);
-int ProcessLineDouble(string str, double *parameter, string paramname);
-int ProcessLineFloat(string str, float *parameter, string paramname);
-void LineList(void);
-
-bool ParseSuccess = 0;
-
-enum ResultAlias {RESULT_OK, RESULT_FAIL};
-
+File_class File;
 
 int nthOccurrence(const std::string& str, const std::string& findMe, int nth)
 {
@@ -44,7 +31,7 @@ int nthOccurrence(const std::string& str, const std::string& findMe, int nth)
 }
 
 template <typename T>
-void ProcessLine(string input, T&value, string paramname){
+void ProcessLine(string input, T*value, string paramname){
     if (std::is_same<T, float>::value) {ProcessLineFloat(input, &value, paramname);}
     else if (std::is_same<T, int>::value) {ProcessLineInt(input, &value, paramname);}
     else if (std::is_same<T, bool>::value) {ProcessLineBool(input, &value, paramname);}
@@ -53,18 +40,18 @@ void ProcessLine(string input, T&value, string paramname){
     else if (std::is_same<T, cv::Scalar>::value) {ProcessLineScalar(input, &value, paramname);}
 }
 
-void ReadConfig(string filename){
+void File_class::ReadConfig(string filename){
     ifstream in;            // Create an input file stream.
     in.open(filename);
     if (!in) {
-        ConsoleOut(u8"ОШИБКА: Указанный файл конфигурации не найден!");
+        GUI.ConsoleOut(u8"ОШИБКА: Указанный файл конфигурации не найден!");
         //ShowError("settings file not found!");
         //err = 1; //openWindow(ERROR_WINDOW_NAME);
     }
     //else {closeWindow(ERROR_WINDOW_NAME);}
     else
     {
-        ConsoleOut(u8"ФАЙЛ: Файл конфигурации найден");
+        GUI.ConsoleOut(u8"ФАЙЛ: Файл конфигурации найден");
         string str;
         getline(in, str);  // Get the frist line from the file, if any.
         while (in) {  // Continue if the line was sucessfully read.
@@ -131,10 +118,10 @@ void ReadConfig(string filename){
                 ProcessLineBool(str, &V.BS.MOG2.Learning, "V.BS.MOG2.Learning");
 
                 //knn
-                //ProcessLineInt(str, &bs_knn_history, "bs_knn_history");
-                //ProcessLineFloat(str, &bs_knn_thresh, "bs_knn_thresh");
-                //ProcessLineBool(str, &bs_knn_shadows, "bs_knn_shadows");
-                //ProcessLineBool(str, &bs_knn_learning, "bs_knn_learning");
+                //ProcessLineInt(str, &Img.bs_knn_history, "Img.bs_knn_history");
+                //ProcessLineFloat(str, &Img.bs_knn_thresh, "Img.bs_knn_thresh");
+                //ProcessLineBool(str, &Img.bs_knn_shadows, "Img.bs_knn_shadows");
+                //ProcessLineBool(str, &Img.bs_knn_learning, "Img.bs_knn_learning");
 
                 //cnt
                 ProcessLineInt(str, &V.BS.CNT.MinPixStability, "V.BS.CNT.MinPixStability");
@@ -144,18 +131,18 @@ void ReadConfig(string filename){
                 ProcessLineInt(str, &V.BS.CNT.FPS, "V.BS.CNT.FPS");
 
                 //gsoc
-                //ProcessLineInt(str, &bs_gsoc_mc, "bs_gsoc_mc");
-                //ProcessLineInt(str, &bs_gsoc_samples, "bs_gsoc_samples");
-                //ProcessLineFloat(str, &bs_gsoc_reprate, "bs_gsoc_reprate");
-                //ProcessLineFloat(str, &bs_gsoc_proprate, "bs_gsoc_proprate");
-                //ProcessLineInt(str, &bs_gsoc_hits_thresh, "bs_gsoc_hits_thresh");
-                //ProcessLineFloat(str, &bs_gsoc_alpha, "bs_gsoc_alpha");
-                //ProcessLineFloat(str, &bs_gsoc_beta, "bs_gsoc_beta");
-                //ProcessLineFloat(str, &bs_gsoc_bs_decay, "bs_gsoc_bs_decay");
-                //ProcessLineFloat(str, &bs_gsoc_bs_mul, "bs_gsoc_bs_mul");
-                //ProcessLineFloat(str, &bs_gsoc_noise_bg, "bs_gsoc_noise_bg");
-                //ProcessLineFloat(str, &bs_gsoc_noise_fg, "bs_gsoc_noise_fg");
-                //ProcessLineBool(str, &bs_gsoc_learning, "bs_gsoc_learning");
+                //ProcessLineInt(str, &Img.bs_gsoc_mc, "Img.bs_gsoc_mc");
+                //ProcessLineInt(str, &Img.bs_gsoc_samples, "Img.bs_gsoc_samples");
+                //ProcessLineFloat(str, &Img.bs_gsoc_reprate, "Img.bs_gsoc_reprate");
+                //ProcessLineFloat(str, &Img.bs_gsoc_proprate, "Img.bs_gsoc_proprate");
+                //ProcessLineInt(str, &Img.bs_gsoc_hits_thresh, "Img.bs_gsoc_hits_thresh");
+                //ProcessLineFloat(str, &Img.bs_gsoc_alpha, "Img.bs_gsoc_alpha");
+                //ProcessLineFloat(str, &Img.bs_gsoc_beta, "Img.bs_gsoc_beta");
+                //ProcessLineFloat(str, &Img.bs_gsoc_Img.bs_decay, "Img.bs_gsoc_Img.bs_decay");
+                //ProcessLineFloat(str, &Img.bs_gsoc_Img.bs_mul, "Img.bs_gsoc_Img.bs_mul");
+                //ProcessLineFloat(str, &Img.bs_gsoc_noise_bg, "Img.bs_gsoc_noise_bg");
+                //ProcessLineFloat(str, &Img.bs_gsoc_noise_fg, "Img.bs_gsoc_noise_fg");
+                //ProcessLineBool(str, &Img.bs_gsoc_learning, "Img.bs_gsoc_learning");
 
                 //com camera
                 ProcessLineInt(str, &V.Cam.Number, "V.Cam.Number");
@@ -179,11 +166,11 @@ void ReadConfig(string filename){
             }
             getline(in, str);   // Try to get another line.
         }
-        ConsoleOut(u8"ФАЙЛ: Загрузка конфигурации завершена");
+        GUI.ConsoleOut(u8"ФАЙЛ: Загрузка конфигурации завершена");
     }
 }
 
-int ProcessLineLong(string str, long *parameter, string paramname){
+int File_class::ProcessLineLong(string str, long *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
@@ -193,12 +180,12 @@ int ProcessLineLong(string str, long *parameter, string paramname){
         //cout << paramname << " = " << *parameter << endl;
         to_return = RESULT_OK;
         //cout << paramname << " found in line" << endl;
-        //ConsoleOut("%s = %lu", paramname, parameter);
+        //GUI.ConsoleOut("%s = %lu", paramname, parameter);
     }
     return to_return;
 }
 
-int ProcessLineFloat(string str, float *parameter, string paramname){
+int File_class::ProcessLineFloat(string str, float *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
@@ -213,7 +200,7 @@ int ProcessLineFloat(string str, float *parameter, string paramname){
     return to_return;
 }
 
-int ProcessLineDouble(string str, double *parameter, string paramname){
+int File_class::ProcessLineDouble(string str, double *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
@@ -228,7 +215,7 @@ int ProcessLineDouble(string str, double *parameter, string paramname){
     return to_return;
 }
 
-int ProcessLineInt(string str, int *parameter, string paramname){
+int File_class::ProcessLineInt(string str, int *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
@@ -241,7 +228,7 @@ int ProcessLineInt(string str, int *parameter, string paramname){
     return to_return;
 }
 
-int ProcessLineBool(string str, bool *parameter, string paramname){
+int File_class::ProcessLineBool(string str, bool *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
@@ -257,7 +244,7 @@ int ProcessLineBool(string str, bool *parameter, string paramname){
     return to_return;
 }
 
-int ProcessLineScalar(string str, Scalar *parameter, string paramname){
+int File_class::ProcessLineScalar(string str, Scalar *parameter, string paramname){
     int to_return = RESULT_FAIL;
     //hsv_input_correction=(50.0,100.0,150.0);
     int position = str.find(paramname);         //find a variable name
@@ -299,16 +286,16 @@ int ProcessLineScalar(string str, Scalar *parameter, string paramname){
 }
 
 
-void SaveConfig(string filename){
+void File_class::SaveConfig(string filename){
     ofstream file;
     file.open(filename,  fstream::out);
-    ConsoleOut(u8"ФАЙЛ: Начинаем запись конфигурации");
+    GUI.ConsoleOut(u8"ФАЙЛ: Начинаем запись конфигурации");
 
     file << "# input\n";
     file << "V.Input.CaptureRun=" << V.Input.CaptureRun <<";\n";
 
-    file << "input_correction_on=" << input_correction_on <<";\n";
-    file << "hsv_input_correction=" << hsv_input_correction <<";\n";
+    file << "Img.input_correction_on=" << Img.input_correction_on <<";\n";
+    file << "Img.hsv_input_correction=" << Img.hsv_input_correction <<";\n";
     //file << "cut_up=" << cut_up <<";\n";
     //file << "cut_down=" << cut_down <<";\n";
     //file << "cut_left=" << cut_left <<";\n";
@@ -328,7 +315,7 @@ void SaveConfig(string filename){
     file << "V.Contours.MinBBoxArea=" << V.Contours.MinBBoxArea <<";\n";
     file << "V.Contours.MaxBBoxArea=" << V.Contours.MaxBBoxArea <<";\n";
     file << "V.Contours.morph_mask=" << V.Contours.morph_mask <<";\n";
-    file << "input_correction_on=" << input_correction_on <<";\n";
+    file << "Img.input_correction_on=" << Img.input_correction_on <<";\n";
     file << "V.Morph.Size=" << V.Morph.Size <<";\n";
 
     file << "\n";
@@ -379,11 +366,11 @@ void SaveConfig(string filename){
 
     file << "\n";
     file << "# knn\n";
-    file << "bs_knn_history=" << bs_knn_history <<";\n";
-    file << "bs_knn_thresh=" << bs_knn_thresh <<";\n";
-    file << "bs_knn_shadows=" << bs_knn_shadows <<";\n";
-    file << "bs_knn_learning=" << bs_knn_learning <<";\n";
-    file << "bs_knn_lrate=" << bs_knn_lrate <<";\n";
+    file << "Img.bs_knn_history=" << Img.bs_knn_history <<";\n";
+    file << "Img.bs_knn_thresh=" << Img.bs_knn_thresh <<";\n";
+    file << "Img.bs_knn_shadows=" << Img.bs_knn_shadows <<";\n";
+    file << "Img.bs_knn_learning=" << Img.bs_knn_learning <<";\n";
+    file << "Img.bs_knn_lrate=" << Img.bs_knn_lrate <<";\n";
 
     file << "\n";
     file << "# cnt\n";
@@ -398,18 +385,18 @@ void SaveConfig(string filename){
 
     file << "\n";
     file << "# gsoc\n";
-    file << "bs_gsoc_mc=" << bs_gsoc_mc <<";\n";
-    file << "bs_gsoc_samples=" << bs_gsoc_samples <<";\n";
-    file << "bs_gsoc_reprate=" << bs_gsoc_reprate <<";\n";
-    file << "bs_gsoc_proprate=" << bs_gsoc_proprate <<";\n";
-    file << "bs_gsoc_hits_thresh=" << bs_gsoc_hits_thresh <<";\n";
-    file << "bs_gsoc_alpha=" << bs_gsoc_alpha <<";\n";
-    file << "bs_gsoc_beta=" << bs_gsoc_beta <<";\n";
-    file << "bs_gsoc_bs_decay=" << bs_gsoc_bs_decay <<";\n";
-    file << "bs_gsoc_bs_mul=" << bs_gsoc_bs_mul <<";\n";
-    file << "bs_gsoc_noise_bg=" << bs_gsoc_noise_bg <<";\n";
-    file << "bs_gsoc_noise_fg=" << bs_gsoc_noise_fg <<";\n";
-    file << "bs_gsoc_learning=" << bs_gsoc_learning <<";\n";
+    file << "Img.bs_gsoc_mc=" << Img.bs_gsoc_mc <<";\n";
+    file << "Img.bs_gsoc_samples=" << Img.bs_gsoc_samples <<";\n";
+    file << "Img.bs_gsoc_reprate=" << Img.bs_gsoc_reprate <<";\n";
+    file << "Img.bs_gsoc_proprate=" << Img.bs_gsoc_proprate <<";\n";
+    file << "Img.bs_gsoc_hits_thresh=" << Img.bs_gsoc_hits_thresh <<";\n";
+    file << "Img.bs_gsoc_alpha=" << Img.bs_gsoc_alpha <<";\n";
+    file << "Img.bs_gsoc_beta=" << Img.bs_gsoc_beta <<";\n";
+    file << "Img.bs_gsoc_bs_decay=" << Img.bs_gsoc_bs_decay <<";\n";
+    file << "Img.bs_gsoc_bs_mul=" << Img.bs_gsoc_bs_mul <<";\n";
+    file << "Img.bs_gsoc_noise_bg=" << Img.bs_gsoc_noise_bg <<";\n";
+    file << "Img.bs_gsoc_noise_fg=" << Img.bs_gsoc_noise_fg <<";\n";
+    file << "Img.bs_gsoc_learning=" << Img.bs_gsoc_learning <<";\n";
 
     file << "\n";
     file << "# camera\n";
@@ -433,5 +420,5 @@ void SaveConfig(string filename){
 
     file << "V.UI.Fullscreen=" << V.UI.Fullscreen <<";\n";
     file.close();
-    ConsoleOut(u8"ФАЙЛ: Сохранение конфигурации завершено");
+    GUI.ConsoleOut(u8"ФАЙЛ: Сохранение конфигурации завершено");
 }

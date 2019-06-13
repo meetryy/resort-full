@@ -150,8 +150,8 @@ struct V_t{
 extern struct V_t V;
 
 //input
-extern bool input_correction_on;
-extern  cv::Scalar hsv_input_correction;
+//extern bool input_correction_on;
+//extern  cv::Scalar hsv_input_correction;
 
 //edge detection
 //contours
@@ -161,14 +161,15 @@ extern  cv::Scalar hsv_input_correction;
 
 
 //info
-extern float   time1;
-extern float   time2;
+//extern float   time1;
+//extern float   time2;
 
-extern long info_total_contours;
-extern long useful_contours;
+//extern long info_total_contours;
+//extern long useful_contours;
 
 
 ///////////////////////
+/*
 
 extern  int     bs_knn_history;
 extern  float   bs_knn_thresh;
@@ -189,6 +190,7 @@ extern  float   bs_gsoc_noise_bg;
 extern  float   bs_gsoc_noise_fg;
 extern  bool    bs_gsoc_learning;
 extern  float   bs_gsoc_lrate;
+*/
 
 extern  long    pix_per_100mm;
 
@@ -202,10 +204,10 @@ extern  double    cut_left;
 extern  double    cut_right;
 
 extern bool     draw_ruler;
-extern bool     capture_file;
+//extern bool     capture_file;
 extern bool     show_quad;
 extern bool     show_particle_number;
 
-extern int show_mat_upd_counter;
-extern int show_mat_upd_target;
-extern int fps_average;
+//extern int show_mat_upd_counter;
+//extern int show_mat_upd_target;
+//extern int fps_average;

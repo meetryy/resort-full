@@ -4,7 +4,6 @@
 #include "opencv2/imgcodecs.hpp"
 #include <opencv2/core/utility.hpp>
 #include <opencv2/bgsegm.hpp>
-#include "bgsegm.hpp"
 #include <opencv2/videoio.hpp>
 
 #include <iostream>
@@ -17,86 +16,20 @@
 #include "variables1.h"
 #include "mog.h"
 #include "real_dimensions.h"
-#include "KalmanFilterTracker.h"
 #include "bgsubcnt.h"
 #include "omp.h"
 #include "newGUI.h"
 
-#include "imgui.h"
-#include "imgui-SFML.h"
-
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-
 using namespace cv;
 using namespace std;
 
-Scalar avg_color_hsv;
-
-char str[200];
-float avg_time = 0;
-int ScalarInRange (Scalar input, Scalar compare_to, Scalar delta, bool useHSV);
-cv::Scalar BGR2HSV(cv::Scalar inBGR);
-
-
-bool input_correction_on;
-cv::Scalar hsv_input_correction;
-int show_frame;
-
-
-long    info_total_contours;
-long    useful_contours;
-long    good_contours;
-
-int     bs_knn_history;
-float   bs_knn_thresh;
-bool    bs_knn_shadows;
-bool    bs_knn_learning;
-int     bs_gsoc_mc;
-int     bs_gsoc_samples;
-float   bs_gsoc_reprate;
-float   bs_gsoc_proprate;
-int     bs_gsoc_hits_thresh;
-float   bs_gsoc_alpha;
-float   bs_gsoc_beta;
-float   bs_gsoc_bs_decay;
-float   bs_gsoc_bs_mul;
-float   bs_gsoc_noise_bg;
-float   bs_gsoc_noise_fg;
-bool    bs_gsoc_learning;
-float   bs_knn_lrate;
-float   bs_gsoc_lrate;
-
-bool    ColorOK =0;
-bool    video_recording = 0;
-
-bool    capture_file = 0;
-bool    show_particle_number = 0;
-
-int     show_mat_upd_counter = 0;
-int     show_mat_upd_target = 2;
-
+Image_class Img;
 cv::Ptr<cv::BackgroundSubtractor> BackSubtractor;
 cv::VideoCapture camera(cv::CAP_DSHOW);
 cv::VideoCapture videocapture("test_video.avi");
-VideoWriter oVideoWriter;
+cv::VideoWriter oVideoWriter;
 
-int fps_average = 20;
-
-float   time1;
-float   time2;
-//V.Info.fps_avg_counter;
-
-
-sf::Clock FPS_Clock;
-float fps_accumulated = 0;
-
-void FPS_Routine(void){
+void Image_class::FPS_Routine(void){
     sf::Time elapsed1 = FPS_Clock.getElapsedTime();
     FPS_Clock.restart();
 
@@ -107,10 +40,9 @@ void FPS_Routine(void){
         fps_accumulated = 0;
         V.Info.fps_avg_counter = 0;
     }
-
 }
 
-void BS_Init(int bs_algo){
+void Image_class::BS_Init(int bs_algo){
     if (bs_algo==BS_MOG){BackSubtractor = cv::bgsegm::createBackgroundSubtractorMOG(V.BS.MOG.History,V.BS.MOG.Mixtures,V.BS.MOG.BackRatio,V.BS.MOG.NoiseSigma);}
     if (bs_algo==BS_MOG2){BackSubtractor = cv::createBackgroundSubtractorMOG2(V.BS.MOG2.History,V.BS.MOG2.Thresh,V.BS.MOG2.DetectShadows);}
     if (bs_algo==BS_CNT){
@@ -129,38 +61,19 @@ void BS_Init(int bs_algo){
                                                                                       bs_gsoc_noise_fg);}
 
     V.BS.CurrentAlgo = bs_algo;
-    ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Алгоритм вычитания фона инициализирован");
+    GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Алгоритм вычитания фона инициализирован");
 }
 
-Mat img_in;
-Mat img_mog_output;
-Mat img_canny;
-Mat img_roi;
-Mat img_roi_hsv;
-Mat img_wholemask;
-Mat img_output;
-Mat img_bs_back;
-Mat img_morph_out;
-Mat img_canny_output;
-Mat img_contours;
-
-omp_lock_t img_roi_lock;
-omp_lock_t img_output_lock;
-omp_lock_t max_cont_lock;
-omp_lock_t img_wholemask_lock;
-
-
-void ImgProcessor (void){
+void Image_class::ImgProcessor (void){
 
 omp_init_lock(&img_roi_lock);
 omp_init_lock(&img_output_lock);
 omp_init_lock(&max_cont_lock);
 omp_init_lock(&img_wholemask_lock);
 
-ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
+GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
 
-while (1)
-{
+while (1){
     if (V.Input.CaptureRun)
     {
         FPS_Routine();
@@ -278,24 +191,26 @@ while (1)
 
         show_mat_upd_counter++;
         if (show_mat_upd_counter >= show_mat_upd_target){
-            for (int i=0; i<W_MAT_NR; i++){
-                if (MatWin[i].show){
-                    MatWin[i].write.lock();
-                        MatWin[i].mat->copyTo(MatWin[i].mat_show);
-                    MatWin[i].write.unlock();
+            for (int i=0; i<GUI.W_MAT_NR; i++){
+                if (GUI.MatWin[i].show){
+                    GUI.MatWin[i].write.lock();
+                        GUI.MatWin[i].mat->copyTo(GUI.MatWin[i].mat_show);
+                    GUI.MatWin[i].write.unlock();
                 }
             }
         show_mat_upd_counter = 0;
         }
     }
 
-    else
-    {
-        Sleep(100);
-    }
+    else {Sleep(100);}
     }
 
 }
+}
+
+void Image_class::RunProcessor(void){
+    std::thread img_t(&Image_class::ImgProcessor, this);
+    img_t.detach();
 }
 
 int ScalarInRange_old (Scalar input, Scalar compare_to, Scalar delta, bool useHSV){
@@ -344,7 +259,7 @@ int ScalarInRange_old (Scalar input, Scalar compare_to, Scalar delta, bool useHS
 
 inline bool ValueInRange(double value, double lower, double upper) {return((lower < value) && (value < upper));}
 
-int ScalarInRange (Scalar input, Scalar compare_to, Scalar delta, bool useHSV){
+int Image_class::ScalarInRange (Scalar input, Scalar compare_to, Scalar delta, bool useHSV){
     int to_return = 0;
     // HSV compare
     if (useHSV) {
@@ -383,7 +298,7 @@ int ScalarInRange (Scalar input, Scalar compare_to, Scalar delta, bool useHSV){
 return to_return;
 }
 
-cv::Scalar BGR2HSV(cv::Scalar inBGR){
+cv::Scalar Image_class::BGR2HSV(cv::Scalar inBGR){
     cv::Mat tempBGR(1, 1, CV_8UC3, inBGR);
     cv::Mat tempHSV; //(1, 1, CV_8UC3, avg_color);
     cvtColor(tempBGR, tempHSV,COLOR_BGR2HSV);
@@ -391,7 +306,7 @@ cv::Scalar BGR2HSV(cv::Scalar inBGR){
     return hsvout;
 }
 
-void cam_open(void){
+void Image_class::cam_open(void){
     camera.open(V.Cam.Number);
     camera.set(cv::CAP_PROP_FOURCC ,cv::VideoWriter::fourcc('M', 'J', 'P', 'G') );
     camera.set(cv::CAP_PROP_FPS, V.Cam.FPS);
@@ -408,31 +323,31 @@ void cam_open(void){
 
     if (camera.isOpened())
     {
-        ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Камера открыта");
+        GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Камера открыта");
         V.Input.CaptureRun = 1;
         camera >> img_in;
     }
 }
 
-void cam_close(void){
+void Image_class::cam_close(void){
     V.Input.CaptureRun = 0;
     camera.release();
     //if (!camera.isOpened()) {  }
 }
 
-void video_close(void){
+void Image_class::video_close(void){
     V.Input.CaptureRun = 0;
     videocapture.release();
     //if (!videocapture.isOpened()) {}
 }
 
-void video_open(void){
+void Image_class::video_open(void){
     videocapture.open("test_video.avi");
     if (videocapture.isOpened()) {V.Input.CaptureRun = 1;}
 }
 
 
-void cam_update(void){
+void Image_class::cam_update(void){
     if (camera.isOpened()){
         camera.set(cv::CAP_PROP_CONTRAST , V.Cam.Contrast);
         camera.set(cv::CAP_PROP_GAIN, V.Cam.Gain);
@@ -440,15 +355,15 @@ void cam_update(void){
         camera.set(cv::CAP_PROP_SATURATION ,V.Cam.Saturation);
         camera.set(cv::CAP_PROP_EXPOSURE ,V.Cam.Exposure);
         //camera.set(cv::CAP_PROP_GAMMA   ,V.Cam.Hue);
-        ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Параметры камеры обновлены");
+        GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Параметры камеры обновлены");
     }
     else{
-        ConsoleOut(u8"ОШИБКА: Камера закрыта!");
+        GUI.ConsoleOut(u8"ОШИБКА: Камера закрыта!");
     }
 
 }
 
-void start_video_rec(void){
+void Image_class::start_video_rec(void){
     time_t now;
     char the_date[32];
     the_date[0] = '\0';
@@ -463,16 +378,16 @@ void start_video_rec(void){
     oVideoWriter.open(buf, cv::VideoWriter::fourcc('M','J','P','G'), 50, frameSize, true); //initialize the VideoWriter object
 
     if ( !oVideoWriter.isOpened() ) {
-        ConsoleOut(u8"ОШИБКА: Невозможно открыть поток для записи");
+        GUI.ConsoleOut(u8"ОШИБКА: Невозможно открыть поток для записи");
    }
-   else{ConsoleOut(u8"ЗАПИСЬ: Запись видео начата");
+   else{GUI.ConsoleOut(u8"ЗАПИСЬ: Запись видео начата");
         video_recording = 1;}
 }
 
-void stop_video_rec(void){
+void Image_class::stop_video_rec(void){
     if (oVideoWriter.isOpened() ){
     oVideoWriter.release();
-    ConsoleOut(u8"ЗАПИСЬ: Запись видео остановлена");
+    GUI.ConsoleOut(u8"ЗАПИСЬ: Запись видео остановлена");
     video_recording = 0;
    }
 }

@@ -4,10 +4,16 @@
 
 #define RS232_BUFFERSIZE 64
 
-extern bool COM_present[16];
-extern char TxBuffer[RS232_BUFFERSIZE];
+class COM_class{
+public:
+    enum com_status {COM_ERROR, COM_OK};
+    bool IsPresent[16];
+    char TxBuffer[RS232_BUFFERSIZE];
 
-int open_COM(int port_number);
-int close_COM(int port_number);
-int list_COM(void);
-int handshake_COM(void);
+    int Open(int port_number);
+    int Close(int port_number);
+    int List(void);
+    int Shake(void);
+};
+
+extern COM_class COM;

@@ -26,38 +26,15 @@
 #include "mog.h"
 #include "real_dimensions.h"
 #include "newGUI.h"
-//#include "ImGuiFileDialog.h"
-#include "imguifilesystem.h"
+#include "gui/imguifilesystem.h"
 
 using namespace std;
+using namespace ImGui;
 
-void GUI_FileDialogue(void);
 std::string FilePath(void);
 
-static int test_int = 0;
-
-//V.Contours.WideAreaRange = 1;
-
-float col[3]={0.0};
 bool* p_open;
-using namespace ImGui;
-float test_color[4]={0.0};
-
-cv::Mat frameRGB[W_MAT_NR], frameRGBA[W_MAT_NR];
-sf::Image image[W_MAT_NR];
-sf::Sprite sprite[W_MAT_NR];
-sf::Texture texture[W_MAT_NR];
-
-void GUI_FileDialogue(void);
-
-enum BrowseAlias {BROWSE_SAVE, BROWSE_LOAD};
-bool BrowseMode = 0;
-
-struct mat_window_t MatWin[W_MAT_NR];
-struct set_window_t SetWin[W_SET_NR];
-
-static void ShowHelpMarker(const char* desc)
-{
+void GUI_class::ShowHelpMarker(const char* desc){
     ImGui::SameLine();
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())
@@ -70,7 +47,83 @@ static void ShowHelpMarker(const char* desc)
     }
 }
 
+void GUI_class::Init(void){
+    ScreenW = sf::VideoMode::getDesktopMode().width;
+    ScreenH = sf::VideoMode::getDesktopMode().height;
 
+    window.create(sf::VideoMode(GUI.ScreenW, GUI.ScreenH), GUI.WindowName);//,sf::Style::Fullscreen);
+
+    window.setFramerateLimit(50);
+    V.Info.ConsoleDestination = 1;
+    V.UI.Fullscreen = 0;
+    SetWin[W_SELF_LOG].show = 1;
+
+    ImGui::SFML::Init(window, false);
+    LoadFont();
+}
+
+
+void GUI_class::Worker(void){
+    sf::Clock deltaClock;
+    sf::Event event;
+
+    while (window.isOpen()) {
+        while (window.pollEvent(event)) {
+            ImGui::SFML::ProcessEvent(event);
+            if (event.type == sf::Event::Closed) {window.close();}
+            if (event.type == sf::Event::KeyPressed){
+                if (event.key.code == sf::Keyboard::F12) {V.UI.Fullscreen = !V.UI.Fullscreen; FullscreenChanged = 1;}
+            }
+         }
+
+        if(FullscreenChanged){
+                window.close();
+                if (V.UI.Fullscreen) window.create(sf::VideoMode(ScreenW, ScreenH), WindowName,sf::Style::Fullscreen);
+                        else    window.create(sf::VideoMode(ScreenW, ScreenH), WindowName);
+                window.setFramerateLimit(60);
+                FullscreenChanged=0;
+                GUI.ConsoleOut(u8"ИНТЕРФЕЙС: Полноэкранный режим переключен");
+            }
+
+        ImGui::SFML::Update(window, deltaClock.restart());
+        GUI.Draw();
+
+        window.clear();
+        sf::RectangleShape rect_back(sf::Vector2f(ScreenW, ScreenH));
+        rect_back.setFillColor(sf::Color(50, 50, 50));
+        window.draw(rect_back);
+        ImGui::SFML::Render(window);
+        window.display();
+    }
+    ImGui::SFML::Shutdown();
+}
+
+
+void GUI_class::LoadFont(void){
+    ImFontConfig font_config;
+    font_config.OversampleH = 1; //or 2 is the same
+    font_config.OversampleV = 1;
+    font_config.PixelSnapH = 1;
+
+    static const ImWchar ranges[] =
+    {
+        0x0020, 0x00FF, // Basic Latin + Latin Supplement
+        0x0400, 0x044F, // Cyrillic
+        0,
+    };
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->Clear(); // clear fonts if you loaded some before (even if only default one was loaded)
+    //io.Fonts->AddFontDefault(); // this will load default font as well
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 16.0f, &font_config, ranges);
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Verdana.ttf", 16.0f, &font_config, ranges);
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\lucon.ttf", 14.0f, &font_config, ranges);
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\comic.ttf", 18.0f, &font_config, ranges);
+
+    ImGui::SFML::UpdateFontTexture(); // important call: updates font texture
+    ImGui::GetIO().Fonts->Fonts[0]->AddRemapChar(0xCF, 0x043F);
+    ConsoleOut(u8"ИНТЕРФЕЙС: Закгрузка шрифтов завершена");
+}
 
 struct ExampleAppLog
 {
@@ -139,7 +192,7 @@ struct ExampleAppLog
 
 static ExampleAppLog GUI_Log;
 
-void ConsoleOut (string InString){
+void GUI_class::ConsoleOut (string InString){
     time_t now;
     char the_date[32];
     the_date[0] = '\0';
@@ -154,11 +207,10 @@ void ConsoleOut (string InString){
 }
 
 static bool browseButtonPressed;
-
 ImVec4 ColorOn = ImColor(0.0f,1.0f,0.0f,1.0f);
 ImVec4 ColorOff = ImColor(1.0f,0.0f,0.0f,1.0f);
 
-void StatedText(string Input, bool state){
+void GUI_class::StatedText(string Input, bool state){
     if (state) {
         ImGui::PushStyleColor(ImGuiCol_Text, ColorOn);
     }
@@ -169,7 +221,7 @@ void StatedText(string Input, bool state){
     ImGui::PopStyleColor();
 }
 
-void MenuBarStateList(void){
+void GUI_class::MenuBarStateList(void){
         StatedText(u8"Камера", V.Input.CaptureRun);
         ImGui::Separator();
         StatedText(u8"Комуникация", V.Input.CaptureRun);
@@ -179,7 +231,7 @@ void MenuBarStateList(void){
 
 }
 
-void Draw_ImGui(void){
+void GUI_class::Draw(void){
     //ImGui::StyleColorsLight();
 // =============================== MENUBAR =============================
     if (ImGui::BeginMainMenuBar()){
@@ -251,7 +303,7 @@ void Draw_ImGui(void){
         MenuBarStateList();
 
         SameLine(GetWindowWidth()-140);
-        ImGui::Text("ReSort v0.1 12.2018");
+        ImGui::Text(WindowName.c_str());
 
     ImGui::EndMainMenuBar();
     }
@@ -311,7 +363,7 @@ if (SetWin[W_SET_FILE].show){
             if (strlen(chosenPath)>0) {
                 std::cout<<chosenPath<<std::endl;
                 SetWin[W_SET_FILE].show = 0;
-                SaveConfig(chosenPath);
+                File.SaveConfig(chosenPath);
             }
     }
 
@@ -320,18 +372,13 @@ if (SetWin[W_SET_FILE].show){
             if (strlen(chosenPath)>0) {
                 std::cout<<chosenPath<<std::endl;
                 SetWin[W_SET_FILE].show = 0;
-                ReadConfig(chosenPath);
+                File.ReadConfig(chosenPath);
             }
     }
 
     browseButtonPressed = 0;
     ImGui::End();
  }
-
-
-
-
-
 
 
 //==================== SETTINGS WINDOWS ==========================================
@@ -342,9 +389,9 @@ if (SetWin[W_SET_FILE].show){
     if (SetWin[W_SET_IN].show){
         ImGui::Begin(SetWin[W_SET_IN].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
             ImGui::Combo(u8"Источник", &V.Input.Source, u8"Камера\0Видео\0\0");
-            ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
-            ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &show_mat_upd_target,  0, 127);
-            ShowHelpMarker(u8"Может ускорить быстродействие");
+            GUI.ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
+            ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &Img.show_mat_upd_target,  0, 127);
+            GUI.ShowHelpMarker(u8"Может ускорить быстродействие");
 
             if (V.Input.Source == 0){
                 ImGui::InputInt(u8"Номер камеры", &V.Cam.Number);
@@ -355,20 +402,20 @@ if (SetWin[W_SET_FILE].show){
                 if(ImGui::Combo(u8"Разрешение", &reso_curr, reso, IM_ARRAYSIZE(reso))){
                     V.Cam.Width  = resol[reso_curr*2];
                     V.Cam.Height = resol[reso_curr*2+1];
-                    cam_open();
+                    Img.cam_open();
                 }
-                ShowHelpMarker(u8"Чем меньше, тем быстрее");
+                GUI.ShowHelpMarker(u8"Чем меньше, тем быстрее");
 
-                if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток")) {cam_open();}}
+                if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток")) {Img.cam_open();}}
                 else                {if (ImGui::Button(u8"Закрыть поток")) {V.Input.CaptureRun = 0;}}
-                if (ImGui::SliderFloat(u8"Скорость", &V.Cam.FPS,  5.0, 400.0,"%1.2f")) cam_update();
-                ShowHelpMarker(u8"Поддерживаются не все скорости\nВозможная скорость зависит от экспозиции");
-                if (ImGui::SliderInt(u8"Усиление", &V.Cam.Gain,  0, 127)) cam_update();
-                ShowHelpMarker(u8"Устанавливать наименьшее значение во избежание шума");
-                if (ImGui::SliderInt(u8"Контраст", &V.Cam.Contrast,  0, 127)) cam_update();
-                if (ImGui::SliderInt(u8"Экспозиция", &V.Cam.Exposure,  -5, 0)) cam_update();
-                ShowHelpMarker(u8"Обратно пропорциональна к скорости");
-                if (ImGui::SliderInt(u8"Насыщенность", &V.Cam.Saturation,  0, 127)) cam_update();
+                if (ImGui::SliderFloat(u8"Скорость", &V.Cam.FPS,  5.0, 400.0,"%1.2f")) Img.cam_update();
+                GUI.ShowHelpMarker(u8"Поддерживаются не все скорости\nВозможная скорость зависит от экспозиции");
+                if (ImGui::SliderInt(u8"Усиление", &V.Cam.Gain,  0, 127)) Img.cam_update();
+                GUI.ShowHelpMarker(u8"Устанавливать наименьшее значение во избежание шума");
+                if (ImGui::SliderInt(u8"Контраст", &V.Cam.Contrast,  0, 127)) Img.cam_update();
+                if (ImGui::SliderInt(u8"Экспозиция", &V.Cam.Exposure,  -5, 0)) Img.cam_update();
+                GUI.ShowHelpMarker(u8"Обратно пропорциональна к скорости");
+                if (ImGui::SliderInt(u8"Насыщенность", &V.Cam.Saturation,  0, 127)) Img.cam_update();
                 ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
             }
             if (V.Input.Source == 1){
@@ -377,9 +424,9 @@ if (SetWin[W_SET_FILE].show){
                 //if (ImGui::Button(u8"Пауза")){}
                 //ImGui::SameLine();
                 //if (ImGui::Button(u8"Сначала")){}
-                capture_file = V.Input.Source;
-                if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток")) {video_open();}}
-                else                {if (ImGui::Button(u8"Закрыть поток")) {video_close();}}
+                Img.capture_file = V.Input.Source;
+                if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток")) {Img.video_open();}}
+                else                {if (ImGui::Button(u8"Закрыть поток")) {Img.video_close();}}
 
             }
         ImGui::End();
@@ -387,10 +434,10 @@ if (SetWin[W_SET_FILE].show){
 
     if (SetWin[W_SET_BG].show){
         ImGui::Begin(SetWin[W_SET_BG].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            if(ImGui::Combo(u8"Алгоритм", &V.BS.CurrentAlgo, u8"MOG\0MOG2\0CNT\0KNN\0GSOC\0\0")){BS_Init(V.BS.CurrentAlgo);}
-            ShowHelpMarker(u8"MOG и MOG2 не нагружают просеоор, но не очень точы\nCNT наиболее быстрый, но снижает быстродействие");
+            if(ImGui::Combo(u8"Алгоритм", &V.BS.CurrentAlgo, u8"MOG\0MOG2\0CNT\0KNN\0GSOC\0\0")){Img.BS_Init(V.BS.CurrentAlgo);}
+            GUI.ShowHelpMarker(u8"MOG и MOG2 не нагружают просеоор, но не очень точы\nCNT наиболее быстрый, но снижает быстродействие");
             ImGui::SliderInt(u8"Предварительное размытие", &V.BS.BlurBeforeMog,  1, 10);
-            ShowHelpMarker(u8"Помогает избавиться от шелухи в маске вычитания фона");
+            GUI.ShowHelpMarker(u8"Помогает избавиться от шелухи в маске вычитания фона");
             if (V.BS.CurrentAlgo==BS_MOG){
                 ImGui::Checkbox(u8"Обучение", &V.BS.MOG.Learning);
                 ImGui::SliderInt(u8"История", &V.BS.MOG.History,  1, 300);
@@ -410,50 +457,50 @@ if (SetWin[W_SET_FILE].show){
             }
             if (V.BS.CurrentAlgo==BS_CNT){
                 ImGui::Checkbox(u8"Обучение", &V.BS.CNT.Learning);
-                ShowHelpMarker(u8"Должно всегда быть включено");
+                GUI.ShowHelpMarker(u8"Должно всегда быть включено");
                 ImGui::SliderInt(u8"Мин. стабильных кадров", &V.BS.CNT.MinPixStability,  1, 200);
-                ShowHelpMarker(u8"Через сколько кадров пиксель считается фоновым");
+                GUI.ShowHelpMarker(u8"Через сколько кадров пиксель считается фоновым");
                 ImGui::SliderInt(u8"Макс. стабильных кадров", &V.BS.CNT.MaxPixStability,  1, 200);
-                ShowHelpMarker(u8"Максимальный рейтинг пикселя в истории");
+                GUI.ShowHelpMarker(u8"Максимальный рейтинг пикселя в истории");
                 ImGui::SliderInt(u8"Кадров/сек", &V.BS.CNT.FPS,  1, 100);
-                ShowHelpMarker(u8"Целевая скорость камеры");
+                GUI.ShowHelpMarker(u8"Целевая скорость камеры");
                 ImGui::Checkbox(u8"Использовать историю", &V.BS.CNT.UseHistory);
                 ImGui::Checkbox(u8"Работать параллельно", &V.BS.CNT.IsParallel);
-                ShowHelpMarker(u8"Иногда ускоряет, иногда бесполезно");
+                GUI.ShowHelpMarker(u8"Иногда ускоряет, иногда бесполезно");
                 ImGui::SliderFloat(u8"Скорость обучения", &V.BS.CNT.LRate, 0.01f, 0.99f, "%1.2f");
-                ShowHelpMarker(u8"Скорость работы алгоритма");
+                GUI.ShowHelpMarker(u8"Скорость работы алгоритма");
 
             }
             if (V.BS.CurrentAlgo==BS_KNN){
-                ImGui::Checkbox(u8"Обучение", &bs_knn_learning);
-                ImGui::SliderInt(u8"История", &bs_knn_history,  1, 300);
-                ImGui::SliderFloat(u8"Порог", &bs_knn_thresh, 0.0f, 1.0f, "%1.2f");
-                ImGui::SliderFloat(u8"Скорость обучения", &bs_knn_lrate, 0.01f, 0.99f, "%1.2f");
-                ImGui::Checkbox(u8"Искать тени", &bs_knn_shadows);
+                ImGui::Checkbox(u8"Обучение", &Img.bs_knn_learning);
+                ImGui::SliderInt(u8"История", &Img.bs_knn_history,  1, 300);
+                ImGui::SliderFloat(u8"Порог", &Img.bs_knn_thresh, 0.0f, 1.0f, "%1.2f");
+                ImGui::SliderFloat(u8"Скорость обучения", &Img.bs_knn_lrate, 0.01f, 0.99f, "%1.2f");
+                ImGui::Checkbox(u8"Искать тени", &Img.bs_knn_shadows);
 
             }
 
             if (V.BS.CurrentAlgo==BS_GSOC){
-                ImGui::Checkbox(u8"Обучение", &bs_gsoc_learning);
-                ImGui::SliderFloat(u8"Скорость обучения", &bs_gsoc_lrate, 0.01f, 0.99f, "%1.2f");
-                ImGui::SliderInt(u8"Компенсация движения камеры", &bs_gsoc_mc,  0, 1);
-                ImGui::SliderInt(u8"Образцов", &bs_gsoc_samples,  1, 200);
-                ImGui::SliderFloat(u8"Propagation rate", &bs_gsoc_proprate, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderFloat(u8"Replace rate", &bs_gsoc_reprate, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderInt(u8"Hits threshold", &bs_gsoc_hits_thresh,  1, 200);
-                ImGui::SliderFloat(u8"alpha", &bs_gsoc_alpha, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderFloat(u8"beta", &bs_gsoc_beta, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderFloat(u8"blinkingSupressionDecay ", &bs_gsoc_bs_decay, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderFloat(u8"blinkingSupressionMultiplier ", &bs_gsoc_bs_mul, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderFloat(u8"noiseRemovalThresholdFacBG ", &bs_gsoc_noise_bg, 0.0f, 1.0f, "%1.3f");
-                ImGui::SliderFloat(u8"noiseRemovalThresholdFacFG ", &bs_gsoc_noise_fg, 0.0f, 1.0f, "%1.3f");
+                ImGui::Checkbox(u8"Обучение", &Img.bs_gsoc_learning);
+                ImGui::SliderFloat(u8"Скорость обучения", &Img.bs_gsoc_lrate, 0.01f, 0.99f, "%1.2f");
+                ImGui::SliderInt(u8"Компенсация движения камеры", &Img.bs_gsoc_mc,  0, 1);
+                ImGui::SliderInt(u8"Образцов", &Img.bs_gsoc_samples,  1, 200);
+                ImGui::SliderFloat(u8"Propagation rate", &Img.bs_gsoc_proprate, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderFloat(u8"Replace rate", &Img.bs_gsoc_reprate, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderInt(u8"Hits threshold", &Img.bs_gsoc_hits_thresh,  1, 200);
+                ImGui::SliderFloat(u8"alpha", &Img.bs_gsoc_alpha, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderFloat(u8"beta", &Img.bs_gsoc_beta, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderFloat(u8"blinkingSupressionDecay ", &Img.bs_gsoc_bs_decay, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderFloat(u8"blinkingSupressionMultiplier ", &Img.bs_gsoc_bs_mul, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderFloat(u8"noiseRemovalThresholdFacBG ", &Img.bs_gsoc_noise_bg, 0.0f, 1.0f, "%1.3f");
+                ImGui::SliderFloat(u8"noiseRemovalThresholdFacFG ", &Img.bs_gsoc_noise_fg, 0.0f, 1.0f, "%1.3f");
 
 
 
             }
 
-             if (ImGui::Button(u8"Применить настройки")) {BS_Init(V.BS.CurrentAlgo);}
-            ShowHelpMarker(u8"Некоторые настройки не применяются автоматически");
+             if (ImGui::Button(u8"Применить настройки")) {Img.BS_Init(V.BS.CurrentAlgo);}
+            GUI.ShowHelpMarker(u8"Некоторые настройки не применяются автоматически");
 
         ImGui::End();
     }
@@ -464,10 +511,10 @@ if (SetWin[W_SET_FILE].show){
             if (V.Contours.CurrentAlgo==0){
                 V.Edge.UseScharr=0;
                 ImGui::SliderInt(u8"Размытие", &V.Edge.BlurValue,  1, 5);
-                ShowHelpMarker(u8"Предварительное размытие помогает избавиться от мусора\nНечётные значения работают лучше");
+                GUI.ShowHelpMarker(u8"Предварительное размытие помогает избавиться от мусора\nНечётные значения работают лучше");
                 ImGui::SliderInt(u8"Порог 1", &V.Edge.CannyThresh1, 1, 500);
                 ImGui::SliderInt(u8"Порог 2", &V.Edge.CannyThresh2, 1, 500);
-                ShowHelpMarker(u8"По усолчанию порог 2 примерно в два раза больше порога 1");
+                GUI.ShowHelpMarker(u8"По усолчанию порог 2 примерно в два раза больше порога 1");
             }
 
             if (V.Contours.CurrentAlgo==1){
@@ -483,12 +530,12 @@ if (SetWin[W_SET_FILE].show){
         ImGui::Begin(SetWin[W_SET_MASK].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
             ImGui::SliderFloat(u8"Минимальная площадь рамки", &V.Contours.MinBBoxArea,  0.0f, 100.0f+V.Contours.WideAreaRange*10000.0f, "%.0f");
             ImGui::SliderFloat(u8"Максимальная площадь рамки", &V.Contours.MaxBBoxArea,  0.0f, 10000.0f+V.Contours.WideAreaRange*20000.0f, "%.0f");
-            ShowHelpMarker(u8"Размеры частиц, подлежащих обработке");
+            GUI.ShowHelpMarker(u8"Размеры частиц, подлежащих обработке");
             ImGui::Checkbox(u8"Расширенные пределы площади", &V.Contours.WideAreaRange);
             ImGui::Combo(u8"Тип морфо преобразования", &V.Morph.Type, u8"RECT\0ELLIPSE\0CROSS\0\0");
-            ShowHelpMarker(u8"Вид корневого элемента морфологического преобразования\nRECT самый быстрый, ELLIPSE немного медленнее, но более реалистичный");
+            GUI.ShowHelpMarker(u8"Вид корневого элемента морфологического преобразования\nRECT самый быстрый, ELLIPSE немного медленнее, но более реалистичный");
             ImGui::SliderInt(u8"Размер зерна", &V.Morph.Size,  1, 10);
-            ShowHelpMarker(u8"Размер корневого элемента морфологического преобразования\nМаленький работает более тонко, большой /""залепляет/"" маску грубее");
+            GUI.ShowHelpMarker(u8"Размер корневого элемента морфологического преобразования\nМаленький работает более тонко, большой /""залепляет/"" маску грубее");
         ImGui::End();
     }
 
@@ -514,7 +561,7 @@ if (SetWin[W_SET_FILE].show){
             }
 
             ImGui::Checkbox(u8"Цветовое пространство допуска", &V.Color.GoodSpace);
-            ShowHelpMarker(u8"Использовать HSV или RGB допуск");
+            GUI.ShowHelpMarker(u8"Использовать HSV или RGB допуск");
             if(V.Color.GoodSpace){
                 if (ImGui::SliderFloat(u8"Допуск H", &tolh, 0.0f, 180.0f, "%3.1f"))   V.Color.ToleranceHSV.val[0] = (double)tolh;
                 if (ImGui::SliderFloat(u8"Допуск S", &tols, 0.0f, 255.0f, "%3.1f"))   V.Color.ToleranceHSV.val[1] = (double)tols;
@@ -544,11 +591,11 @@ if (SetWin[W_SET_FILE].show){
         ImGui::Begin(SetWin[W_SET_COM].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
             static int com_selected = 0;
             //static int histo_selected = 0;
-            if (ImGui::Button(u8"Сканировать порты")) {list_COM();}
-            ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
+            if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
+            GUI.ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
             ImGui::Text(u8"Доступные порты:");
             for (int i = 0; i < 16; i++){
-                if (COM_present[i] == 1){
+                if (COM.IsPresent[i] == 1){
                     char label[128];
                     sprintf(label, "COM %d", i);
                     if (ImGui::Selectable(label, com_selected == i))
@@ -561,8 +608,8 @@ if (SetWin[W_SET_FILE].show){
             static int speed_current = 0;
             ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds));
             V.ComPort.Speed = com_speeds[speed_current];
-            if(!V.ComPort.Connected){if (ImGui::Button(u8"Подключиться")){open_COM(com_selected);}}
-            else                {if (ImGui::Button(u8"Отключиться")){close_COM(com_selected);}}
+            if(!V.ComPort.Connected){if (ImGui::Button(u8"Подключиться")){COM.Open(com_selected);}}
+            else                {if (ImGui::Button(u8"Отключиться")){COM.Close(com_selected);}}
 
         ImGui::End();
     }
@@ -602,8 +649,8 @@ if (SetWin[W_SET_FILE].show){
                 while (refresh_time < ImGui::GetTime()) // Create dummy data at fixed 60 hz rate for the demo
                 {
                     fps_values[values_offset] = V.Info.FPS;
-                    contours_values[values_offset] = (float)info_total_contours;
-                    good_contours_values[values_offset] = (float)good_contours;
+                    contours_values[values_offset] = (float)Img.info_total_contours;
+                    good_contours_values[values_offset] = (float)Img.good_contours;
 
                     values_offset = (values_offset+1) % IM_ARRAYSIZE(fps_values);
                     refresh_time += 1.0f/5.0f;
@@ -614,14 +661,14 @@ if (SetWin[W_SET_FILE].show){
                 ImGui::PlotLines("FPS", fps_values, IM_ARRAYSIZE(fps_values), values_offset, fps_buf, 0.0f, *std::max_element(std::begin(fps_values), std::end(fps_values)), ImVec2(0,80));
             ImGui::Spacing();
                 char cont_buf[8];
-                sprintf(cont_buf,"%lu",  info_total_contours);
+                sprintf(cont_buf,"%lu",  Img.info_total_contours);
                 ImGui::PlotLines(u8"Контуров", contours_values, IM_ARRAYSIZE(contours_values), values_offset, cont_buf, 0.0f, *std::max_element(std::begin(contours_values), std::end(contours_values)), ImVec2(0,80));
             ImGui::Spacing();
                 char useful_cont_buf[8];
-                sprintf(useful_cont_buf,"%lu",good_contours);
+                sprintf(useful_cont_buf,"%lu",Img.good_contours);
                 ImGui::PlotLines(u8"Полезных контуров", good_contours_values, IM_ARRAYSIZE(good_contours_values), values_offset, useful_cont_buf, 0.0f, 70.0f, ImVec2(0,80));
             ImGui::Spacing();
-            ImGui::SliderInt(u8"Усреднять FPS обработки", &fps_average,  1, 127);
+            ImGui::SliderInt(u8"Усреднять FPS обработки", &Img.fps_average,  1, 127);
             //ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
 
         ImGui::End();
@@ -666,8 +713,8 @@ if (SetWin[W_SET_FILE].show){
                 ImGui::Spacing();
                 ImGui::Text("Alignment");
                 ImGui::SliderFloat2("WindowTitleAlign", (float*)&style.WindowTitleAlign, 0.0f, 1.0f, "%.2f");
-                ImGui::SliderFloat2("ButtonTextAlign", (float*)&style.ButtonTextAlign, 0.0f, 1.0f, "%.2f"); ImGui::SameLine(); ShowHelpMarker("Alignment applies when a button is larger than its text content.");
-                ImGui::Text("Safe Area Padding"); ImGui::SameLine(); ShowHelpMarker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");
+                ImGui::SliderFloat2("ButtonTextAlign", (float*)&style.ButtonTextAlign, 0.0f, 1.0f, "%.2f"); ImGui::SameLine(); GUI.ShowHelpMarker("Alignment applies when a button is larger than its text content.");
+                ImGui::Text("Safe Area Padding"); ImGui::SameLine(); GUI.ShowHelpMarker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");
                 ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&style.DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
             ImGui::TreePop();
         }
@@ -684,8 +731,8 @@ if (SetWin[W_SET_FILE].show){
 
 
 
-void GUI_VarInit(void){
 
+void GUI_class::VarInit(void){
     SetWin[W_SET_IN].title=u8"Настройки: вход";
     SetWin[W_SET_BG].title=u8"Настройки: вычитание фона";
     SetWin[W_SET_CONTOUR].title=u8"Настройки: контуры";
@@ -705,17 +752,17 @@ void GUI_VarInit(void){
     MatWin[W_MAT_MORPH].title=u8"Изображение: морфология";
     MatWin[W_MAT_OUT].title=u8"Изображение: выход";
 
-    MatWin[W_MAT_IN].mat = &img_in;
-    MatWin[W_MAT_CONTOUR].mat = &img_canny_output;
-    MatWin[W_MAT_MASK].mat = &img_wholemask;
-    MatWin[W_MAT_BG].mat = &img_bs_back;
-    MatWin[W_MAT_MOG].mat = &img_mog_output;
-    MatWin[W_MAT_MORPH].mat = &img_morph_out;
-    MatWin[W_MAT_OUT].mat = &img_output;
+    MatWin[W_MAT_IN].mat = &Img.img_in;
+    MatWin[W_MAT_CONTOUR].mat = &Img.img_canny_output;
+    MatWin[W_MAT_MASK].mat = &Img.img_wholemask;
+    MatWin[W_MAT_BG].mat = &Img.img_bs_back;
+    MatWin[W_MAT_MOG].mat = &Img.img_mog_output;
+    MatWin[W_MAT_MORPH].mat = &Img.img_morph_out;
+    MatWin[W_MAT_OUT].mat = &Img.img_output;
 }
 
 
-void GUI_Fill_Textures(void){
+void GUI_class::Fill_Textures(void){
     for(int i=0; i<W_MAT_NR; i++){
         if (MatWin[i].show){
             MatWin[i].write.lock();

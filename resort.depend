@@ -1725,7 +1725,7 @@
 1544123028 d:\codeblocks\projects\resort-full\bgsubcnt.h
 	"opencv2/video.hpp"
 
-1548541062 source:d:\codeblocks\projects\resort-full\com_port.cpp
+1560452823 source:d:\codeblocks\projects\resort-full\com_port.cpp
 	<iostream>
 	<fstream>
 	<stdexcept>
@@ -1752,19 +1752,19 @@
 	<errno.h>
 	<windows.h>
 
-1536611859 d:\codeblocks\projects\resort-full\com_port.h
+1560452391 d:\codeblocks\projects\resort-full\com_port.h
 	<iostream>
 	<fstream>
 	<stdexcept>
 
-1548537133 d:\codeblocks\projects\resort-full\variables1.h
+1560455638 d:\codeblocks\projects\resort-full\variables1.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
 
 1536939805 d:\codeblocks\projects\resort-full\ui.h
 
-1548540698 source:d:\codeblocks\projects\resort-full\file.cpp
+1560455527 source:d:\codeblocks\projects\resort-full\file.cpp
 	<iostream>
 	<fstream>
 	<opencv2/core/core.hpp>
@@ -1772,17 +1772,15 @@
 	<opencv2/highgui/highgui.hpp>
 	"variables1.h"
 	"file.h"
-	"main.h"
-	"UI.h"
+	"img.h"
 	"newGUI.h"
 
-1546277320 d:\codeblocks\projects\resort-full\file.h
+1560453346 d:\codeblocks\projects\resort-full\file.h
 	<iostream>
 	<fstream>
-	<stdexcept>
 	<opencv2/core/core.hpp>
-	<opencv2/highgui/highgui.hpp>
 	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
 
 1548531499 d:\codeblocks\projects\resort-full\main.h
 	<iostream>
@@ -1793,14 +1791,13 @@
 	<opencv2/imgproc/imgproc.hpp>
 	<SFML/Graphics/Texture.hpp>
 
-1548541933 source:d:\codeblocks\projects\resort-full\img.cpp
+1560455592 source:d:\codeblocks\projects\resort-full\img.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
 	"opencv2/imgcodecs.hpp"
 	<opencv2/core/utility.hpp>
 	<opencv2/bgsegm.hpp>
-	"bgsegm.hpp"
 	<opencv2/videoio.hpp>
 	<iostream>
 	<thread>
@@ -1811,21 +1808,20 @@
 	"variables1.h"
 	"mog.h"
 	"real_dimensions.h"
-	"KalmanFilterTracker.h"
 	"bgsubcnt.h"
 	"omp.h"
 	"newGUI.h"
-	"imgui.h"
-	"imgui-SFML.h"
-	<SFML/Graphics/RenderWindow.hpp>
-	<SFML/System/Clock.hpp>
-	<SFML/Window/Event.hpp>
-	<SFML/Graphics/Texture.hpp>
-	<SFML/Graphics/Sprite.hpp>
-	<SFML/Graphics/CircleShape.hpp>
-	<SFML/Graphics/RectangleShape.hpp>
 
-1548541532 d:\codeblocks\projects\resort-full\img.h
+1560455638 d:\codeblocks\projects\resort-full\img.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	"opencv2/imgcodecs.hpp"
+	<opencv2/core/utility.hpp>
+	<opencv2/bgsegm.hpp>
+	<opencv2/videoio.hpp>
+	<SFML/System/Clock.hpp>
+	"omp.h"
 
 1544974581 d:\codeblocks\projects\resort-full\mog.h
 	<opencv2/core/core.hpp>
@@ -1840,7 +1836,15 @@
 	<iostream>
 	"opencv2/opencv.hpp"
 
-1548538537 d:\codeblocks\projects\resort-full\newgui.h
+1560452823 d:\codeblocks\projects\resort-full\newgui.h
+	<string>
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/System/Clock.hpp>
+	<SFML/Window/Event.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
 
 1543890888 d:\codeblocks\projects\resort-full\imgui\imgui.h
 	"imconfig.h"
@@ -2017,7 +2021,7 @@
 	<errno.h>
 	<limits.h>
 
-1548541752 source:d:\codeblocks\projects\resort-full\newgui.cpp
+1560455552 source:d:\codeblocks\projects\resort-full\newgui.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<iostream>
@@ -2043,7 +2047,7 @@
 	"mog.h"
 	"real_dimensions.h"
 	"newGUI.h"
-	"imguifilesystem.h"
+	"gui/imguifilesystem.h"
 
 1537042353 source:d:\codeblocks\projects\resort-full\real_dimensions.cpp
 	<opencv2/core/core.hpp>
@@ -2058,7 +2062,7 @@
 1511356394 source:d:\codeblocks\projects\resort-full\rs232.c
 	"rs232.h"
 
-1548540204 source:d:\codeblocks\projects\resort-full\main.cpp
+1560454000 source:d:\codeblocks\projects\resort-full\main.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -2090,6 +2094,72 @@
 	"mog.h"
 	"real_dimensions.h"
 	"newGUI.h"
-	"ImGuiFileDialog.h"
+	"gui/ImGuiFileDialog.h"
 	"omp.h"
+
+1544971424 source:d:\codeblocks\projects\resort-full\gui\imguifiledialog.cpp
+	"ImGuiFileDialog.h"
+	"imgui.h"
+	"dirent/dirent.h"
+	"imgui_internal.h"
+	<algorithm>
+
+1544829165 d:\codeblocks\projects\resort-full\gui\imguifiledialog.h
+	<vector>
+	<string>
+
+1544829205 d:\codeblocks\projects\resort-full\gui\dirent\dirent.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+
+1544971716 source:d:\codeblocks\projects\resort-full\gui\imguifilesystem.cpp
+	<windows.h>
+	<imgui.h>
+	<imgui_internal.h>
+	"imguifilesystem.h"
+	<shlobj.h>
+	<unistd.h>
+	<pwd.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+	"dirent_portable.h"
+	<sys/stat.h>
+	<ctype.h>
+	<string.h>
+	<stdlib.h>
+
+1544969088 d:\codeblocks\projects\resort-full\gui\imguifilesystem.h
+	"imguifilesystem.h"
+	<imgui.h>
+	<stdint.h>
+	<stdio.h>
+	<limits.h>
+	<linux/limits.h>
+	<windef.h>
+
+1544969084 d:\codeblocks\projects\resort-full\gui\dirent_portable.h
+	<dirent.h>
+	<stdio.h>
+	<stdarg.h>
+	<windef.h>
+	<winbase.h>
+	<wchar.h>
+	<string.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<errno.h>
+	<limits.h>
 
