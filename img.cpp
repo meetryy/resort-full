@@ -20,17 +20,21 @@
 #include "omp.h"
 #include "newGUI.h"
 #include "video_player.h"
+#include "preprocessor.h"
+#include "belt_processor.h"
 
 using namespace cv;
 using namespace std;
 
 Image_class Img;
 cv::Ptr<cv::BackgroundSubtractor> BackSubtractor;
-cv::VideoCapture camera(cv::CAP_DSHOW);
-cv::VideoCapture videocapture("test_video.avi");
-cv::VideoWriter oVideoWriter;
+cv::VideoCapture    camera(cv::CAP_DSHOW);
+cv::VideoCapture    videocapture("test_video.avi");
+cv::VideoWriter     oVideoWriter;
 
-videoPlayer_t videoPlayer;
+videoPlayer_t       videoPlayer;
+preprocessor_t      preprocessor;
+imageProcessor_t    BeltProcessor;
 
 void Image_class::FPS_Routine(void){
     sf::Time elapsed1 = FPS_Clock.getElapsedTime();
@@ -179,15 +183,9 @@ void Image_class::ImgProcessor(void){
 
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
 
-    videoPlayer.Start("test_video.avi", 0, 200, -1);
+    //BeltProcessor.Init();
 
     while (1){
-        //videoPlayer.fpsStart();
-        videoPlayer.fpsStart();
-        img_debug = videoPlayer.getFrame();
-
-        //if (videoPlayer.fps >= )
-
         if (V.Input.CaptureRun){
             FPS_Routine();
             switch (V.Input.Source){
@@ -197,12 +195,16 @@ void Image_class::ImgProcessor(void){
                     break;}
                 // video
                 case 1: {
-                    videocapture >> img_in;
-                    if (img_in.empty()) {videocapture.set(CAP_PROP_POS_FRAMES, 0); videocapture >> img_in;}
+                    videoPlayer.fpsStart();
+                    Mat videoFrame = videoPlayer.getFrame();
+                    img_in = preprocessor.Result(videoFrame);
                     break;}
             }
 
-            WaterfallProcessor(img_in);
+            switch (V.procType){
+                case PROC_WF: {WaterfallProcessor(img_in); break;}
+                case PROC_B: {BeltProcessor.Result(img_in); break;}
+            }
 
             show_mat_upd_counter++;
             if (show_mat_upd_counter >= show_mat_upd_target){
@@ -215,8 +217,6 @@ void Image_class::ImgProcessor(void){
                 }
             show_mat_upd_counter = 0;
             }
-
-            //if (!videofileFrame.empty()) imshow("videofileFrame", videofileFrame);
         }
 
         videoPlayer.fpsStop();
@@ -265,9 +265,9 @@ int ScalarInRange_old (Scalar input, Scalar compare_to, Scalar delta, bool useHS
                  ((compare_to + delta).val[k] >= input.val[k]) //||
                  //((-1.0*180.0 + (compare_to + delta).val[0]) >= input.val[0])
                 )
-            {
-                    to_return++;
-            }
+            //{
+            to_return++;
+            //}
         }
     }
     return to_return;

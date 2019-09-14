@@ -23,6 +23,8 @@ struct V_t{
     };
     Input_t Input;
 
+    int procType = 0;
+
     struct Cam_t{
         int     Number;
         long    Width;

@@ -28,6 +28,8 @@
 #include "newGUI.h"
 #include "gui/imguifilesystem.h"
 #include "video_player.h"
+#include "preprocessor.h"
+#include "belt_processor.h"
 
 using namespace std;
 using namespace ImGui;
@@ -51,6 +53,10 @@ void GUI_class::ShowHelpMarker(const char* desc){
 void GUI_class::Init(void){
     ScreenW = sf::VideoMode::getDesktopMode().width;
     ScreenH = sf::VideoMode::getDesktopMode().height;
+
+    GUI.WindowName.append(" (");
+    GUI.WindowName.append(__DATE__);
+    GUI.WindowName.append(")");
 
     window.create(sf::VideoMode(GUI.ScreenW, GUI.ScreenH), GUI.WindowName);//,sf::Style::Fullscreen);
 
@@ -293,12 +299,12 @@ void GUI_class::drawMenuBar(void){
         ImGui::Separator();
         if (ImGui::BeginMenu(u8"Показать")){
                 ImGui::MenuItem(u8"Вход", NULL, &MatWin[W_MAT_IN].show);
-                ImGui::MenuItem(u8"Вычитание фона: результат", NULL, &MatWin[W_MAT_MOG].show);
-                ImGui::MenuItem(u8"Вычитание фона: модель фона", NULL, &MatWin[W_MAT_BG].show);
-                ImGui::MenuItem(u8"Контуры", NULL, &MatWin[W_MAT_CONTOUR].show);
-                ImGui::MenuItem(u8"Морфология", NULL, &MatWin[W_MAT_MORPH].show);
-                ImGui::MenuItem(u8"Маска", NULL, &MatWin[W_MAT_MASK].show);
-                ImGui::MenuItem(u8"Выход", NULL, &MatWin[W_MAT_OUT].show);
+                ImGui::MenuItem(u8"Вычитание фона: результат", NULL, &MatWin[W_MAT_WF_MOG].show);
+                ImGui::MenuItem(u8"Вычитание фона: модель фона", NULL, &MatWin[W_MAT_WF_BG].show);
+                ImGui::MenuItem(u8"Контуры", NULL, &MatWin[W_MAT_WF_CONTOUR].show);
+                ImGui::MenuItem(u8"Морфология", NULL, &MatWin[W_MAT_WF_MORPH].show);
+                ImGui::MenuItem(u8"Маска", NULL, &MatWin[W_MAT_WF_MASK].show);
+                ImGui::MenuItem(u8"Выход", NULL, &MatWin[W_MAT_WF_OUT].show);
             ImGui::EndMenu();
         }
         ImGui::Separator();
@@ -362,10 +368,10 @@ void GUI_class::drawMatWindows(void){
                     sprite[i].setTexture(texture[i]);
 
                 ImGuiWindowFlags MatWinFlags = ImGuiWindowFlags_AlwaysAutoResize;
-                if(i == W_MAT_OUT) {MatWinFlags |= ImGuiWindowFlags_MenuBar;}
+                if(i == W_MAT_WF_OUT) {MatWinFlags |= ImGuiWindowFlags_MenuBar;}
 
                 ImGui::Begin(MatWin[i].title.c_str(), p_open, MatWinFlags);
-                    if(i == W_MAT_OUT){
+                    if(i == W_MAT_WF_OUT){
                         if (ImGui::BeginMenuBar()){
                             if (ImGui::BeginMenu(u8"Показать")){
                                     ImGui::MenuItem(u8"Контуры", "", &V.Show.Contours);
@@ -431,7 +437,7 @@ void GUI_class::drawSettingsWindow(void){
 
     if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_None)){
         static int catSelected = 0;
-        ImGui::BeginChild("##wfsettingsleft", ImVec2(ImGui::GetWindowWidth()/3.0, 0), true);
+        ImGui::BeginChild("##wfsettingsleft", ImVec2(ImGui::GetWindowWidth()/3.5, 0), true);
         for (int i = 0; i < NR_CAT; i++){
             if (ImGui::Selectable(settingsCatNames[i].c_str(), catSelected == i))
                 catSelected = i;
@@ -443,6 +449,9 @@ void GUI_class::drawSettingsWindow(void){
             ImGui::BeginChild("##wfitems", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
             switch (catSelected) {
                 case CAT_INPUT: {
+                    ImGui::Text(u8"Настройки источника изображения");
+                    ImGui::Separator();
+
                     ImGui::Combo(u8"Источник картинки", &V.Input.Source, u8"Камера\0Видео\0\0");
                     GUI.ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
 
@@ -482,57 +491,105 @@ void GUI_class::drawSettingsWindow(void){
 
                         ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
 
-                        if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток с камеры")) {Img.cam_open();}}
-                        else {if (ImGui::Button(u8"Закрыть поток с камеры")) {V.Input.CaptureRun = 0;}}
+
                     }
 
                     if (V.Input.Source == 1){
-                        ImGui::Text(u8"Настройки видео файла:");
+                        //ImGui::Text(u8"Настройки видео файла:");
                         //ImGui::InputText(u8"Имя файла", test_text, 64);
                         //if (ImGui::Button(u8"Открыть файл")) {}
                         //if (ImGui::Button(u8"Пауза")){}
                         //ImGui::SameLine();
                         //if (ImGui::Button(u8"Сначала")){}
                         Img.capture_file = V.Input.Source;
-                        if  (!V.Input.CaptureRun) {if (ImGui::Button(u8"Открыть поток из файла")) {Img.video_open();}}
-                        else                {if (ImGui::Button(u8"Закрыть поток из файла")) {Img.video_close();}}
+
+                        #warning TODO add video file list here
+                        #warning TODO open video file by name
+
                         ImGui::Text(u8"Свойства видео файла:");
                         ImGui::Text("%.0f x %.0f", videoPlayer.frameW, videoPlayer.frameH);
-                        ImGui::Text(u8"с %u до %u", videoPlayer.startFrame, videoPlayer.endFrame);
-                        ImGui::Text(u8"%u, %.2f ms", videoPlayer.playbackMarker, videoPlayer.playbackMs);
-                        ImGui::Text(u8"%u frames, %.1f FPS, %.1f FPS now", videoPlayer.fileLengthFrames, videoPlayer.videoFPS, videoPlayer.fps);
-                        ImGui::Text(u8"part len = %u frames, portion = %.3f", videoPlayer.partLength, videoPlayer.playbackPortion);
-                        ImGui::ProgressBar(videoPlayer.playbackPortion);
-                        ImGui::SliderInt("start", &videoPlayer.startFrame, 0, videoPlayer.fileLengthFrames, "%u");
-                        ImGui::SliderInt("end", &videoPlayer.endFrame, 0, videoPlayer.fileLengthFrames, "%u");
-                        ImGui::Checkbox("pause", &videoPlayer.pause);
+                        //ImGui::Text(u8"с %u до %u", videoPlayer.startFrame, videoPlayer.endFrame);
+                        //ImGui::Text(u8"%u, %.2f ms", videoPlayer.playbackMarker, videoPlayer.playbackMs);
+                        ImGui::Text(u8"Всего %u кадров, %.1f FPS, %.1f FPS now", videoPlayer.fileLengthFrames, videoPlayer.videoFPS, videoPlayer.fps);
 
-                        ImGui::SliderFloat("fpsLimiter", &videoPlayer.fpsLimiter, 1.0f, 200.0f, "%.1f");
-                        if (ImGui::SliderInt("set position", &videoPlayer.playbackMarker, videoPlayer.startFrame, videoPlayer.endFrame, "&u"))
-                            videoPlayer.setMarker(videoPlayer.playbackMarker);
+                        char pBarBuf[64];
+                        sprintf(pBarBuf, "%i / %i", videoPlayer.playbackMarker - videoPlayer.startFrame, videoPlayer.partLength);
 
-                        /*
-                        Rotation = Rotate;
-                        cap.set(CAP_PROP_POS_FRAMES, StartFrame);
-                        frameH = cap.get(CAP_PROP_FRAME_HEIGHT);
-                        frameW = cap.get(CAP_PROP_FRAME_WIDTH);
-                        playbackMarker = cap.get(CAP_PROP_POS_FRAMES);
-                        playbackMs = cap.get(CAP_PROP_POS_MSEC);
+                        ImGui::ProgressBar(videoPlayer.playbackPortion, ImVec2(0.f,0.f), pBarBuf);
+                        ImGui::SliderInt(u8"Начало, кадр", &videoPlayer.startFrame, 0, videoPlayer.fileLengthFrames, "%u");
+                        ImGui::SliderInt(u8"Конец, кадр", &videoPlayer.endFrame, videoPlayer.startFrame, videoPlayer.fileLengthFrames, "%u");
+                        ImGui::Checkbox(u8"Пауза", &videoPlayer.pause);
 
-                        videoFPS = cap.get(CAP_PROP_FPS);
-                        fileLengthFrames =  cap.get(CAP_PROP_FRAME_COUNT);
-                        fileLengthMs = fileLengthFrames / videoFPS;
-                        */
-
+                        ImGui::SliderFloat(u8"Ограничитель скорости", &videoPlayer.fpsLimiter, 1.0f, 200.0f, "%.1f ms");
+                        if (videoPlayer.pause){
+                            if (ImGui::SliderInt(u8"Позиция", &videoPlayer.playbackMarker, videoPlayer.startFrame, videoPlayer.endFrame, "%u"))
+                                videoPlayer.setMarker(videoPlayer.playbackMarker);
+                        }
                     }
+
+                    if  (!V.Input.CaptureRun) {
+                            if (ImGui::Button(u8"Открыть поток")) {
+                                if (V.Input.Source == 0){
+                                    Img.cam_open();
+                                }
+
+                                if (V.Input.Source == 1){
+                                    videoPlayer.Start("test_video.avi", videoPlayer.startFrame, -1, -1);
+                                    //BeltProcessor.Init();
+                                    BeltProcessor.initDone = 0;
+                                    V.Input.CaptureRun = 1;
+                                    //Img.video_open();
+                                }
+                            }
+                        }
+
+                        else {
+                            if (ImGui::Button(u8"Закрыть поток")) {
+                                if (V.Input.Source == 0){
+                                    V.Input.CaptureRun = 0;
+                                }
+
+                                if (V.Input.Source == 1){
+                                    videoPlayer.Stop();
+                                    V.Input.CaptureRun = 0;
+                                    BeltProcessor.initDone = 0;
+                                }
+                            }
+                        }
+
                     break;}
 
                 case CAT_PROCESSING: {
+                    ImGui::Text(u8"Настройки обработки изображения");
+                    ImGui::Separator();
+
+                    ImGui::Combo(u8"Основной алгоритм работы", &V.procType, u8"Водопад\0Ремень\0\0");
+                    ImGui::Separator();
+
                     ImGui::Text(u8"Настройки препроцессора изображения:");
+                    ImGui::Checkbox("on", &preprocessor.isOn);
+
+                    const char* items[] = { u8"0", u8"90 ЧС", u8"180", u8"90 ПЧС"};
+                    static int item_current = 0;
+                    ImGui::Combo(u8"Поворот", &item_current, items, IM_ARRAYSIZE(items));
+                    preprocessor.rotation = item_current - 1;
+
+                    ImGui::SliderInt("marginLeft", &preprocessor.marginLeft, 0, (int)videoPlayer.frameW/2-1, "%u pix");
+                    ImGui::SliderInt("marginRight", &preprocessor.marginRight, 0, (int)videoPlayer.frameW/2-1, "%u pix");
+                    ImGui::SliderInt("marginUp", &preprocessor.marginUp, 0, (int)videoPlayer.frameH/2-1, "%u pix");
+                    ImGui::SliderInt("marginDown", &preprocessor.marginDown, 0, (int)videoPlayer.frameH/2-1, "%u pix");
+
+                    ImGui::SliderFloat("brightness", &preprocessor.brightness, 0.0f, 5.0f, "%.2f");
+                    ImGui::SliderFloat("contrast", &preprocessor.contrast, 0.0f, 5.0f, "%.2f");
+                    ImGui::SliderFloat("saturation", &preprocessor.saturation, 0.0f, 5.0f, "%.2f");
+                    ImGui::SliderInt("sharpTimes", &preprocessor.sharpTimes, 1, 10, "%u");
+
                     break;}
 
                 case CAT_WF_CONTOURS: {
-                    ImGui::Text(u8"Настройки размеров частиц, подлежащих обработке:");
+                    ImGui::Text(u8"Водопад: настройки размеров частиц");
+                    ImGui::Separator();
+
                     ImGui::DragFloat(u8"min площадь рамки", &V.Contours.MinBBoxArea, 1.0, 1.0, V.Contours.MaxBBoxArea, "%.0f");
                     //ImGui::SliderFloat(, ,  0.0f, 100.0f+V.Contours.WideAreaRange*10000.0f, "%.0f");
                     GUI.ShowHelpMarker(u8"(pix^2)");
@@ -542,6 +599,9 @@ void GUI_class::drawSettingsWindow(void){
                 break;}
 
                 case CAT_WF_EDGE: {
+                    ImGui::Text(u8"Водопад: настройки поиска контуров");
+                    ImGui::Separator();
+
                     ImGui::Combo(u8"Алгоритм поиска", &V.Contours.CurrentAlgo, u8"Canny\0Scharr\0\0");
                     ImGui::Separator();
                     if (V.Contours.CurrentAlgo == 0){
@@ -562,6 +622,9 @@ void GUI_class::drawSettingsWindow(void){
                     break;}
 
                 case CAT_WF_MORPHO: {
+                    ImGui::Text(u8"Водопад: настройки морфологического преобразования");
+                    ImGui::Separator();
+
                     ImGui::Combo(u8"Тип морфо преобразования", &V.Morph.Type, u8"RECT\0ELLIPSE\0CROSS\0\0");
                     GUI.ShowHelpMarker(u8"Вид корневого элемента морфологического преобразования\nRECT самый быстрый, ELLIPSE немного медленнее, но более реалистичный");
                     ImGui::SliderInt(u8"Размер зерна", &V.Morph.Size,  1, 10);
@@ -569,6 +632,9 @@ void GUI_class::drawSettingsWindow(void){
                     break;}
 
                 case CAT_WF_COLOR: {
+                    ImGui::Text(u8"Водопад: настройки цвета частиц");
+                    ImGui::Separator();
+
                     static float tolh = (float)V.Color.ToleranceHSV.val[0];
                     static float tols = (float)V.Color.ToleranceHSV.val[1];
                     static float tolv = (float)V.Color.ToleranceHSV.val[2];
@@ -603,6 +669,9 @@ void GUI_class::drawSettingsWindow(void){
                     break;}
 
                 case CAT_WF_BS: {
+                    ImGui::Text(u8"Водопад: настройки алгоритма отделения фона");
+                    ImGui::Separator();
+
                     if(ImGui::Combo(u8"Алгоритм", &V.BS.CurrentAlgo, u8"MOG\0MOG2\0CNT\0\0")){Img.BS_Init(V.BS.CurrentAlgo);}
                     GUI.ShowHelpMarker(u8"MOG и MOG2 не нагружают процессор, но не очень точны\nCNT наиболее быстрый, но имеет низкое быстродействие");
                     ImGui::SliderInt(u8"Предварительное размытие", &V.BS.BlurBeforeMog,  1, 10);
@@ -677,7 +746,9 @@ void GUI_class::drawSettingsWindow(void){
                 //case CAT_WF_BS_CNT: {break;}
 
                 case CAT_WF_SHOW: {
-                    ImGui::Text(u8"Настройка HUD водопада");
+                    ImGui::Text(u8"Водопад: настройки HUD");
+                    ImGui::Separator();
+
                     ImGui::Checkbox(u8"Контуры", &V.Show.Contours);
                     ImGui::Checkbox(u8"Центры", &V.Show.Centers);
                     ImGui::Checkbox(u8"Коробки", &V.Show.BBoxes);
@@ -687,14 +758,65 @@ void GUI_class::drawSettingsWindow(void){
                     ImGui::Checkbox(u8"Залить контуры результатом", &V.Show.FilContour);
                     break;}
 
-                case CAT_B_COLOR: {break;}
-                case CAT_B_SIZE: {break;}
-                case CAT_B_MORPH: {break;}
-                case CAT_B_BLUR: {break;}
-                case CAT_B_ACCUM: {break;}
-                case CAT_B_INFO: {break;}
+                case CAT_B_COLOR: {
+                    ImGui::Text(u8"Ремень: настройки цвета");
+                    ImGui::Separator();
+
+                    ImGui::Text(u8"Оттенок (H):");
+                        ImGui::SliderInt(u8"H min", &BeltProcessor.low_H, 0, BeltProcessor.max_H, "%u");
+                        ImGui::SliderInt(u8"H max", &BeltProcessor.high_H, BeltProcessor.low_H, BeltProcessor.max_H, "%u");
+
+                    ImGui::Text(u8"Насыщенность (S):");
+                        ImGui::SliderInt(u8"S min", &BeltProcessor.low_S, 0, BeltProcessor.max_S, "%u");
+                        ImGui::SliderInt(u8"S max", &BeltProcessor.high_S, BeltProcessor.low_S, BeltProcessor.max_S, "%u");
+
+                    ImGui::Text(u8"Значение (V):");
+                        ImGui::SliderInt(u8"V min", &BeltProcessor.low_V, 0, BeltProcessor.max_V, "%u");
+                        ImGui::SliderInt(u8"V max", &BeltProcessor.high_V, BeltProcessor.low_V, BeltProcessor.max_V, "%u");
+
+                    break;}
+
+                case CAT_B_SIZE: {
+                    ImGui::Text(u8"Ремень: настройки размеров частиц");
+                    ImGui::Separator();
+                    ImGui::DragFloat(u8"min площадь коробки", &BeltProcessor.minArea, 1.0, 1.0, 100000.0, "%.0f");
+                    ImGui::DragFloat(u8"max площадь коробки", &BeltProcessor.maxArea, 1.0, BeltProcessor.minArea, 100000.0, "%.0f");
+                    break;}
+
+                case CAT_B_MORPH: {
+                    ImGui::Text(u8"Ремень: настройки морфологического преобразования");
+                    ImGui::Separator();
+                    ImGui::Combo(u8"Тип морфо преобразования", &BeltProcessor.morphType,
+                                 u8"MORPH_ERODE\0MORPH_DILATE\0MORPH_OPEN\0MORPH_CLOSE\0MORPH_GRADIENT\0MORPH_TOPHAT\0MORPH_BLACKHAT\0MORPH_HITMISS\0\0");
+                    ImGui::Combo(u8"Тип корневого элемента", &BeltProcessor.morphShape, u8"RECT\0ELLIPSE\0CROSS\0\0");
+                    GUI.ShowHelpMarker(u8"Вид корневого элемента морфологического преобразования\nRECT самый быстрый, ELLIPSE немного медленнее, но более реалистичный");
+                    ImGui::SliderInt(u8"Размер зерна", &BeltProcessor.morphArea,  1, 10);
+                    GUI.ShowHelpMarker(u8"Размер корневого элемента морфологического преобразования\nМаленький работает более тонко, большой /""залепляет/"" маску грубее");
+                    break;}
+
+                case CAT_B_BLUR: {
+                    ImGui::Text(u8"Ремень: настройки размытия");
+                    ImGui::Separator();
+                    ImGui::SliderInt(u8"Размер размытия", &BeltProcessor.blurSize,  1, 10);
+                    break;}
+
+                case CAT_B_ACCUM: {
+                    ImGui::Text(u8"Ремень: настройки аккумулятора");
+                    ImGui::Separator();
+                    ImGui::SliderFloat(u8"saturationWeight", &BeltProcessor.saturationWeight, 0.0, 1.0, "%.2f");
+                    ImGui::SliderInt(u8"satRangeMin", &BeltProcessor.satRangeMin,  0, 255);
+                    ImGui::SliderInt(u8"satRangeMax", &BeltProcessor.satRangeMax,  0, 255);
+
+                break;}
+
+                case CAT_B_INFO: {
+                    ImGui::DragFloat(u8"mmPerFrame", &BeltProcessor.mmPerFrame, 0.01, 0.0, 10.0, "%.2f");
+                    break;}
 
                 case CAT_COM: {
+                    ImGui::Text(u8"Настройки коммуникации с аппартным обеспечением");
+                    ImGui::Separator();
+
                     static int com_selected = 0;
                     //static int histo_selected = 0;
                     if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
@@ -720,6 +842,9 @@ void GUI_class::drawSettingsWindow(void){
 
                 case CAT_UI: {break;}
                 case CAT_STATS: {
+                    ImGui::Text(u8"Статистика обработки");
+                    ImGui::Separator();
+
                     static float fps_values[100] = {0};
                     static float contours_values[100] = {0};
                     static float good_contours_values[100] = {0};
@@ -753,80 +878,19 @@ void GUI_class::drawSettingsWindow(void){
                     //ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
 
                     break;}
-                case CAT_DEBUG: {break;}
+                case CAT_DEBUG: {
+                    ImGui::Checkbox("show debug mat", &MatWin[W_MAT_DEBUG].show);
+
+                    break;}
             }
             ImGui::EndChild();
         ImGui::EndGroup();
     }
     ImGui::End();
 }
-
-void GUI_class::drawSettingsWindowOld(void){
-     if (SetWin[W_SET_IN].show){
-        ImGui::Begin(SetWin[W_SET_IN].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_BG].show){
-        ImGui::Begin(SetWin[W_SET_BG].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_CONTOUR].show){
-        ImGui::Begin(SetWin[W_SET_CONTOUR].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_MASK].show){
-        ImGui::Begin(SetWin[W_SET_MASK].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-           ImGui::End();
-    }
-
-    if (SetWin[W_SET_COLOR].show){
-        ImGui::Begin(SetWin[W_SET_COLOR].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_OUT].show){
-        ImGui::Begin(SetWin[W_SET_OUT].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_COM].show){
-        ImGui::Begin(SetWin[W_SET_COM].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_HW].show){
-        ImGui::Begin(SetWin[W_SET_HW].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::Separator();
-            ImGui::Separator();
-            ImGui::BulletText(u8"тут пока ничего не работает");
-            ImGui::Separator();
-            ImGui::Separator();
-            //ImGui::Checkbox(u8"Передняя подсветка", &b);
-            //ImGui::SliderInt(u8"Интенсивность", &test_int,  0, 255);
-            ImGui::Separator();
-            //ImGui::Checkbox(u8"Передняя УФ подсветка", &b);
-            //ImGui::SliderInt(u8"Интенсивность", &test_int,  0, 255);
-            ImGui::Separator();
-            static ImVec4 color = ImColor(114, 144, 154, 200);
-            ImGui::ColorPicker4(u8"Задняя подсветка", (float*)&color);
-            ImGui::Separator();
-            ImGui::SliderInt(u8"Скорость протяжки", &test_int,  0, 255);
-        ImGui::End();
-    }
-
-    if (SetWin[W_SET_INFO].show){
-        ImGui::Begin(SetWin[W_SET_INFO].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-
-        ImGui::End();
-    }
-
+/*
     if (SetWin[W_SELF_COLORS].show){
-        ImGui::Begin(SetWin[W_SELF_COLORS].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin(SetWin[W_SELF_COLORS].title.c_str(), p_open, ImGuiWindowFlags_AlwaysAutoResize);
             static int style_idx = 1;
             if (ImGui::Combo(u8"Цветовая схема", &style_idx, u8"Классическая\0Тёмная\0Светлая\0")){
                 switch (style_idx){
@@ -877,12 +941,29 @@ void GUI_class::drawSettingsWindowOld(void){
     if (SetWin[W_SELF_LOG].show){
             GUI_Log.Draw(u8"Консоль", p_open);
     }
+*/
 
-}
+
+
+
+
 void GUI_class::Draw(void){
     drawMenuBar();
     drawMatWindows();
     drawSettingsWindow();
+
+    ImGui::Begin(u8"Изображения", p_open, ImGuiWindowFlags_None);
+        for (int cat=0; cat<NR_W_CAT; cat++){
+            if (ImGui::TreeNode(matWinCats[cat].c_str())){
+                for (int win=0; win<W_MAT_NR; win++){
+                    if (MatWin[win].cat == cat){
+                        ImGui::Checkbox(MatWin[win].title.c_str(), &MatWin[win].show);
+                    }
+                }
+                ImGui::TreePop();
+            }
+    }
+    ImGui::End();
 }
 
 
@@ -898,25 +979,54 @@ void GUI_class::VarInit(void){
     SetWin[W_SET_HW].title=u8"Управление оборудованием";
     SetWin[W_SELF_COLORS].title=u8"Настройки программы: интерфейс";
 
-    MatWin[W_MAT_IN].title=u8"Изображение: вход";
-    MatWin[W_MAT_CONTOUR].title=u8"Изображение: контуры";
-    MatWin[W_MAT_MASK].title=u8"Изображение: маска";
-    MatWin[W_MAT_BG].title=u8"Вычитание фона: модель фона";
-    MatWin[W_MAT_MOG].title=u8"Вычитание фона: результат";
-    MatWin[W_MAT_MORPH].title=u8"Изображение: морфология";
-    MatWin[W_MAT_OUT].title=u8"Изображение: выход";
-
+    MatWin[W_MAT_IN].title=u8"Вход";
     MatWin[W_MAT_IN].mat = &Img.img_in;
-    MatWin[W_MAT_CONTOUR].mat = &Img.img_canny_output;
-    MatWin[W_MAT_MASK].mat = &Img.img_wholemask;
-    MatWin[W_MAT_BG].mat = &Img.img_bs_back;
-    MatWin[W_MAT_MOG].mat = &Img.img_mog_output;
-    MatWin[W_MAT_MORPH].mat = &Img.img_morph_out;
-    MatWin[W_MAT_OUT].mat = &Img.img_output;
+    MatWin[W_MAT_IN].cat = W_CAT_INPUT;
+
+    MatWin[W_MAT_WF_CONTOUR].title=u8"Контуры";
+    MatWin[W_MAT_WF_CONTOUR].mat = &Img.img_canny_output;
+    MatWin[W_MAT_WF_CONTOUR].cat = W_CAT_WF;
+
+    MatWin[W_MAT_WF_MASK].title=u8"Маска";
+    MatWin[W_MAT_WF_MASK].mat = &Img.img_wholemask;
+    MatWin[W_MAT_WF_MASK].cat = W_CAT_WF;
+
+    MatWin[W_MAT_WF_BG].title=u8"Модель фона";
+    MatWin[W_MAT_WF_BG].mat = &Img.img_bs_back;
+    MatWin[W_MAT_WF_BG].cat = W_CAT_WF;
+
+    MatWin[W_MAT_WF_MOG].title=u8"Результат вычитания фона";
+    MatWin[W_MAT_WF_MOG].mat = &Img.img_mog_output;
+    MatWin[W_MAT_WF_MOG].cat = W_CAT_WF;
+
+    MatWin[W_MAT_WF_MORPH].title=u8"Морфология";
+    MatWin[W_MAT_WF_MORPH].mat = &Img.img_morph_out;
+    MatWin[W_MAT_WF_MORPH].cat = W_CAT_WF;
+
+    MatWin[W_MAT_WF_OUT].title=u8"Выход";
+    MatWin[W_MAT_WF_OUT].mat = &Img.img_output;
+    MatWin[W_MAT_WF_OUT].cat = W_CAT_WF;
 
     MatWin[W_MAT_DEBUG].mat = &Img.img_debug;
     MatWin[W_MAT_DEBUG].title=u8"W_MAT_DEBUG";
+    MatWin[W_MAT_DEBUG].cat = W_CAT_NONE;
     MatWin[W_MAT_DEBUG].show = 1;
+
+    MatWin[W_MAT_PP_HUD].title=u8"HUD";
+    MatWin[W_MAT_PP_HUD].mat = &preprocessor.HUD;
+    MatWin[W_MAT_PP_HUD].cat = W_CAT_PP;
+
+    MatWin[W_MAT_B_HUD].title=u8"HUD";
+    MatWin[W_MAT_B_HUD].mat = &BeltProcessor.mainMatHUD;
+    MatWin[W_MAT_B_HUD].cat = W_CAT_BELT;
+
+    MatWin[W_MAT_B_ACCUM].title=u8"W_MAT_B_ACCUM";
+    MatWin[W_MAT_B_ACCUM].mat = &BeltProcessor.matSatRendered;
+    MatWin[W_MAT_B_ACCUM].cat = W_CAT_BELT;
+
+    MatWin[W_MAT_B_RANGED].title=u8"W_MAT_B_RANGED";
+    MatWin[W_MAT_B_RANGED].mat = &BeltProcessor.matSatRanged;
+    MatWin[W_MAT_B_RANGED].cat = W_CAT_BELT;
 
     settingsCatNames[CAT_INPUT] = u8"Вход изображения";
     settingsCatNames[CAT_PROCESSING] = u8"Обработка";
@@ -925,9 +1035,6 @@ void GUI_class::VarInit(void){
     settingsCatNames[CAT_WF_MORPHO] = u8"- Водопад: Морфология";
     settingsCatNames[CAT_WF_COLOR] = u8"- Водопад: Цвет";
     settingsCatNames[CAT_WF_BS] = u8"- Водопад: отделение фона";
-    //settingsCatNames[CAT_WF_BS_MOG] = u8"-- Водопад: ОФ MOG";
-    //settingsCatNames[CAT_WF_BS_MOG2] = u8"-- Водопад: ОФ MOG2";
-    //settingsCatNames[CAT_WF_BS_CNT] =  u8"-- Водопад: ОФ CNT";
     settingsCatNames[CAT_WF_SHOW] = u8"- Водопад: HUD";
     settingsCatNames[CAT_COM] = u8"Коммуникация";
     settingsCatNames[CAT_UI] = u8"Интерфейс";
@@ -953,10 +1060,7 @@ void GUI_class::Fill_Textures(void){
                 texture[i].loadFromImage(image[i]);
                 sprite[i].setTexture(texture[i]);
             }
-            else{
-
-            }
-             MatWin[i].write.unlock();
+            MatWin[i].write.unlock();
         }
     }
 }

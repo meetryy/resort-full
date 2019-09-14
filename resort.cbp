@@ -64,6 +64,8 @@
 		<Unit filename="COM_port.h" />
 		<Unit filename="RS-232/rs232.h" />
 		<Unit filename="arnold_schwarzenegger.jpg" />
+		<Unit filename="belt_processor.cpp" />
+		<Unit filename="belt_processor.h" />
 		<Unit filename="bgsubcnt.cpp" />
 		<Unit filename="bgsubcnt.h" />
 		<Unit filename="dirent_portable.h" />

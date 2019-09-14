@@ -50,7 +50,7 @@ sf::Window window;
 
 V_t V;
 
-const string WindowName = "ReSort v0.1 01.2019";
+std::string WindowName = "ReSort v0.1";
 
 int main(int argc, const char *argv[])
 {

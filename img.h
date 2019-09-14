@@ -8,30 +8,21 @@
 
 #include <SFML/System/Clock.hpp>
 
-//extern cv::Mat img_output;
-//extern cv::Mat img_in;
-//extern cv::Mat img_mog_output;
 extern cv::Mat img_gray;
 extern cv::Mat img_canny;
-//extern cv::Mat img_wholemask;
 extern cv::Mat img_output;
 extern cv::Mat1b img_quad;
-//extern cv::Mat img_bs_back;
-
-//extern cv::Mat img_morph_out;
-//extern cv::Mat img_canny_output;
 extern cv::Mat img_contours;
 extern cv::Mat img_mask;
 
-//extern long good_contours;
-
 enum morphAlias {MORPH_CURRENT_RECT, MORPH_CURRENT_ELLIPSE, MORPH_CURRENT_CROSS};
+enum procTypes {PROC_WF, PROC_B};
 
 #include "omp.h"
 
 class Image_class{
 private:
-    bool    ColorOK =0;
+    bool    ColorOK = 0;
     bool    video_recording = 0;
 
 public:
@@ -42,11 +33,9 @@ public:
     int ScalarInRange (cv::Scalar input, cv::Scalar compare_to, cv::Scalar delta, bool useHSV);
     cv::Scalar BGR2HSV(cv::Scalar inBGR);
 
-
     bool input_correction_on;
     cv::Scalar hsv_input_correction;
     int show_frame;
-
 
     float   time1;
     float   time2;
@@ -100,6 +89,7 @@ public:
     omp_lock_t img_output_lock;
     omp_lock_t max_cont_lock;
     omp_lock_t img_wholemask_lock;
+
 
     void ProcessImg(void);
     void MOG_Init(void);

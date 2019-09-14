@@ -23,6 +23,7 @@ private:
         std::string title;
         cv::Mat *mat;
         bool out_ready;
+        int cat = 0;
         cv::Mat mat_show;
     };
 
@@ -34,11 +35,18 @@ private:
 
 
 public:
-    enum MatWinAlias {W_MAT_IN, W_MAT_BG, W_MAT_CONTOUR, W_MAT_MOG, W_MAT_MORPH, W_MAT_OUT, W_MAT_MASK, W_MAT_DEBUG, W_MAT_NR};
+    enum MatWinAlias {  W_MAT_IN,
+                        W_MAT_WF_BG, W_MAT_WF_CONTOUR, W_MAT_WF_MOG, W_MAT_WF_MORPH, W_MAT_WF_OUT, W_MAT_WF_MASK,
+                        W_MAT_PP_IN, W_MAT_PP_HUD,
+                        W_MAT_B_HUD, W_MAT_B_ACCUM, W_MAT_B_RANGED,
+                        W_MAT_DEBUG, W_MAT_NR};
     enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, W_SET_COM, W_SET_HW, W_SET_INFO,W_SET_OUT,
                         W_SELF_COLORS, W_SELF_LOG, W_SET_FILE,
                         W_SET_NR};
 
+    enum matwins {W_CAT_NONE, W_CAT_INPUT, W_CAT_PP, W_CAT_WF, W_CAT_BELT, NR_W_CAT};
+
+    const std::string matWinCats[NR_W_CAT] = {u8"Без категории", u8"Вход", u8"Препроцессор", u8"Водопад",u8"Ремень"};
 
     cv::Mat frameRGB[W_MAT_NR], frameRGBA[W_MAT_NR];
     sf::Image image[W_MAT_NR];
@@ -53,7 +61,7 @@ public:
 
     sf::RenderWindow window;
     sf::Clock deltaClock;
-    const std::string WindowName = "ReSort v0.2 06.2019";
+    std::string WindowName = "ReSort v0.2";
     long ScreenW = 0;
     long ScreenH = 0;
 

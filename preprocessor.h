@@ -8,17 +8,17 @@
 
 class preprocessor_t{
 public:
-
+    bool isOn = 0;
     int  marginLeft = 200;
     int  marginRight = 200;
     int  marginUp = 50;
     int  marginDown = 100;
 
-    double  brightness = 1.1;
-    double  contrast = 1.35;
-    double  saturation = 3.5;
-    int     sharpTimes = 1;
-
+    float  brightness = 1.1;
+    float  contrast = 1.35;
+    float  saturation = 3.5;
+    int    sharpTimes = 1;
+    int     rotation = -1;
 
     cv::Mat     HUD;
     cv::Mat     out;

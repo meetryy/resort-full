@@ -37,7 +37,7 @@ cv::Mat videoPlayer_t::getFrame(void){
     playbackMs = cap.get(CAP_PROP_POS_MSEC);
 
     partLength = endFrame - startFrame;
-    playbackPortion = (float)playbackMarker / (float)partLength;
+    playbackPortion = (float)(playbackMarker - startFrame) / (float)partLength;
     if (playbackMarker >= endFrame) cap.set(CAP_PROP_POS_FRAMES, startFrame);
 
     if (!pause) {
@@ -65,6 +65,11 @@ void videoPlayer_t::setMarker(int frames){
 void videoPlayer_t::fpsStart(void){
     startTime = cv::getTickCount(); // fps routine
 }
+
+void videoPlayer_t::Stop(void){
+    cap.release();
+}
+
 #include <ctime>
 #include <unistd.h>
 
@@ -76,13 +81,14 @@ void videoPlayer_t::fpsStop(void){
             fpsAccum =0 ;
             fpsAvgCounter = 0;
         }
-        if (fps >= fpsLimiter) {
-            #warning FIXME this works wrong
-            int fpsDiff = (int)(fps - fpsLimiter);
-            float targerFrameTime = 1000.0 / fpsLimiter;
-            int thisFrameTime = 1000.0 / fps;
-            int delay = (int)(targerFrameTime - thisFrameTime);
+
+        //if (fps >= fpsLimiter) {
+        //    #warning FIXME this works wrong
+        //    int fpsDiff = (int)(fps - fpsLimiter);
+        //    float targerFrameTime = 1000.0 / fpsLimiter;
+        //    int thisFrameTime = 1000.0 / fps;
+        //    int delay = (int)(targerFrameTime - thisFrameTime);
             //float diffMs = 1000.0 / (float)fpsDiff;
-            usleep(1000 * delay);
-        }
+            usleep(1000 * (int)fpsLimiter);
+        //}
 }
