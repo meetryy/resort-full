@@ -34,7 +34,7 @@ private:
 
 
 public:
-    enum MatWinAlias {W_MAT_IN, W_MAT_BG, W_MAT_CONTOUR, W_MAT_MOG, W_MAT_MORPH, W_MAT_OUT, W_MAT_MASK, W_MAT_NR};
+    enum MatWinAlias {W_MAT_IN, W_MAT_BG, W_MAT_CONTOUR, W_MAT_MOG, W_MAT_MORPH, W_MAT_OUT, W_MAT_MASK, W_MAT_DEBUG, W_MAT_NR};
     enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, W_SET_COM, W_SET_HW, W_SET_INFO,W_SET_OUT,
                         W_SELF_COLORS, W_SELF_LOG, W_SET_FILE,
                         W_SET_NR};
@@ -70,6 +70,23 @@ public:
     void MenuBarStateList(void);
     void StatedText(std::string Input, bool state);
 
+    void drawMenuBar(void);
+    void drawMatWindows(void);
+    void drawSettingsWindow(void);
+    void drawSettingsWindowOld(void);
+
+    void drawWaterfallSetingsWindow(void);
+    enum settingsCats { CAT_INPUT, CAT_PROCESSING,
+                        CAT_WF_EDGE, CAT_WF_CONTOURS, CAT_WF_MORPHO, CAT_WF_COLOR,
+                        CAT_WF_BS,
+                        //CAT_WF_BS_MOG, CAT_WF_BS_MOG2, CAT_WF_BS_CNT,
+                        CAT_WF_SHOW,
+                        CAT_B_COLOR, CAT_B_SIZE, CAT_B_MORPH, CAT_B_BLUR, CAT_B_ACCUM, CAT_B_INFO,
+                        CAT_COM, CAT_UI,
+                        CAT_STATS,
+                        CAT_DEBUG,
+                        NR_CAT};
+    std::string settingsCatNames[NR_CAT];
 };
 
 extern GUI_class GUI;

@@ -62,17 +62,17 @@
 		</Linker>
 		<Unit filename="COM_port.cpp" />
 		<Unit filename="COM_port.h" />
-		<Unit filename="ImGuiFileDialog.cpp" />
-		<Unit filename="ImGuiFileDialog.h" />
 		<Unit filename="RS-232/rs232.h" />
-		<Unit filename="UI.h" />
 		<Unit filename="arnold_schwarzenegger.jpg" />
 		<Unit filename="bgsubcnt.cpp" />
 		<Unit filename="bgsubcnt.h" />
-		<Unit filename="cvui.h" />
 		<Unit filename="dirent_portable.h" />
 		<Unit filename="file.cpp" />
 		<Unit filename="file.h" />
+		<Unit filename="gui/ImGuiFileDialog.cpp" />
+		<Unit filename="gui/ImGuiFileDialog.h" />
+		<Unit filename="gui/imguifilesystem.cpp" />
+		<Unit filename="gui/imguifilesystem.h" />
 		<Unit filename="img.cpp" />
 		<Unit filename="img.h" />
 		<Unit filename="imgui/imgui-SFML.cpp" />
@@ -80,21 +80,22 @@
 		<Unit filename="imgui/imgui_demo.cpp" />
 		<Unit filename="imgui/imgui_draw.cpp" />
 		<Unit filename="imgui/imgui_widgets.cpp" />
-		<Unit filename="imguifilesystem.cpp" />
-		<Unit filename="imguifilesystem.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Unit filename="mog.h" />
 		<Unit filename="newGUI.cpp" />
 		<Unit filename="newGUI.h" />
+		<Unit filename="preprocessor.cpp" />
+		<Unit filename="preprocessor.h" />
 		<Unit filename="real_dimensions.cpp" />
 		<Unit filename="real_dimensions.h" />
 		<Unit filename="rs232.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="rs232.h" />
-		<Unit filename="spark.h" />
 		<Unit filename="variables1.h" />
+		<Unit filename="video_player.cpp" />
+		<Unit filename="video_player.h" />
 		<Unit filename="webcam.h" />
 		<Extensions>
 			<code_completion />

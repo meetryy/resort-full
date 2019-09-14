@@ -1791,7 +1791,7 @@
 	<opencv2/imgproc/imgproc.hpp>
 	<SFML/Graphics/Texture.hpp>
 
-1560455592 source:d:\codeblocks\projects\resort-full\img.cpp
+1568418834 source:d:\codeblocks\projects\resort-full\img.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -1811,8 +1811,9 @@
 	"bgsubcnt.h"
 	"omp.h"
 	"newGUI.h"
+	"video_player.h"
 
-1560455638 d:\codeblocks\projects\resort-full\img.h
+1568410310 d:\codeblocks\projects\resort-full\img.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -1836,7 +1837,7 @@
 	<iostream>
 	"opencv2/opencv.hpp"
 
-1560452823 d:\codeblocks\projects\resort-full\newgui.h
+1568410332 d:\codeblocks\projects\resort-full\newgui.h
 	<string>
 	<SFML/Graphics/RenderWindow.hpp>
 	<SFML/System/Clock.hpp>
@@ -2021,7 +2022,7 @@
 	<errno.h>
 	<limits.h>
 
-1560455552 source:d:\codeblocks\projects\resort-full\newgui.cpp
+1568419281 source:d:\codeblocks\projects\resort-full\newgui.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<iostream>
@@ -2048,6 +2049,7 @@
 	"real_dimensions.h"
 	"newGUI.h"
 	"gui/imguifilesystem.h"
+	"video_player.h"
 
 1537042353 source:d:\codeblocks\projects\resort-full\real_dimensions.cpp
 	<opencv2/core/core.hpp>
@@ -2062,7 +2064,7 @@
 1511356394 source:d:\codeblocks\projects\resort-full\rs232.c
 	"rs232.h"
 
-1560454000 source:d:\codeblocks\projects\resort-full\main.cpp
+1568402845 source:d:\codeblocks\projects\resort-full\main.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -2085,7 +2087,6 @@
 	<SFML/Graphics/CircleShape.hpp>
 	<SFML/Graphics/RectangleShape.hpp>
 	"variables1.h"
-	"UI.h"
 	"main.h"
 	"file.h"
 	"img.h"
@@ -2162,4 +2163,33 @@
 	<sys/stat.h>
 	<errno.h>
 	<limits.h>
+
+1562095978 source:d:\codeblocks\projects\resort-full\preprocessor.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	"preprocessor.h"
+	"video_player.h"
+
+1562171533 d:\codeblocks\projects\resort-full\preprocessor.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<string>
+
+1568418572 d:\codeblocks\projects\resort-full\video_player.h
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<string>
+
+1568419149 source:d:\codeblocks\projects\resort-full\video_player.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	"video_player.h"
+	<ctime>
+	<unistd.h>
 

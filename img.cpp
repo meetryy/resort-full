@@ -19,6 +19,7 @@
 #include "bgsubcnt.h"
 #include "omp.h"
 #include "newGUI.h"
+#include "video_player.h"
 
 using namespace cv;
 using namespace std;
@@ -28,6 +29,8 @@ cv::Ptr<cv::BackgroundSubtractor> BackSubtractor;
 cv::VideoCapture camera(cv::CAP_DSHOW);
 cv::VideoCapture videocapture("test_video.avi");
 cv::VideoWriter oVideoWriter;
+
+videoPlayer_t videoPlayer;
 
 void Image_class::FPS_Routine(void){
     sf::Time elapsed1 = FPS_Clock.getElapsedTime();
@@ -64,42 +67,20 @@ void Image_class::BS_Init(int bs_algo){
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Алгоритм вычитания фона инициализирован");
 }
 
-void Image_class::ImgProcessor (void){
-
-omp_init_lock(&img_roi_lock);
-omp_init_lock(&img_output_lock);
-omp_init_lock(&max_cont_lock);
-omp_init_lock(&img_wholemask_lock);
-
-GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
-
-while (1){
-    if (V.Input.CaptureRun)
-    {
-        FPS_Routine();
-
-        if (!V.Input.FreezeFrame && !V.Input.Source) {camera >> img_in;}
-        if (V.Input.Source) {
-                //camera.release();
-                videocapture >> img_in;
-                if (img_in.empty()) {videocapture.set(CAP_PROP_POS_FRAMES, 0); videocapture >> img_in;}
-        }
-
-        if (!img_in.empty()){
+void Image_class::WaterfallProcessor(cv::Mat img_in){
+    if (!img_in.empty()){
         img_wholemask = Mat::zeros(img_in.size(), CV_8UC3);
         Mat img_output_temp = img_in.clone();
         cv::Mat img_gray;
         cv::cvtColor(img_in, img_gray, cv::COLOR_BGR2GRAY);
         blur(img_gray, img_gray, Size(V.BS.BlurBeforeMog,V.BS.BlurBeforeMog));
 
-        switch (V.BS.CurrentAlgo)
-        {
+        switch (V.BS.CurrentAlgo){
             case BS_MOG:    {BackSubtractor->apply(img_gray, img_mog_output, V.BS.MOG.LRate*V.BS.MOG.Learning); break;}
             case BS_MOG2:   {BackSubtractor->apply(img_gray, img_mog_output, V.BS.MOG2.LRate*V.BS.MOG2.Learning); break;}
             case BS_CNT:    {BackSubtractor->apply(img_gray, img_mog_output, V.BS.CNT.LRate*V.BS.CNT.Learning); break;}
             case BS_KNN:    {BackSubtractor->apply(img_gray, img_mog_output, bs_knn_learning*bs_knn_lrate); break;}
             case BS_GSOC:   {BackSubtractor->apply(img_gray, img_mog_output, bs_gsoc_lrate); break;}
-
         }
 
         blur(img_mog_output, img_mog_output, Size((int)V.Edge.BlurValue,(int)V.Edge.BlurValue) );
@@ -111,7 +92,7 @@ while (1){
             Canny( dx, dy, img_canny_output, V.Edge.CannyThresh1, V.Edge.CannyThresh1*3);
         }
 
-        else{Canny(img_mog_output, img_canny_output, V.Edge.CannyThresh1, V.Edge.CannyThresh2 );}
+        else {Canny(img_mog_output, img_canny_output, V.Edge.CannyThresh1, V.Edge.CannyThresh2 );}
 
         static int type;
         if (V.Morph.Type==MORPH_CURRENT_RECT){type=cv::MORPH_RECT;}
@@ -131,9 +112,9 @@ while (1){
         good_contours = 0;
         info_total_contours = 0;
 
-        omp_set_num_threads(16);
-
+        //omp_set_num_threads(16);
         //#pragma omp parallel for schedule(dynamic)
+
         for(unsigned long i = 0; i < contours.size(); i++ ){
             omp_set_lock(&img_wholemask_lock);
             cv::drawContours(img_wholemask, contours, i, cv::Scalar(255,255,255), cv::FILLED);
@@ -182,30 +163,65 @@ while (1){
                 if (V.Show.Diameter){ sprintf(str,"d=%.1f mm", pix2mm(diameter)); putText(img_output_temp, str, Point(X,Y+42), FONT_HERSHEY_PLAIN  , 1.2, textcolor, 1);}
                 if (V.Show.BBoxes){rectangle(img_output_temp,boundingRect(contours[i]).tl(), boundingRect(contours[i]).br(), Scalar(255,0,0), 1, 4, 0 );}
                 if (V.Show.Centers){circle(img_output_temp, mc[i], 2, 255, -1, 8, 0 );}
-                }
-        }
-
-        //omp_set_lock(&img_output_lock);
-        img_output_temp.copyTo(img_output);
-        //omp_unset_lock(&img_output_lock);
-
-        show_mat_upd_counter++;
-        if (show_mat_upd_counter >= show_mat_upd_target){
-            for (int i=0; i<GUI.W_MAT_NR; i++){
-                if (GUI.MatWin[i].show){
-                    GUI.MatWin[i].write.lock();
-                        GUI.MatWin[i].mat->copyTo(GUI.MatWin[i].mat_show);
-                    GUI.MatWin[i].write.unlock();
-                }
             }
-        show_mat_upd_counter = 0;
         }
-    }
-
-    else {Sleep(100);}
-    }
-
+        img_output_temp.copyTo(img_output);
 }
+else  Sleep(100);
+}
+Mat videofileFrame;
+
+void Image_class::ImgProcessor(void){
+    omp_init_lock(&img_roi_lock);
+    omp_init_lock(&img_output_lock);
+    omp_init_lock(&max_cont_lock);
+    omp_init_lock(&img_wholemask_lock);
+
+    GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
+
+    videoPlayer.Start("test_video.avi", 0, 200, -1);
+
+    while (1){
+        //videoPlayer.fpsStart();
+        videoPlayer.fpsStart();
+        img_debug = videoPlayer.getFrame();
+
+        //if (videoPlayer.fps >= )
+
+        if (V.Input.CaptureRun){
+            FPS_Routine();
+            switch (V.Input.Source){
+                // camera
+                case 0: {
+                    if (!V.Input.FreezeFrame) camera >> img_in;
+                    break;}
+                // video
+                case 1: {
+                    videocapture >> img_in;
+                    if (img_in.empty()) {videocapture.set(CAP_PROP_POS_FRAMES, 0); videocapture >> img_in;}
+                    break;}
+            }
+
+            WaterfallProcessor(img_in);
+
+            show_mat_upd_counter++;
+            if (show_mat_upd_counter >= show_mat_upd_target){
+                for (int i=0; i<GUI.W_MAT_NR; i++){
+                    if (GUI.MatWin[i].show){
+                        GUI.MatWin[i].write.lock();
+                            GUI.MatWin[i].mat->copyTo(GUI.MatWin[i].mat_show);
+                        GUI.MatWin[i].write.unlock();
+                    }
+                }
+            show_mat_upd_counter = 0;
+            }
+
+            //if (!videofileFrame.empty()) imshow("videofileFrame", videofileFrame);
+        }
+
+        videoPlayer.fpsStop();
+
+    }
 }
 
 void Image_class::RunProcessor(void){

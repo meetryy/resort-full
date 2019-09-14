@@ -94,6 +94,7 @@ public:
     cv::Mat img_morph_out;
     cv::Mat img_canny_output;
     cv::Mat img_contours;
+    cv::Mat img_debug;
 
     omp_lock_t img_roi_lock;
     omp_lock_t img_output_lock;
@@ -114,6 +115,7 @@ public:
     void BS_Init(int bs_algo);
     void FPS_Routine(void);
     void RunProcessor(void);
+    void WaterfallProcessor(cv::Mat img_in);
 
 };
 

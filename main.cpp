@@ -23,7 +23,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "variables1.h"
-#include "UI.h"
+//#include "UI.h"
 #include "main.h"
 #include "file.h"
 #include "img.h"
