@@ -30,6 +30,8 @@ int nthOccurrence(const std::string& str, const std::string& findMe, int nth)
     return pos;
 }
 
+/*
+
 template <typename T>
 void ProcessLine(string input, T*value, string paramname){
     if (std::is_same<T, float>::value) {ProcessLineFloat(input, &value, paramname);}
@@ -39,16 +41,13 @@ void ProcessLine(string input, T*value, string paramname){
     else if (std::is_same<T, long>::value)  {ProcessLineLong(input, &value, paramname);}
     else if (std::is_same<T, cv::Scalar>::value) {ProcessLineScalar(input, &value, paramname);}
 }
+*/
 
 void File_class::ReadConfig(string filename){
     ifstream in;            // Create an input file stream.
     in.open(filename);
-    if (!in) {
-        GUI.ConsoleOut(u8"ОШИБКА: Указанный файл конфигурации не найден!");
-        //ShowError("settings file not found!");
-        //err = 1; //openWindow(ERROR_WINDOW_NAME);
-    }
-    //else {closeWindow(ERROR_WINDOW_NAME);}
+    if (!in) GUI.ConsoleOut(u8"ОШИБКА: Указанный файл конфигурации не найден!");
+
     else
     {
         GUI.ConsoleOut(u8"ФАЙЛ: Файл конфигурации найден");
@@ -65,57 +64,57 @@ void File_class::ReadConfig(string filename){
                 //ProcessLineDouble(str, &cut_down, "cut_down");
                 //ProcessLineDouble(str, &cut_left, "cut_left");
                 //ProcessLineDouble(str, &cut_right, "cut_right");
-                ProcessLineFloat(str, &V.Cam.FPS, "V.Cam.FPS");
+                ProcessLine(str, &V.Cam.FPS, "V.Cam.FPS");
 
                 //edge detection
-                ProcessLineInt(str, &V.Edge.BlurValue, "V.Edge.BlurValue");
-                ProcessLineInt(str, &V.Edge.CannyThresh1, "V.Edge.CannyThresh1");
-                ProcessLineInt(str, &V.Edge.CannyThresh2, "V.Edge.CannyThresh2");
-                ProcessLineBool(str, &V.Edge.UseScharr, "V.Edge.UseScharr");
-                ProcessLineLong(str, &V.Edge.ScharrThresh, "V.Edge.ScharrThresh");
-                ProcessLineInt(str, &V.Contours.CurrentAlgo, "V.Contours.CurrentAlgo");
+                ProcessLine(str, &V.Edge.BlurValue, "V.Edge.BlurValue");
+                ProcessLine(str, &V.Edge.CannyThresh1, "V.Edge.CannyThresh1");
+                ProcessLine(str, &V.Edge.CannyThresh2, "V.Edge.CannyThresh2");
+                ProcessLine(str, &V.Edge.UseScharr, "V.Edge.UseScharr");
+                ProcessLine(str, &V.Edge.ScharrThresh, "V.Edge.ScharrThresh");
+                ProcessLine(str, &V.Contours.CurrentAlgo, "V.Contours.CurrentAlgo");
 
                 //contours
-                ProcessLineFloat(str, &V.Contours.MinBBoxArea, "V.Contours.MinBBoxArea");
-                ProcessLineFloat(str, &V.Contours.MaxBBoxArea, "V.Contours.MaxBBoxArea");
-                ProcessLineBool(str, &V.Contours.morph_mask, "V.Contours.morph_mask");
-                ProcessLineInt(str, &V.Morph.Size, "V.Morph.Size");
+                ProcessLine(str, &V.Contours.MinBBoxArea, "V.Contours.MinBBoxArea");
+                ProcessLine(str, &V.Contours.MaxBBoxArea, "V.Contours.MaxBBoxArea");
+                ProcessLine(str, &V.Contours.morph_mask, "V.Contours.morph_mask");
+                ProcessLine(str, &V.Morph.Size, "V.Morph.Size");
 
 
                 //color
-                ProcessLineScalar(str, &V.Color.GoodRGB, "V.Color.GoodRGB");
-                ProcessLineScalar(str, &V.Color.ToleranceRGB, "V.Color.ToleranceRGB");
-                ProcessLineScalar(str, &V.Color.GoodHSV, "V.Color.GoodHSV");
-                ProcessLineScalar(str, &V.Color.ToleranceHSV, "V.Color.ToleranceHSV");
-                ProcessLineBool(str, &V.Color.GoodSpace, "V.Color.GoodSpace");
+                ProcessLine(str, &V.Color.GoodRGB, "V.Color.GoodRGB");
+                ProcessLine(str, &V.Color.ToleranceRGB, "V.Color.ToleranceRGB");
+                ProcessLine(str, &V.Color.GoodHSV, "V.Color.GoodHSV");
+                ProcessLine(str, &V.Color.ToleranceHSV, "V.Color.ToleranceHSV");
+                ProcessLine(str, &V.Color.GoodSpace, "V.Color.GoodSpace");
 
                 //output
-                ProcessLineBool(str, &V.Show.Contours, "V.Show.Contours");
-                ProcessLineBool(str, &V.Show.Centers, "V.Show.Centers");
-                ProcessLineBool(str, &V.Show.BBoxes, "V.Show.BBoxes");
-                ProcessLineBool(str, &V.Show.AvgColor, "V.Show.AvgColor");
-                ProcessLineBool(str, &V.Show.Area, "V.Show.Area");
-                ProcessLineBool(str, &V.Show.FillAvg, "V.Show.FillAvg");
-                ProcessLineBool(str, &V.Show.FilContour, "V.Show.FilContour");
+                ProcessLine(str, &V.Show.Contours, "V.Show.Contours");
+                ProcessLine(str, &V.Show.Centers, "V.Show.Centers");
+                ProcessLine(str, &V.Show.BBoxes, "V.Show.BBoxes");
+                ProcessLine(str, &V.Show.AvgColor, "V.Show.AvgColor");
+                ProcessLine(str, &V.Show.Area, "V.Show.Area");
+                ProcessLine(str, &V.Show.FillAvg, "V.Show.FillAvg");
+                ProcessLine(str, &V.Show.FilContour, "V.Show.FilContour");
 
                 //com port
-                ProcessLineBool(str, &V.ComPort.Connected, "V.ComPort.Connected");
-                ProcessLineInt(str, &V.ComPort.Number, "V.ComPort.Number");
-                ProcessLineLong(str, &V.ComPort.Speed, "V.ComPort.Speed");
+                ProcessLine(str, &V.ComPort.Connected, "V.ComPort.Connected");
+                ProcessLine(str, &V.ComPort.Number, "V.ComPort.Number");
+                ProcessLine(str, &V.ComPort.Speed, "V.ComPort.Speed");
 
                 //mog
-                ProcessLineInt(str, &V.BS.MOG.History, "V.BS.MOG.History");
-                ProcessLineInt(str, &V.BS.MOG.Mixtures, "V.BS.MOG.Mixtures");
-                ProcessLineFloat(str, &V.BS.MOG.BackRatio, "V.BS.MOG.BackRatio");
-                ProcessLineFloat(str, &V.BS.MOG.NoiseSigma, "V.BS.MOG.NoiseSigma");
-                ProcessLineFloat(str, &V.BS.MOG.LRate, "V.BS.MOG.LRate");
-                ProcessLineBool(str, &V.BS.MOG.Learning, "V.BS.MOG.Learning");
+                ProcessLine(str, &V.BS.MOG.History, "V.BS.MOG.History");
+                ProcessLine(str, &V.BS.MOG.Mixtures, "V.BS.MOG.Mixtures");
+                ProcessLine(str, &V.BS.MOG.BackRatio, "V.BS.MOG.BackRatio");
+                ProcessLine(str, &V.BS.MOG.NoiseSigma, "V.BS.MOG.NoiseSigma");
+                ProcessLine(str, &V.BS.MOG.LRate, "V.BS.MOG.LRate");
+                ProcessLine(str, &V.BS.MOG.Learning, "V.BS.MOG.Learning");
 
                 //mog2
-                ProcessLineInt(str, &V.BS.MOG2.History, "V.BS.MOG2.History");
-                ProcessLineFloat(str, &V.BS.MOG2.Thresh, "V.BS.MOG2.Thresh");
-                ProcessLineBool(str, &V.BS.MOG2.DetectShadows, "V.BS.MOG2.DetectShadows");
-                ProcessLineBool(str, &V.BS.MOG2.Learning, "V.BS.MOG2.Learning");
+                ProcessLine(str, &V.BS.MOG2.History, "V.BS.MOG2.History");
+                ProcessLine(str, &V.BS.MOG2.Thresh, "V.BS.MOG2.Thresh");
+                ProcessLine(str, &V.BS.MOG2.DetectShadows, "V.BS.MOG2.DetectShadows");
+                ProcessLine(str, &V.BS.MOG2.Learning, "V.BS.MOG2.Learning");
 
                 //knn
                 //ProcessLineInt(str, &Img.bs_knn_history, "Img.bs_knn_history");
@@ -124,11 +123,11 @@ void File_class::ReadConfig(string filename){
                 //ProcessLineBool(str, &Img.bs_knn_learning, "Img.bs_knn_learning");
 
                 //cnt
-                ProcessLineInt(str, &V.BS.CNT.MinPixStability, "V.BS.CNT.MinPixStability");
-                ProcessLineInt(str, &V.BS.CNT.MaxPixStability, "V.BS.CNT.MaxPixStability");
-                ProcessLineBool(str, &V.BS.CNT.UseHistory, "V.BS.CNT.UseHistory");
-                ProcessLineBool(str, &V.BS.CNT.IsParallel, "V.BS.CNT.IsParallel");
-                ProcessLineInt(str, &V.BS.CNT.FPS, "V.BS.CNT.FPS");
+                ProcessLine(str, &V.BS.CNT.MinPixStability, "V.BS.CNT.MinPixStability");
+                ProcessLine(str, &V.BS.CNT.MaxPixStability, "V.BS.CNT.MaxPixStability");
+                ProcessLine(str, &V.BS.CNT.UseHistory, "V.BS.CNT.UseHistory");
+                ProcessLine(str, &V.BS.CNT.IsParallel, "V.BS.CNT.IsParallel");
+                ProcessLine(str, &V.BS.CNT.FPS, "V.BS.CNT.FPS");
 
                 //gsoc
                 //ProcessLineInt(str, &Img.bs_gsoc_mc, "Img.bs_gsoc_mc");
@@ -145,23 +144,23 @@ void File_class::ReadConfig(string filename){
                 //ProcessLineBool(str, &Img.bs_gsoc_learning, "Img.bs_gsoc_learning");
 
                 //com camera
-                ProcessLineInt(str, &V.Cam.Number, "V.Cam.Number");
-                ProcessLineLong(str, &V.Cam.Width, "V.Cam.Width");
-                ProcessLineLong(str, &V.Cam.Height, "V.Cam.Height");
-                ProcessLineInt(str, &V.Cam.Gain, "V.Cam.Gain");
-                ProcessLineInt(str, &V.Cam.Contrast, "V.Cam.Contrast");
-                ProcessLineInt(str, &V.Cam.Brightness, "V.Cam.Brightness");
-                ProcessLineInt(str, &V.Cam.Exposure, "V.Cam.Exposure");
-                ProcessLineInt(str, &V.Cam.Saturation, "V.Cam.Saturation");
-                ProcessLineInt(str, &V.Cam.Hue, "V.Cam.Hue");
+                ProcessLine(str, &V.Cam.Number, "V.Cam.Number");
+                ProcessLine(str, &V.Cam.Width, "V.Cam.Width");
+                ProcessLine(str, &V.Cam.Height, "V.Cam.Height");
+                ProcessLine(str, &V.Cam.Gain, "V.Cam.Gain");
+                ProcessLine(str, &V.Cam.Contrast, "V.Cam.Contrast");
+                ProcessLine(str, &V.Cam.Brightness, "V.Cam.Brightness");
+                ProcessLine(str, &V.Cam.Exposure, "V.Cam.Exposure");
+                ProcessLine(str, &V.Cam.Saturation, "V.Cam.Saturation");
+                ProcessLine(str, &V.Cam.Hue, "V.Cam.Hue");
 
                 //misc
-                ProcessLineLong(str, &pix_per_100mm, "pix_per_100mm");
-                ProcessLineInt(str, &V.Morph.Type, "V.Morph.Type");
-                ProcessLineInt(str, &V.Contours.CurrentAlgo, "V.Contours.CurrentAlgo");
-                ProcessLineInt(str, &V.BS.CurrentAlgo, "V.BS.CurrentAlgo");
-                ProcessLineInt(str, &V.BS.BlurBeforeMog, "V.BS.BlurBeforeMog");
-                ProcessLineBool(str, &V.UI.Fullscreen, "V.UI.Fullscreen");
+                ProcessLine(str, &pix_per_100mm, "pix_per_100mm");
+                ProcessLine(str, &V.Morph.Type, "V.Morph.Type");
+                ProcessLine(str, &V.Contours.CurrentAlgo, "V.Contours.CurrentAlgo");
+                ProcessLine(str, &V.BS.CurrentAlgo, "V.BS.CurrentAlgo");
+                ProcessLine(str, &V.BS.BlurBeforeMog, "V.BS.BlurBeforeMog");
+                ProcessLine(str, &V.UI.Fullscreen, "V.UI.Fullscreen");
 
             }
             getline(in, str);   // Try to get another line.
@@ -170,14 +169,14 @@ void File_class::ReadConfig(string filename){
     }
 }
 
-int File_class::ProcessLineLong(string str, long *parameter, string paramname){
+int File_class::ProcessLine(string str, long *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
         string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
         std::string::size_type sz;     // alias of size_t
         *parameter = std::stoi (value,&sz);  //string to int
-        //cout << paramname << " = " << *parameter << endl;
+        cout << "reading long " << paramname << " = " << *parameter << " OK!"<< endl;
         to_return = RESULT_OK;
         //cout << paramname << " found in line" << endl;
         //GUI.ConsoleOut("%s = %lu", paramname, parameter);
@@ -185,14 +184,14 @@ int File_class::ProcessLineLong(string str, long *parameter, string paramname){
     return to_return;
 }
 
-int File_class::ProcessLineFloat(string str, float *parameter, string paramname){
+int File_class::ProcessLine(string str, float *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
         string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
         std::string::size_type sz;     // alias of size_t
         *parameter = std::stof (value,&sz);  //string to int
-        //cout << paramname << " = " << *parameter << endl;
+        cout << "reading float " << paramname << " = " << *parameter << " OK!"<< endl;
         to_return = RESULT_OK;
         //cout << paramname << " found in line" << endl;
     }
@@ -200,14 +199,14 @@ int File_class::ProcessLineFloat(string str, float *parameter, string paramname)
     return to_return;
 }
 
-int File_class::ProcessLineDouble(string str, double *parameter, string paramname){
+int File_class::ProcessLine(string str, double *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
         string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
         std::string::size_type sz;     // alias of size_t
         *parameter = std::stof (value,&sz);  //string to int
-        //cout << paramname << " = " << *parameter << endl;
+        cout << "reading double " << paramname << " = " << *parameter << " OK!"<< endl;
         to_return = RESULT_OK;
         //cout << paramname << " found in line" << endl;
     }
@@ -215,20 +214,20 @@ int File_class::ProcessLineDouble(string str, double *parameter, string paramnam
     return to_return;
 }
 
-int File_class::ProcessLineInt(string str, int *parameter, string paramname){
+int File_class::ProcessLine(string str, int *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
         string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
         std::string::size_type sz;     // alias of size_t
         *parameter = std::stoi (value,&sz);  //string to int
-        //cout << paramname << " = " << *parameter << endl;
+        cout << "reading int " << paramname << " = " << *parameter << " OK!"<< endl;
         to_return = RESULT_OK;
     }
     return to_return;
 }
 
-int File_class::ProcessLineBool(string str, bool *parameter, string paramname){
+int File_class::ProcessLine(string str, bool *parameter, string paramname){
     int to_return = RESULT_FAIL;
     int position = str.find(paramname);         //find a variable name
     if (position != string::npos) {             //if exist
@@ -236,7 +235,7 @@ int File_class::ProcessLineBool(string str, bool *parameter, string paramname){
         //cout << "bool value = " << value << endl;
         std::string::size_type sz;     // alias of size_t
         *parameter = std::stoi (value,nullptr,2);;  //string to int
-        //cout << paramname << " = " << *parameter << endl;
+        cout << "reading bool " << paramname << " = " << *parameter << " OK!"<< endl;
         //cout << paramname << " FOUND in line" << endl;
         to_return = RESULT_OK;
     }
@@ -244,7 +243,7 @@ int File_class::ProcessLineBool(string str, bool *parameter, string paramname){
     return to_return;
 }
 
-int File_class::ProcessLineScalar(string str, Scalar *parameter, string paramname){
+int File_class::ProcessLine(string str, Scalar *parameter, string paramname){
     int to_return = RESULT_FAIL;
     //hsv_input_correction=(50.0,100.0,150.0);
     int position = str.find(paramname);         //find a variable name
@@ -276,7 +275,7 @@ int File_class::ProcessLineScalar(string str, Scalar *parameter, string paramnam
         double val3 = 0;//std::stof (subvalue3,&sz);  //string to int
 
         *parameter = Scalar(val0,val1,val2,val3);
-
+        cout << "reading scalar " << paramname << " = " << *parameter << " OK!"<< endl;
         to_return = RESULT_OK;
 
 

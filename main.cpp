@@ -23,7 +23,6 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "variables1.h"
-//#include "UI.h"
 #include "main.h"
 #include "file.h"
 #include "img.h"
@@ -33,7 +32,9 @@
 #include "real_dimensions.h"
 #include "newGUI.h"
 #include "gui/ImGuiFileDialog.h"
+#include "belt_processor.h"
 #include "omp.h"
+
 #define FPS_AVERAGE 50
 
 using namespace cv;
@@ -54,7 +55,6 @@ std::string WindowName = "ReSort v0.1";
 
 int main(int argc, const char *argv[])
 {
-
     GUI.Init();
     GUI.VarInit();
 
@@ -62,6 +62,8 @@ int main(int argc, const char *argv[])
     File.SaveConfig("settings.ini");
 
     COM.List();
+    std::thread t1(comport_thread);
+    t1.detach();
 
     V.Input.CaptureRun = 0;
 
@@ -72,17 +74,21 @@ int main(int argc, const char *argv[])
     //thread ImgProcessor_t(ImgProcessor);
     //ImgProcessor_t.detach();
 
+
     Img.RunProcessor();
 
     GUI.Worker();
 
+
+
 }
 
 void comport_thread(void){
+    std::cout << "com thread started" << std::endl;
     while(1){
         //std::cout << "task1 says:";
         //cv::waitKey(100);
-        //if (V.ComPort.Connected) {handshake_COM();}
+        if (V.ComPort.Connected) {COM.listen();}
     }
 }
 

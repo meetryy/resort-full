@@ -9,7 +9,7 @@ class File_class{
 private:
     bool ParseSuccess = 0;
     enum ResultAlias {RESULT_OK, RESULT_FAIL};
-
+/*
     template <typename T>
     void ProcessLine(std::string input, T&value, std::string paramname){
         if (std::is_same<T, float>::value) {ProcessLineFloat(input, value, paramname);}
@@ -19,16 +19,18 @@ private:
         else if (std::is_same<T, long>::value)  {ProcessLineLong(input, value, paramname);}
         else if (std::is_same<T, cv::Scalar>::value) {ProcessLineScalar(input, value, paramname);}
     }
+*/
 
 public:
     void ReadConfig(std::string filename);
     void SaveConfig(std::string filename);
-    int ProcessLineLong(std::string str, long *parameter, std::string paramname);
-    int ProcessLineBool(std::string str, bool *parameter, std::string  paramname);
-    int ProcessLineScalar(std::string  str, cv::Scalar *parameter, std::string paramname);
-    int ProcessLineInt(std::string  str, int *parameter, std::string  paramname);
-    int ProcessLineDouble(std::string  str, double *parameter, std::string  paramname);
-    int ProcessLineFloat(std::string  str, float *parameter, std::string  paramname);
+
+    int ProcessLine(std::string str, long *parameter, std::string paramname);
+    int ProcessLine(std::string str, bool *parameter, std::string  paramname);
+    int ProcessLine(std::string  str, cv::Scalar *parameter, std::string paramname);
+    int ProcessLine(std::string  str, int *parameter, std::string  paramname);
+    int ProcessLine(std::string  str, double *parameter, std::string  paramname);
+    int ProcessLine(std::string  str, float *parameter, std::string  paramname);
     void LineList(void);
 };
 

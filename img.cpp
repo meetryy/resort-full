@@ -183,18 +183,15 @@ void Image_class::ImgProcessor(void){
 
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
 
-    //BeltProcessor.Init();
-
     while (1){
         if (V.Input.CaptureRun){
             FPS_Routine();
             switch (V.Input.Source){
-                // camera
-                case 0: {
+                case 0: { // camera
                     if (!V.Input.FreezeFrame) camera >> img_in;
                     break;}
-                // video
-                case 1: {
+
+                case 1: { // video
                     videoPlayer.fpsStart();
                     Mat videoFrame = videoPlayer.getFrame();
                     img_in = preprocessor.Result(videoFrame);
@@ -348,13 +345,11 @@ void Image_class::cam_open(void){
 void Image_class::cam_close(void){
     V.Input.CaptureRun = 0;
     camera.release();
-    //if (!camera.isOpened()) {  }
 }
 
 void Image_class::video_close(void){
     V.Input.CaptureRun = 0;
     videocapture.release();
-    //if (!videocapture.isOpened()) {}
 }
 
 void Image_class::video_open(void){

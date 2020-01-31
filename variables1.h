@@ -15,17 +15,16 @@ extern float time2;
 extern int show_frame;
 
 struct V_t{
-    struct Input_t{
+    struct {
         bool CaptureRun;
         bool FreezeFrame;
         int  Source;
         bool CaptureFile;
-    };
-    Input_t Input;
+    } Input;
 
     int procType = 0;
 
-    struct Cam_t{
+    struct {
         int     Number;
         long    Width;
         long    Height;
@@ -36,43 +35,38 @@ struct V_t{
         int     Hue;
         int     Saturation;
         float   FPS;
-    };
-    Cam_t Cam;
+    } Cam;
 
-    struct Edge_t{
+    struct{
         int BlurValue;
         int CannyThresh1;
         int CannyThresh2;
         bool UseScharr;
         long ScharrThresh;
-    };
-    Edge_t Edge;
+    } Edge;
 
-    struct Contours_t{
+    struct {
         float MinBBoxArea;
         float MaxBBoxArea;
         bool morph_mask;
         bool WideAreaRange;
         int   CurrentAlgo;
-    };
-    Contours_t Contours;
+    } Contours;
 
-    struct Morph_t{
+    struct {
         int Size;
         int Type;
-    };
-    Morph_t Morph;
+    } Morph;
 
-    struct Color_t{
+    struct {
         cv::Scalar GoodRGB;
         cv::Scalar ToleranceRGB;
         cv::Scalar GoodHSV;
         cv::Scalar ToleranceHSV;
         bool GoodSpace;
-    };
-    Color_t Color;
+    } Color;
 
-    struct Show_t{
+    struct {
         bool Contours;
         bool Centers;
         bool BBoxes;
@@ -83,39 +77,35 @@ struct V_t{
         bool FilContour;
         int  MatUpdCounter;
         int  MatUpdTarget;
-    };
-    Show_t Show;
+    } Show;
 
-    struct COM_t{
+    struct {
         bool Connected;
         int  Number;
         long Speed;
-    };
-    COM_t ComPort;
+    } ComPort;
 
-    struct BS_t{
+    struct {
         int CurrentAlgo;
         int BlurBeforeMog;
-        struct MOG_t{
+        struct {
             int     History;
             int     Mixtures;
             float   BackRatio;
             float   NoiseSigma;
             bool    Learning;
             float   LRate;
-        };
-        MOG_t MOG;
+        } MOG;
 
-        struct MOG2_t{
+        struct {
             int     History;
             float   Thresh;
             bool    DetectShadows;
             bool    Learning;
             float   LRate;
-        };
-        MOG2_t MOG2;
+        } MOG2;
 
-        struct CNT_t{
+        struct {
             int     MinPixStability;
             int     MaxPixStability;
             int     FPS;
@@ -123,12 +113,10 @@ struct V_t{
             bool    IsParallel;
             float   LRate;
             bool    Learning;
-        };
-        CNT_t CNT;
-    };
-    BS_t BS;
+        }CNT;
+    } BS;
 
-    struct Info_t{
+    struct {
         float   time1;
         float   time2;
         float   s_per_frame;
@@ -139,77 +127,23 @@ struct V_t{
         long    UsefulContours;
         int     FPSAverage;
         bool    ConsoleDestination;
-    };
-    Info_t Info;
+    } Info;
 
-    struct UI_t{
+    struct {
         bool Fullscreen;
-    };
-    UI_t UI;
+    } UI;
+
+    bool comTest = 0;
 
 };
 
 extern struct V_t V;
 
-//input
-//extern bool input_correction_on;
-//extern  cv::Scalar hsv_input_correction;
-
-//edge detection
-//contours
-//color
-//output
-//com port
-
-
-//info
-//extern float   time1;
-//extern float   time2;
-
-//extern long info_total_contours;
-//extern long useful_contours;
-
-
-///////////////////////
-/*
-
-extern  int     bs_knn_history;
-extern  float   bs_knn_thresh;
-extern  bool    bs_knn_shadows;
-extern  bool    bs_knn_learning;
-extern  float   bs_knn_lrate;
-
-extern  int     bs_gsoc_mc;
-extern  int     bs_gsoc_samples;
-extern  float   bs_gsoc_reprate;
-extern  float   bs_gsoc_proprate;
-extern  int     bs_gsoc_hits_thresh;
-extern  float   bs_gsoc_alpha;
-extern  float   bs_gsoc_beta;
-extern  float   bs_gsoc_bs_decay;
-extern  float   bs_gsoc_bs_mul;
-extern  float   bs_gsoc_noise_bg;
-extern  float   bs_gsoc_noise_fg;
-extern  bool    bs_gsoc_learning;
-extern  float   bs_gsoc_lrate;
-*/
-
 extern  long    pix_per_100mm;
-
 extern bool     video_recording;
-
 extern bool     show_GUI;
 
 extern  double    cut_up;
 extern  double    cut_down;
 extern  double    cut_left;
 extern  double    cut_right;
-
-extern bool     draw_ruler;
-//extern bool     capture_file;
-extern bool     show_quad;
-extern bool     show_particle_number;
-
-//extern int show_mat_upd_counter;
-//extern int show_mat_upd_target;
-//extern int fps_average;

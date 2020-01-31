@@ -61,7 +61,7 @@ public:
 
     sf::RenderWindow window;
     sf::Clock deltaClock;
-    std::string WindowName = "ReSort v0.2";
+    std::string WindowName = "ReSort v0.25";
     long ScreenW = 0;
     long ScreenH = 0;
 
@@ -80,10 +80,15 @@ public:
 
     void drawMenuBar(void);
     void drawMatWindows(void);
-    void drawSettingsWindow(void);
-    void drawSettingsWindowOld(void);
 
-    void drawWaterfallSetingsWindow(void);
+    //void drawSettingsWindowOld(void);
+
+    void drawSettingsWindow(void);
+    void drawMatBar(void);
+    void drawSettingsBar(void);
+    void drawSettingsBlock(void);
+
+    //void drawWaterfallSetingsWindow(void);
     enum settingsCats { CAT_INPUT, CAT_PROCESSING,
                         CAT_WF_EDGE, CAT_WF_CONTOURS, CAT_WF_MORPHO, CAT_WF_COLOR,
                         CAT_WF_BS,

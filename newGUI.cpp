@@ -59,11 +59,11 @@ void GUI_class::Init(void){
     GUI.WindowName.append(")");
 
     window.create(sf::VideoMode(GUI.ScreenW, GUI.ScreenH), GUI.WindowName);//,sf::Style::Fullscreen);
+    window.setFramerateLimit(30);
 
-    window.setFramerateLimit(50);
     V.Info.ConsoleDestination = 1;
     V.UI.Fullscreen = 0;
-    SetWin[W_SELF_LOG].show = 1;
+    //SetWin[W_SELF_LOG].show = 1;
 
     ImGui::SFML::Init(window, false);
     LoadFont();
@@ -87,7 +87,7 @@ void GUI_class::Worker(void){
                 window.close();
                 if (V.UI.Fullscreen) window.create(sf::VideoMode(ScreenW, ScreenH), WindowName,sf::Style::Fullscreen);
                         else    window.create(sf::VideoMode(ScreenW, ScreenH), WindowName);
-                window.setFramerateLimit(60);
+                window.setFramerateLimit(30);
                 FullscreenChanged=0;
                 GUI.ConsoleOut(u8"ИНТЕРФЕЙС: Полноэкранный режим переключен");
             }
@@ -217,12 +217,9 @@ ImVec4 ColorOn = ImColor(0.0f,1.0f,0.0f,1.0f);
 ImVec4 ColorOff = ImColor(1.0f,0.0f,0.0f,1.0f);
 
 void GUI_class::StatedText(string Input, bool state){
-    if (state) {
-        ImGui::PushStyleColor(ImGuiCol_Text, ColorOn);
-    }
-    else{
-        ImGui::PushStyleColor(ImGuiCol_Text, ColorOff);
-    }
+    if (state) ImGui::PushStyleColor(ImGuiCol_Text, ColorOn);
+    else    ImGui::PushStyleColor(ImGuiCol_Text, ColorOff);
+
     ImGui::BulletText(Input.c_str());
     ImGui::PopStyleColor();
 }
@@ -230,53 +227,10 @@ void GUI_class::StatedText(string Input, bool state){
 void GUI_class::MenuBarStateList(void){
         StatedText(u8"Камера", V.Input.CaptureRun);
         ImGui::Separator();
-        StatedText(u8"Комуникация", V.Input.CaptureRun);
+        StatedText(u8"Комуникация", V.comTest);
         ImGui::Separator();
         StatedText(u8"Сепарация", V.Input.CaptureRun);
         ImGui::Separator();
-
-}
-
-void drawSettingsWindow(void){
-    ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Example: Layout", p_open, ImGuiWindowFlags_MenuBar))
-    {
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("Close")) *p_open = false;
-                ImGui::EndMenu();
-            }
-            ImGui::EndMenuBar();
-        }
-
-        // left
-        static int selected = 0;
-        ImGui::BeginChild("left pane", ImVec2(150, 0), true);
-        for (int i = 0; i < 100; i++)
-        {
-            char label[128];
-            sprintf(label, "MyObject %d", i);
-            if (ImGui::Selectable(label, selected == i))
-                selected = i;
-        }
-        ImGui::EndChild();
-        ImGui::SameLine();
-
-        // right
-        ImGui::BeginGroup();
-            ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-                ImGui::Text("MyObject: %d", selected);
-                ImGui::Separator();
-                ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-            ImGui::EndChild();
-            if (ImGui::Button("Revert")) {}
-            ImGui::SameLine();
-            if (ImGui::Button("Save")) {}
-        ImGui::EndGroup();
-    }
-    ImGui::End();
 }
 
 void GUI_class::drawMenuBar(void){
@@ -366,33 +320,16 @@ void GUI_class::drawMatWindows(void){
                     image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
                     texture[i].loadFromImage(image[i]);
                     sprite[i].setTexture(texture[i]);
+                ImGuiWindowFlags MatWinFlags = ImGuiWindowFlags_None;//ImGuiWindowFlags_AlwaysAutoResize;
 
-                ImGuiWindowFlags MatWinFlags = ImGuiWindowFlags_AlwaysAutoResize;
-                if(i == W_MAT_WF_OUT) {MatWinFlags |= ImGuiWindowFlags_MenuBar;}
+                float initSizeX = texture[i].getSize().x;
+                float initSizeY = texture[i].getSize().y;
+                float aspRatio =  initSizeX / initSizeY;
 
                 ImGui::Begin(MatWin[i].title.c_str(), p_open, MatWinFlags);
-                    if(i == W_MAT_WF_OUT){
-                        if (ImGui::BeginMenuBar()){
-                            if (ImGui::BeginMenu(u8"Показать")){
-                                    ImGui::MenuItem(u8"Контуры", "", &V.Show.Contours);
-                                    ImGui::MenuItem(u8"Центры", "", &V.Show.Centers);
-                                    ImGui::MenuItem(u8"Коробки", "", &V.Show.BBoxes);
-                                    ImGui::MenuItem(u8"Средний цвет", "", &V.Show.AvgColor);
-                                    ImGui::MenuItem(u8"Диаметр", "", &V.Show.Diameter);
-                                    ImGui::MenuItem(u8"Площадь", "", &V.Show.Area);
-                                    ImGui::MenuItem(u8"Заполнить средним цветом", "", &V.Show.FillAvg);
-                                    ImGui::MenuItem(u8"Заполнить результатом", "", &V.Show.FilContour);
-                                ImGui::EndMenu();
-                            }
-                        ImGui::EndMenuBar();
-                        }
-                    }
-                    //if (V.Input.Source){
-                            ImGui::Image(texture[i], ImVec2(MatWin[i].mat->cols, MatWin[i].mat->rows));//}
-                    //else {ImGui::Image(texture[i], ImVec2(V.Cam.Width,V.Cam.Height));}
-
+                    //ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().x, ImGui::GetWindowContentRegionMax().y-40));//}
+                    ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().y*aspRatio, ImGui::GetWindowContentRegionMax().y-40));//}
                 ImGui::End();
-
             }
             else{
                 ImGui::Begin(MatWin[i].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
@@ -431,32 +368,107 @@ void GUI_class::drawMatWindows(void){
 }
 
 int thismarker = 0;
-void GUI_class::drawSettingsWindow(void){
 
-    ImGui::ShowDemoWindow();
 
-    if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_None)){
-        static int catSelected = 0;
-        ImGui::BeginChild("##wfsettingsleft", ImVec2(ImGui::GetWindowWidth()/3.5, 0), true);
-        for (int i = 0; i < NR_CAT; i++){
-            if (ImGui::Selectable(settingsCatNames[i].c_str(), catSelected == i))
-                catSelected = i;
-        }
-        ImGui::EndChild();
-        ImGui::SameLine();
+ImVec4 colByFrac(int pos, int max){
+    float part = float(pos) / (float)max * 1.0f;
+    ImVec4 ret = (ImVec4)ImColor::HSV(part, 0.8f, 0.5f);
+    return ret;
+}
 
-        ImGui::BeginGroup();
-            ImGui::BeginChild("##wfitems", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+int barWinH = 500;
+
+cv::Mat *matPtr;
+cv::Mat smallMat, smallMatRGBA;
+sf::Image smallImage;
+sf::Sprite smallSprite;
+sf::Texture smallTexture;
+std::mutex smallMutex;
+
+void GUI_class::drawMatBar(void){
+    int i = W_MAT_B_RANGED;
+    if(!MatWin[i].mat_show.empty()){
+            MatWin[i].write.lock();
+            if (MatWin[i].mat_show.type() == 16)        {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGR2RGBA);}
+            else if (MatWin[i].mat_show.type() == 0)    {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_GRAY2RGBA);}
+            else if (MatWin[i].mat_show.type() == 24)   {
+                                                            cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGRA2RGBA);
+                                                        }
+            MatWin[i].write.unlock();
+
+            image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
+            texture[i].setSmooth(true);
+            texture[i].loadFromImage(image[i]);
+            //sprite[i].setTexture(texture[i]);
+
+        float initSizeX = texture[i].getSize().x;
+        float initSizeY = texture[i].getSize().y;
+        float aspRatio =  initSizeX / initSizeY;
+
+        //ImGui::Begin(MatWin[i].title.c_str(), p_open, MatWinFlags);
+            //ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().x, ImGui::GetWindowContentRegionMax().y-40));//}
+        //ImGui::BeginChild("##childmat", ImVec2(0, 480.0f));
+            ImGui::Text("type = %u", MatWin[i].mat_show.type());
+            ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().y*aspRatio, ImGui::GetWindowContentRegionMax().y));//}
+        //ImGui::EndChild();
+        //ImGui::End();
+    }
+
+}
+
+int catSelected = 0;
+
+void GUI_class::drawSettingsBlock(void){
+    ImGui::BeginGroup();
+            ImGui::BeginChild("##wfitems", ImVec2(0, 0), 1, 0);
             switch (catSelected) {
                 case CAT_INPUT: {
                     ImGui::Text(u8"Настройки источника изображения");
                     ImGui::Separator();
 
-                    ImGui::Combo(u8"Источник картинки", &V.Input.Source, u8"Камера\0Видео\0\0");
-                    GUI.ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
+                    //ImGui::BeginChild("##startbtnch", ImVec2(60,50), 0, ImGuiWindowFlags_None);
+                        if  (!V.Input.CaptureRun) {
+                                if (ImGui::Button(u8"Открыть поток", ImVec2(60,22))) {
+                                    if (V.Input.Source == 0){
+                                        Img.cam_open();
+                                    }
 
-                    ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &Img.show_mat_upd_target,  0, 127);
-                    GUI.ShowHelpMarker(u8"Может ускорить быстродействие");
+                                    if (V.Input.Source == 1){
+                                        videoPlayer.Start("test_video.avi", videoPlayer.startFrame, -1, -1);
+                                        BeltProcessor.Init();
+                                        BeltProcessor.initDone = 0;
+                                        V.Input.CaptureRun = 1;
+                                        //Img.video_open();
+                                    }
+                                }
+                            }
+
+                            else {
+                                if (ImGui::Button(u8"Закрыть поток", ImVec2(60,22))) {
+                                    if (V.Input.Source == 0){
+                                        V.Input.CaptureRun = 0;
+                                    }
+
+                                    if (V.Input.Source == 1){
+                                        videoPlayer.Stop();
+                                        V.Input.CaptureRun = 0;
+                                        //BeltProcessor.initDone = 0;
+                                    }
+                                }
+                            }
+                    //ImGui::EndChild();
+
+                    ImGui::SameLine();
+
+                    //ImGui::BeginChild("##startbtnch2", ImVec2(0,50), 0, ImGuiWindowFlags_None);
+                       ImGui::Combo(u8"Источник картинки", &V.Input.Source, u8"Камера\0Видео\0\0");
+                        GUI.ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
+
+                        ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &Img.show_mat_upd_target,  0, 127);
+                        GUI.ShowHelpMarker(u8"Может ускорить быстродействие");
+                    //ImGui::EndChild();
+
+
 
                     ImGui::Separator();
 
@@ -526,36 +538,6 @@ void GUI_class::drawSettingsWindow(void){
                                 videoPlayer.setMarker(videoPlayer.playbackMarker);
                         }
                     }
-
-                    if  (!V.Input.CaptureRun) {
-                            if (ImGui::Button(u8"Открыть поток")) {
-                                if (V.Input.Source == 0){
-                                    Img.cam_open();
-                                }
-
-                                if (V.Input.Source == 1){
-                                    videoPlayer.Start("test_video.avi", videoPlayer.startFrame, -1, -1);
-                                    //BeltProcessor.Init();
-                                    BeltProcessor.initDone = 0;
-                                    V.Input.CaptureRun = 1;
-                                    //Img.video_open();
-                                }
-                            }
-                        }
-
-                        else {
-                            if (ImGui::Button(u8"Закрыть поток")) {
-                                if (V.Input.Source == 0){
-                                    V.Input.CaptureRun = 0;
-                                }
-
-                                if (V.Input.Source == 1){
-                                    videoPlayer.Stop();
-                                    V.Input.CaptureRun = 0;
-                                    BeltProcessor.initDone = 0;
-                                }
-                            }
-                        }
 
                     break;}
 
@@ -822,18 +804,22 @@ void GUI_class::drawSettingsWindow(void){
                     if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
                     GUI.ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
                     ImGui::Text(u8"Доступные порты:");
+
+                    ImGui::BeginChild("##coms", ImVec2(150, 300), true);
                     for (int i = 0; i < 16; i++){
                         if (COM.IsPresent[i] == 1){
                             char label[128];
-                            sprintf(label, "COM %d", i);
+                            sprintf(label, "COM%d", i+1);
                             if (ImGui::Selectable(label, com_selected == i))
                             com_selected = i;
                         }
                     }
-                    const char* comspeeds[] = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200"};
-                    const long  com_speeds[] = { 1200,2400,4800,9600,19200,38400,57600,115200};
+                    ImGui::EndChild();
 
+                    const char* comspeeds[] = { "9600", "57600", "115200", "250000", "1000000", "2000000"};
+                    const long  com_speeds[] = { 9600 ,57600, 115200, 250000, 1000000, 2000000};
                     static int speed_current = 0;
+
                     ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds));
                     V.ComPort.Speed = com_speeds[speed_current];
                     if(!V.ComPort.Connected){if (ImGui::Button(u8"Подключиться")){COM.Open(com_selected);}}
@@ -880,70 +866,134 @@ void GUI_class::drawSettingsWindow(void){
                     break;}
                 case CAT_DEBUG: {
                     ImGui::Checkbox("show debug mat", &MatWin[W_MAT_DEBUG].show);
+                    if (ImGui::Button("com port test")) COM.Test();
+                    /*
+                    enum sysStates {STATE_STARTUP, STATE_WAITING, STATE_READY, STATE_ERROR};
+                    enum hwTypeMask {MASK_HWTYPE_MOTOR, MASK_HWTYPE_LAMP, MASK_HWTYPE_LED}; // 4 max!
+                    enum motActMask {MASK_ACT_MOTORRUN, MASK_ACT_MOTORACCEL, MASK_ACT_MOTORSPD}; // 4 max!
+                    enum lampActMask {MASK_ACT_LAMPPWM, MASK_ACT_LAMPONOFF}; // 4 max!
+                    enum ledActMask {MASK_ACT_LEDR, MASK_ACT_LEDG, MASK_ACT_LEDB, MASK_ACT_LEDONOFF}; // 4 max!
+                    */
+
+                    static int hwTypeMaskHere =0;
+                    static int hwActMaskHere =0;
+                    static int hwIDhere = 0;
+                    static int paramHere = 0;
+
+                    ImGui::Combo(u8"hwTypeMask", &hwTypeMaskHere, u8"MASK_HWTYPE_MOTOR\0MASK_HWTYPE_LAMP\0MASK_HWTYPE_LED\0MASK_HWTYPE_MISC\0\0");
+
+                    if (hwTypeMaskHere == MASK_HWTYPE_MOTOR)
+                        ImGui::Combo(u8"hwActMask", &hwActMaskHere, u8"MASK_ACT_MOTORRUN\0MASK_ACT_MOTORACCEL\0MASK_ACT_MOTORSPD\0MASK_ACT_MOTORACCEL\0\0");
+
+                    if (hwTypeMaskHere == MASK_HWTYPE_LAMP)
+                        ImGui::Combo(u8"hwActMask", &hwActMaskHere, u8"MASK_ACT_LAMPPWM\0MASK_ACT_LAMPONOFF\0\0");
+
+                    if (hwTypeMaskHere == MASK_HWTYPE_LED)
+                        ImGui::Combo(u8"hwActMask", &hwActMaskHere, u8"MASK_ACT_LEDR\0MASK_ACT_LEDG\0MASK_ACT_LEDB\0MASK_ACT_LEDONOFF\0\0");
+
+                    if (hwTypeMaskHere == MASK_HWTYPE_MISC)
+                        ImGui::Combo(u8"hwActMask", &hwActMaskHere, u8"MASK_ACT_PING\0\0");
+
+
+                    ImGui::SliderInt("hw ID", &hwIDhere, 0, 4, "%u");
+                    if(ImGui::SliderInt("parameter", &paramHere, 0, 255, "%u")) COM.setHwState(hwTypeMaskHere, hwIDhere, hwActMaskHere, paramHere);
+
+                    if (ImGui::Button("send")) COM.setHwState(hwTypeMaskHere, hwIDhere, hwActMaskHere, paramHere);
+                    if (ImGui::Button("shake")) COM.Shake();
+
 
                     break;}
             }
             ImGui::EndChild();
         ImGui::EndGroup();
+}
+
+void btnStyleInactive(void){
+    ImGui::PushStyleColor(ImGuiCol_Button,          (ImVec4)ImColor::HSV(0.5f, 0.0f, 0.5f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,   (ImVec4)ImColor::HSV(0.7f, 0.0f, 0.7f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,    (ImVec4)ImColor::HSV(0.9f, 0.0f, 0.9f, 1.0f));
+};
+
+void btnStyleFrac(float frac){
+    ImGui::PushStyleColor(ImGuiCol_Button,          (ImVec4)ImColor::HSV(frac, 0.7f, 0.7f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,   (ImVec4)ImColor::HSV(frac, 0.5f, 0.7f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,    (ImVec4)ImColor::HSV(frac, 0.3f, 0.7f, 1.0f));
+};
+
+void btnStyleColorEnd(void){};
+void btnStylePop(void){ImGui::PopStyleColor(3);};
+
+
+bool testBool = 0;
+
+void GUI_class::drawSettingsBar(void){
+    ImGuiStyle& style = ImGui::GetStyle();
+     ImGui::BeginChild("##wfsettingsleft", ImVec2(210/*ImGui::GetWindowWidth()/3.8f*/, 0), true);
+        for (int i = 0; i < NR_CAT; i++){
+            if (!((V.procType == 0) && (i >= CAT_B_COLOR) && (i <= CAT_B_INFO) ||
+                (V.procType == 1) && (i >= CAT_WF_EDGE) && (i <= CAT_WF_SHOW))) {
+                if (i % 3 == 0) {
+                    btnStyleFrac((float)i/NR_CAT);
+                        if (ImGui::Button(" ", ImVec2(10.0f, 22.0f))) {}
+                    btnStylePop();
+
+                   // chkColorSet();
+                   //     ImGui::Checkbox("##a", &testBool);
+                   // chkColorPop();
+
+                    ImGui::SameLine();
+                }
+
+                else ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (20 + style.ItemSpacing.x));
+
+                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.7f, 1.0f));
+                ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.5f, 1.0f));
+                ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.3f, 1.0f));
+                if (ImGui::Selectable(settingsCatNames[i].c_str(), catSelected == i))
+                    catSelected = i;
+                ImGui::PopStyleColor(3);
+
+                //ImGui::SameLine();
+                //ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - 25);
+                //ImGui::Checkbox("##a", &testBool);
+
+            }
+
+        }
+        ImGui::EndChild();
+}
+
+ImVec2 mainWinSize = ImVec2(1440, 870);
+
+void GUI_class::drawSettingsWindow(void){
+    ImGuiStyle& style = ImGui::GetStyle();
+    int spacing = style.ItemSpacing.x;
+    ImGui::SetNextWindowSize(mainWinSize, ImGuiCond_Always);
+    if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_NoResize)){
+
+        ImGui::BeginChild("##fast", ImVec2(0, 38), 1, 0);
+            if (ImGui::Button(u8"Изображение", ImVec2( ImGui::GetWindowContentRegionWidth()/3-spacing,0))) {} ImGui::SameLine();
+            if (ImGui::Button(u8"Коммуникация", ImVec2(ImGui::GetWindowContentRegionWidth()/3-spacing,0))) {} ImGui::SameLine();
+            if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/3-spacing,0))) {}
+        ImGui::EndChild();
+
+        ImGui::BeginChild("##upper", ImVec2(0, mainWinSize.y/2 - 80));
+            drawSettingsBar();
+            ImGui::SameLine();
+            drawSettingsBlock();
+        ImGui::EndChild();
+
+        //ImGui::SameLine();
+
+        ImGui::BeginChild("##lower", ImVec2(0, 0));
+            drawMatBar();
+        ImGui::EndChild();
+
     }
     ImGui::End();
+
+
 }
-/*
-    if (SetWin[W_SELF_COLORS].show){
-        ImGui::Begin(SetWin[W_SELF_COLORS].title.c_str(), p_open, ImGuiWindowFlags_AlwaysAutoResize);
-            static int style_idx = 1;
-            if (ImGui::Combo(u8"Цветовая схема", &style_idx, u8"Классическая\0Тёмная\0Светлая\0")){
-                switch (style_idx){
-                    case 0: ImGui::StyleColorsClassic(); break;
-                    case 1: ImGui::StyleColorsDark(); break;
-                    case 2: ImGui::StyleColorsLight(); break;
-                }
-            }
-            ImGui::ShowFontSelector(u8"Шрифт");
-            if (ImGui::TreeNode(u8"Размеры")){
-                ImGuiStyle& style = ImGui::GetStyle();
-                ImGui::Text("Main");
-                ImGui::SliderFloat2("WindowPadding", (float*)&style.WindowPadding, 0.0f, 20.0f, "%.0f");
-                ImGui::SliderFloat("PopupRounding", &style.PopupRounding, 0.0f, 16.0f, "%.0f");
-                ImGui::SliderFloat2("FramePadding", (float*)&style.FramePadding, 0.0f, 20.0f, "%.0f");
-                ImGui::SliderFloat2("ItemSpacing", (float*)&style.ItemSpacing, 0.0f, 20.0f, "%.0f");
-                ImGui::SliderFloat2("ItemInnerSpacing", (float*)&style.ItemInnerSpacing, 0.0f, 20.0f, "%.0f");
-                ImGui::SliderFloat2("TouchExtraPadding", (float*)&style.TouchExtraPadding, 0.0f, 10.0f, "%.0f");
-                ImGui::SliderFloat("IndentSpacing", &style.IndentSpacing, 0.0f, 30.0f, "%.0f");
-                ImGui::SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");
-                ImGui::SliderFloat("GrabMinSize", &style.GrabMinSize, 1.0f, 20.0f, "%.0f");
-                ImGui::Spacing();
-                ImGui::Text("Borders");
-                ImGui::SliderFloat("WindowBorderSize", &style.WindowBorderSize, 0.0f, 1.0f, "%.0f");
-                ImGui::SliderFloat("ChildBorderSize", &style.ChildBorderSize, 0.0f, 1.0f, "%.0f");
-                ImGui::SliderFloat("PopupBorderSize", &style.PopupBorderSize, 0.0f, 1.0f, "%.0f");
-                ImGui::SliderFloat("FrameBorderSize", &style.FrameBorderSize, 0.0f, 1.0f, "%.0f");
-                ImGui::Spacing();
-                ImGui::Text("Rounding");
-                ImGui::SliderFloat("WindowRounding", &style.WindowRounding, 0.0f, 14.0f, "%.0f");
-                ImGui::SliderFloat("ChildRounding", &style.ChildRounding, 0.0f, 16.0f, "%.0f");
-                ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f");
-                ImGui::SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0f, 12.0f, "%.0f");
-                ImGui::SliderFloat("GrabRounding", &style.GrabRounding, 0.0f, 12.0f, "%.0f");
-                ImGui::Spacing();
-                ImGui::Text("Alignment");
-                ImGui::SliderFloat2("WindowTitleAlign", (float*)&style.WindowTitleAlign, 0.0f, 1.0f, "%.2f");
-                ImGui::SliderFloat2("ButtonTextAlign", (float*)&style.ButtonTextAlign, 0.0f, 1.0f, "%.2f"); ImGui::SameLine(); GUI.ShowHelpMarker("Alignment applies when a button is larger than its text content.");
-                ImGui::Text("Safe Area Padding"); ImGui::SameLine(); GUI.ShowHelpMarker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");
-                ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&style.DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
-            ImGui::TreePop();
-        }
-        ImGui::End();
-
-
-    }
-
-    if (SetWin[W_SELF_LOG].show){
-            GUI_Log.Draw(u8"Консоль", p_open);
-    }
-*/
-
-
 
 
 
@@ -951,6 +1001,9 @@ void GUI_class::Draw(void){
     drawMenuBar();
     drawMatWindows();
     drawSettingsWindow();
+    ImGui::ShowDemoWindow();
+
+    GUI_Log.Draw(u8"Консоль", p_open);
 
     ImGui::Begin(u8"Изображения", p_open, ImGuiWindowFlags_None);
         for (int cat=0; cat<NR_W_CAT; cat++){
@@ -964,6 +1017,7 @@ void GUI_class::Draw(void){
             }
     }
     ImGui::End();
+
 }
 
 
@@ -1017,15 +1071,15 @@ void GUI_class::VarInit(void){
     MatWin[W_MAT_PP_HUD].cat = W_CAT_PP;
 
     MatWin[W_MAT_B_HUD].title=u8"HUD";
-    MatWin[W_MAT_B_HUD].mat = &BeltProcessor.mainMatHUD;
+    MatWin[W_MAT_B_HUD].mat = &BeltProcessor.ejHUD;
     MatWin[W_MAT_B_HUD].cat = W_CAT_BELT;
 
     MatWin[W_MAT_B_ACCUM].title=u8"W_MAT_B_ACCUM";
-    MatWin[W_MAT_B_ACCUM].mat = &BeltProcessor.matSatRendered;
+    MatWin[W_MAT_B_ACCUM].mat = &BeltProcessor.matAlphaMask;
     MatWin[W_MAT_B_ACCUM].cat = W_CAT_BELT;
 
-    MatWin[W_MAT_B_RANGED].title=u8"W_MAT_B_RANGED";
-    MatWin[W_MAT_B_RANGED].mat = &BeltProcessor.matSatRanged;
+    MatWin[W_MAT_B_RANGED].title=u8"W_MAT_B_RENDERED";
+    MatWin[W_MAT_B_RANGED].mat = &BeltProcessor.matSatRendered;
     MatWin[W_MAT_B_RANGED].cat = W_CAT_BELT;
 
     settingsCatNames[CAT_INPUT] = u8"Вход изображения";
@@ -1050,18 +1104,19 @@ void GUI_class::VarInit(void){
 
 void GUI_class::Fill_Textures(void){
     for(int i=0; i<W_MAT_NR; i++){
-        if (MatWin[i].show){
+        //if (MatWin[i].show){
             MatWin[i].write.lock();
             if(!MatWin[i].mat->empty()){
                 if (MatWin[i].mat->type() == 16){cv::cvtColor(*MatWin[i].mat, frameRGBA[i], cv::COLOR_BGR2RGBA);}
                 else if (MatWin[i].mat->type() == 0){cv::cvtColor(*MatWin[i].mat, frameRGBA[i], cv::COLOR_GRAY2RGBA);}
-
+                //else if (MatWin[i].mat->type() == 0){cv::cvtColor(*MatWin[i].mat, frameRGBA[i], cv::COLOR_GRAY2RGBA);}
+                std::cout << "type = " << MatWin[i].mat->type() << std::endl;
                 image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
                 texture[i].loadFromImage(image[i]);
                 sprite[i].setTexture(texture[i]);
             }
             MatWin[i].write.unlock();
-        }
+        //}
     }
 }
 
