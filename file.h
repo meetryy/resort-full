@@ -31,6 +31,7 @@ public:
     int ProcessLine(std::string  str, int *parameter, std::string  paramname);
     int ProcessLine(std::string  str, double *parameter, std::string  paramname);
     int ProcessLine(std::string  str, float *parameter, std::string  paramname);
+    int ProcessLine(std::string str, std::string *parameter, std::string paramname);
     void LineList(void);
 };
 

@@ -26,6 +26,7 @@
 #include "mog.h"
 #include "real_dimensions.h"
 #include "newGUI.h"
+#include "gui_tools.h"
 #include "gui/imguifilesystem.h"
 #include "video_player.h"
 #include "preprocessor.h"
@@ -59,11 +60,7 @@ void GUI_class::Init(void){
     GUI.WindowName.append(")");
 
     window.create(sf::VideoMode(GUI.ScreenW, GUI.ScreenH), GUI.WindowName);//,sf::Style::Fullscreen);
-    window.setFramerateLimit(30);
-
-    V.Info.ConsoleDestination = 1;
-    V.UI.Fullscreen = 0;
-    //SetWin[W_SELF_LOG].show = 1;
+    window.setFramerateLimit(V.UI.guiFPS);
 
     ImGui::SFML::Init(window, false);
     LoadFont();
@@ -73,6 +70,8 @@ void GUI_class::Init(void){
 void GUI_class::Worker(void){
     sf::Clock deltaClock;
     sf::Event event;
+
+    FullscreenChanged = 1;
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -112,8 +111,7 @@ void GUI_class::LoadFont(void){
     font_config.OversampleV = 1;
     font_config.PixelSnapH = 1;
 
-    static const ImWchar ranges[] =
-    {
+    static const ImWchar ranges[] ={
         0x0020, 0x00FF, // Basic Latin + Latin Supplement
         0x0400, 0x044F, // Cyrillic
         0,
@@ -131,88 +129,8 @@ void GUI_class::LoadFont(void){
     ConsoleOut(u8"ИНТЕРФЕЙС: Закгрузка шрифтов завершена");
 }
 
-struct LogWidget_t
-{
-    ImGuiTextBuffer     Buf;
-    ImGuiTextFilter     Filter;
-    ImVector<int>       LineOffsets;        // Index to lines offset
-    bool                ScrollToBottom;
 
-    void    Clear()     { Buf.clear(); LineOffsets.clear(); }
 
-    void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
-    {
-        int old_size = Buf.size();
-        va_list args;
-        va_start(args, fmt);
-        Buf.appendfv(fmt, args);
-        va_end(args);
-        for (int new_size = Buf.size(); old_size < new_size; old_size++)
-            if (Buf[old_size] == '\n')
-                LineOffsets.push_back(old_size);
-        ScrollToBottom = true;
-    }
-
-    void    Draw(const char* title, bool* p_open = NULL)
-    {
-        ImGui::SetNextWindowSize(ImVec2(500,400), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin(title, p_open))
-        {
-            ImGui::End();
-            return;
-        }
-        if (ImGui::Button(u8"Очистить")) Clear();
-        ImGui::SameLine();
-        bool copy = ImGui::Button(u8"Копировать");
-        ImGui::SameLine();
-        Filter.Draw(u8"Фильтр", -100.0f);
-        ImGui::Checkbox(u8"Вывод сюда (иначе в cout)", &V.Info.ConsoleDestination);
-        ImGui::Separator();
-        ImGui::BeginChild("scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
-        if (copy) ImGui::LogToClipboard();
-
-        if (Filter.IsActive())
-        {
-            const char* buf_begin = Buf.begin();
-            const char* line = buf_begin;
-            for (int line_no = 0; line != NULL; line_no++)
-            {
-                const char* line_end = (line_no < LineOffsets.Size) ? buf_begin + LineOffsets[line_no] : NULL;
-                if (Filter.PassFilter(line, line_end))
-                    ImGui::TextUnformatted(line, line_end);
-                line = line_end && line_end[1] ? line_end + 1 : NULL;
-            }
-        }
-        else
-        {
-            ImGui::TextUnformatted(Buf.begin());
-        }
-
-        if (ScrollToBottom)
-            ImGui::SetScrollHereY(1.0f);
-        ScrollToBottom = false;
-        ImGui::EndChild();
-        ImGui::End();
-    }
-};
-
-static LogWidget_t GUI_Log;
-
-void GUI_class::ConsoleOut (string InString){
-    time_t now;
-    char the_date[32];
-    the_date[0] = '\0';
-    now = time(NULL);
-    strftime(the_date, 32, "%H-%M-%S", gmtime(&now));
-    if (V.Info.ConsoleDestination){
-    GUI_Log.AddLog("%s: %s\n", the_date, InString.c_str());
-    }
-    else{
-        cout << the_date << " " << InString <<endl;
-    }
-}
-
-static bool browseButtonPressed;
 ImVec4 ColorOn = ImColor(0.0f,1.0f,0.0f,1.0f);
 ImVec4 ColorOff = ImColor(1.0f,0.0f,0.0f,1.0f);
 
@@ -224,67 +142,20 @@ void GUI_class::StatedText(string Input, bool state){
     ImGui::PopStyleColor();
 }
 
-void GUI_class::MenuBarStateList(void){
-        StatedText(u8"Камера", V.Input.CaptureRun);
-        ImGui::Separator();
-        StatedText(u8"Комуникация", V.comTest);
-        ImGui::Separator();
-        StatedText(u8"Сепарация", V.Input.CaptureRun);
-        ImGui::Separator();
-}
 
 void GUI_class::drawMenuBar(void){
     if (ImGui::BeginMainMenuBar()){
-        if (ImGui::BeginMenu(u8"Файл")){
-                if (ImGui::MenuItem(u8"Загрузить конфигурацию")){
-                    BrowseMode = BROWSE_LOAD;
-                    browseButtonPressed = 1;
-                    SetWin[W_SET_FILE].show = 1;
-                }
 
-                if (ImGui::MenuItem(u8"Сохранить конфигурацию")){
-                    BrowseMode = BROWSE_SAVE;
-                    browseButtonPressed = 1;
-                    SetWin[W_SET_FILE].show = 1;
-                    };
-                if (ImGui::MenuItem(u8"Выйти из программы")){ImGui::SFML::Shutdown();};
-            ImGui::EndMenu();
-        }
+        ImGui::Text(WindowName.c_str());
         ImGui::Separator();
-        if (ImGui::BeginMenu(u8"Показать")){
-                ImGui::MenuItem(u8"Вход", NULL, &MatWin[W_MAT_IN].show);
-                ImGui::MenuItem(u8"Вычитание фона: результат", NULL, &MatWin[W_MAT_WF_MOG].show);
-                ImGui::MenuItem(u8"Вычитание фона: модель фона", NULL, &MatWin[W_MAT_WF_BG].show);
-                ImGui::MenuItem(u8"Контуры", NULL, &MatWin[W_MAT_WF_CONTOUR].show);
-                ImGui::MenuItem(u8"Морфология", NULL, &MatWin[W_MAT_WF_MORPH].show);
-                ImGui::MenuItem(u8"Маска", NULL, &MatWin[W_MAT_WF_MASK].show);
-                ImGui::MenuItem(u8"Выход", NULL, &MatWin[W_MAT_WF_OUT].show);
-            ImGui::EndMenu();
-        }
-        ImGui::Separator();
-         if (ImGui::BeginMenu(u8"Настройки обработки")){
-                ImGui::MenuItem(u8"Вход", "", &SetWin[W_SET_IN].show);
-                ImGui::MenuItem(u8"Отделение фона", "", &SetWin[W_SET_BG].show);
-                ImGui::MenuItem(u8"Поиск контуров", "", &SetWin[W_SET_CONTOUR].show);
-                ImGui::MenuItem(u8"Маска", "", &SetWin[W_SET_MASK].show);
-                ImGui::MenuItem(u8"Цвет", "", &SetWin[W_SET_COLOR].show);
-                ImGui::MenuItem(u8"Коммуникации", "", &SetWin[W_SET_COM].show);
-                ImGui::MenuItem(u8"Железо", "", &SetWin[W_SET_HW].show);
-                ImGui::MenuItem(u8"Информация", "", &SetWin[W_SET_INFO].show);
-            ImGui::EndMenu();
-        }
-        ImGui::Separator();
-        if (ImGui::BeginMenu(u8"Настройки программы")){
-                ImGui::MenuItem(u8"Внешний вид", "", &SetWin[W_SELF_COLORS].show);
-                ImGui::MenuItem(u8"Консоль", "", &SetWin[W_SELF_LOG].show);
-                if(ImGui::MenuItem(u8"Полный экран", NULL, &V.UI.Fullscreen)){FullscreenChanged=1;}
-                //ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-                //ImGui::InputFloat("Input", &f, 0.1f);
-                //ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-            ImGui::EndMenu();
-        }
 
-        //if (ImGui::MenuItem(u8"Выход", "Alt+F4")) {}
+        ImGui::Text(u8"Конфигурация: settings.ini");
+        if (ImGui::MenuItem(u8"Загрузить")) openFileBrowser(BROWSE_LOAD_CFG);
+        if (ImGui::MenuItem(u8"Сохранить")) openFileBrowser(BROWSE_SAVE_CFG);
+        ImGui::Separator();
+
+        if(ImGui::MenuItem(u8"Полный экран", NULL, &V.UI.Fullscreen)) {FullscreenChanged=1;}
+
         ImGui::Separator();
         ImGui::Text("GUI %.1f FPS",ImGui::GetIO().Framerate);
 
@@ -300,10 +171,10 @@ void GUI_class::drawMenuBar(void){
         ImGui::Separator();
         ImGui::Text("%s", time_buff);
 
-        MenuBarStateList();
+        //MenuBarStateList();
 
-        SameLine(GetWindowWidth()-140);
-        ImGui::Text(WindowName.c_str());
+        SameLine(GetWindowWidth() - 57);
+        if (ImGui::MenuItem(u8"Выход")){openPopUp(PU_EXIT);};
 
     ImGui::EndMainMenuBar();
     }
@@ -340,31 +211,6 @@ void GUI_class::drawMatWindows(void){
         }
     }
 
-        if (SetWin[W_SET_FILE].show){
-            ImGui::Begin("test", p_open, ImGuiWindowFlags_AlwaysAutoResize);
-            static ImGuiFs::Dialog dlg;
-
-            if (BrowseMode == BROWSE_SAVE){
-                const char* chosenPath = dlg.saveFileDialog(browseButtonPressed);
-                    if (strlen(chosenPath)>0) {
-                        std::cout<<chosenPath<<std::endl;
-                        SetWin[W_SET_FILE].show = 0;
-                        File.SaveConfig(chosenPath);
-                    }
-            }
-
-            if (BrowseMode == BROWSE_LOAD){
-                const char* chosenPath = dlg.chooseFileDialog(browseButtonPressed);
-                    if (strlen(chosenPath)>0) {
-                        std::cout<<chosenPath<<std::endl;
-                        SetWin[W_SET_FILE].show = 0;
-                        File.ReadConfig(chosenPath);
-                    }
-            }
-
-            browseButtonPressed = 0;
-            ImGui::End();
-         }
 }
 
 int thismarker = 0;
@@ -385,38 +231,66 @@ sf::Sprite smallSprite;
 sf::Texture smallTexture;
 std::mutex smallMutex;
 
-void GUI_class::drawMatBar(void){
-    int i = W_MAT_B_RANGED;
-    if(!MatWin[i].mat_show.empty()){
-            MatWin[i].write.lock();
-            if (MatWin[i].mat_show.type() == 16)        {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGR2RGBA);}
-            else if (MatWin[i].mat_show.type() == 0)    {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_GRAY2RGBA);}
-            else if (MatWin[i].mat_show.type() == 24)   {
-                                                            cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGRA2RGBA);
-                                                        }
-            MatWin[i].write.unlock();
+void alignCenter(float width){
+    ImGui::Dummy(ImVec2(0.0f, 0.0f));
+    ImGui::SameLine(ImGui::GetWindowContentRegionMax().x / 2 - width / 2);
+}
 
-            image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
-            texture[i].setSmooth(true);
-            texture[i].loadFromImage(image[i]);
-            //sprite[i].setTexture(texture[i]);
+int catSelected = 0;
+
+void GUI_class::drawMatBar(void){
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    int i = setCats[catSelected].matID;
+    MatWin[i].show = 1;
+
+    if((!MatWin[i].mat_show.empty()) && (i != -1)){
+        MatWin[i].write.lock();
+        switch (MatWin[i].mat_show.type()) {
+            case 0:  {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_GRAY2RGBA); break;}
+            case 16: {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGR2RGBA); break;}
+            case 24: {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGRA2RGBA); break;}
+        }
+        MatWin[i].write.unlock();
+
+        image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
+        texture[i].setSmooth(true);
+        texture[i].loadFromImage(image[i]);
 
         float initSizeX = texture[i].getSize().x;
         float initSizeY = texture[i].getSize().y;
         float aspRatio =  initSizeX / initSizeY;
 
-        //ImGui::Begin(MatWin[i].title.c_str(), p_open, MatWinFlags);
-            //ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().x, ImGui::GetWindowContentRegionMax().y-40));//}
-        //ImGui::BeginChild("##childmat", ImVec2(0, 480.0f));
-            ImGui::Text("type = %u", MatWin[i].mat_show.type());
-            ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().y*aspRatio, ImGui::GetWindowContentRegionMax().y));//}
-        //ImGui::EndChild();
-        //ImGui::End();
+        float videoH = ImGui::GetWindowContentRegionMax().y - style.ItemSpacing.y*2;
+        float videoW = videoH * aspRatio;
+
+        if (videoW > ImGui::GetWindowContentRegionMax().x - style.ItemSpacing.x*2){
+            float videoW = ImGui::GetWindowContentRegionMax().x - style.ItemSpacing.x * 2;
+            float videoH = videoW * aspRatio;
+        }
+
+        alignCenter(videoW);
+        ImGui::Image(texture[i], ImVec2(videoW, videoH));//}
     }
 
 }
 
-int catSelected = 0;
+
+#include "imgui_internal.h"
+
+void pushNextDisabledIf(bool isOff){
+    if (isOff){
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    }
+}
+
+void popNextDisabledIf(bool isOff){
+    if (isOff){
+        ImGui::PopItemFlag();
+        ImGui::PopStyleVar();
+    }
+}
 
 void GUI_class::drawSettingsBlock(void){
     ImGui::BeginGroup();
@@ -426,34 +300,16 @@ void GUI_class::drawSettingsBlock(void){
                     ImGui::Text(u8"Настройки источника изображения");
                     ImGui::Separator();
 
-                    //ImGui::BeginChild("##startbtnch", ImVec2(60,50), 0, ImGuiWindowFlags_None);
                         if  (!V.Input.CaptureRun) {
-                                if (ImGui::Button(u8"Открыть поток", ImVec2(60,22))) {
-                                    if (V.Input.Source == 0){
-                                        Img.cam_open();
-                                    }
-
-                                    if (V.Input.Source == 1){
-                                        videoPlayer.Start("test_video.avi", videoPlayer.startFrame, -1, -1);
-                                        BeltProcessor.Init();
-                                        BeltProcessor.initDone = 0;
-                                        V.Input.CaptureRun = 1;
-                                        //Img.video_open();
-                                    }
+                                if (ImGui::Button(u8"Открыть", ImVec2(60,22))) {
+                                    Img.startCapture();
                                 }
                             }
 
                             else {
-                                if (ImGui::Button(u8"Закрыть поток", ImVec2(60,22))) {
-                                    if (V.Input.Source == 0){
-                                        V.Input.CaptureRun = 0;
-                                    }
-
-                                    if (V.Input.Source == 1){
-                                        videoPlayer.Stop();
-                                        V.Input.CaptureRun = 0;
-                                        //BeltProcessor.initDone = 0;
-                                    }
+                                if (ImGui::Button(u8"Закрыть", ImVec2(60,22))) {
+                                    openPopUp(PU_SOURCE_CLOSE);
+                                    //stopCapture();
                                 }
                             }
                     //ImGui::EndChild();
@@ -461,10 +317,18 @@ void GUI_class::drawSettingsBlock(void){
                     ImGui::SameLine();
 
                     //ImGui::BeginChild("##startbtnch2", ImVec2(0,50), 0, ImGuiWindowFlags_None);
-                       ImGui::Combo(u8"Источник картинки", &V.Input.Source, u8"Камера\0Видео\0\0");
+                        pushNextDisabledIf(V.Input.CaptureRun);
+                            ImGui::Combo(u8"Источник картинки", &V.Input.Source, u8"Камера\0Видео\0\0");
+                            if (V.Input.Source == SOURCE_VIDEO){
+                                if (ImGui::Button(u8"Обзор...", ImVec2(60,22))) openFileBrowser(BROWSE_LOAD_VIDEO);
+                            }
+                        popNextDisabledIf(V.Input.CaptureRun);
+
+
+
                         GUI.ShowHelpMarker(u8"Видео с камеры или из файла \"test_video.avi\"");
 
-                        ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &Img.show_mat_upd_target,  0, 127);
+                        ImGui::SliderInt(u8"Выводить каждый n-ный кадр", &Img.matLimiterTarget,  0, 127);
                         GUI.ShowHelpMarker(u8"Может ускорить быстродействие");
                     //ImGui::EndChild();
 
@@ -477,55 +341,57 @@ void GUI_class::drawSettingsBlock(void){
                         ImGui::InputInt(u8"Номер камеры", &V.Cam.Number);
                         GUI.ShowHelpMarker(u8"По умолчанию 0");
 
-                        const char* reso[] = { "320x240", "640x480", "800x600", "1024x768", "1280x720"};
-                        const long  resol[] = {320,240,640,480,800,600,1024,768,1280,720};
-                        static int reso_curr = 0;
-                        if(ImGui::Combo(u8"Разрешение", &reso_curr, reso, IM_ARRAYSIZE(reso))){
-                            V.Cam.Width  = resol[reso_curr*2];
-                            V.Cam.Height = resol[reso_curr*2+1];
-                            Img.cam_open();
-                        }
+                        //const char* reso[] = { "", "", "800x600", "1024x768", "1280x720"};
+                        const long  resol[] = {320,240,640,480,800,600,1024,768,1280,720,1920,1080};
+                        static int reso_curr;
+
+                        pushNextDisabledIf(V.Input.CaptureRun);
+                            if(ImGui::Combo(u8"Разрешение", &reso_curr, " 320x240\0 640x480\0 800x600\0 1024x768\0 1280x720\0 1920x1080 \0\0")){
+                                V.Cam.Width  = resol[reso_curr*2];
+                                V.Cam.Height = resol[reso_curr*2+1];
+                                //Img.cameraOpen();
+                            }
+                        popNextDisabledIf(V.Input.CaptureRun);
+
                         GUI.ShowHelpMarker(u8"Чем меньше, тем быстрее");
 
-                        if (ImGui::SliderFloat(u8"Частота кадров", &V.Cam.FPS,  5.0, 200.0,"%.0f")) Img.cam_update();
+                        if (ImGui::SliderFloat(u8"Частота кадров", &V.Cam.FPS,  5.0, 200.0,"%.0f")) Img.cameraUpdSettings();
                         GUI.ShowHelpMarker(u8"Поддерживаются не все скорости\nВозможная скорость зависит от экспозиции");
 
                         ImGui::Text(u8"Коррекция цвета:");
-                        if (ImGui::SliderInt(u8"Усиление", &V.Cam.Gain,  0, 127)) Img.cam_update();
+                        if (ImGui::SliderInt(u8"Усиление", &V.Cam.Gain,  0, 127)) Img.cameraUpdSettings();
                         GUI.ShowHelpMarker(u8"Следует устанавливать наименьшее значение во избежание шума");
 
-                        if (ImGui::SliderInt(u8"Контраст", &V.Cam.Contrast,  0, 127)) Img.cam_update();
+                        if (ImGui::SliderInt(u8"Контраст", &V.Cam.Contrast,  0, 127)) Img.cameraUpdSettings();
 
-                        if (ImGui::SliderInt(u8"Экспозиция", &V.Cam.Exposure,  -5, 0)) Img.cam_update();
+                        if (ImGui::SliderInt(u8"Экспозиция", &V.Cam.Exposure,  -5, 0)) Img.cameraUpdSettings();
                         GUI.ShowHelpMarker(u8"Обратно пропорциональна к скорости");
 
-                        if (ImGui::SliderInt(u8"Насыщенность", &V.Cam.Saturation,  0, 127)) Img.cam_update();
+                        if (ImGui::SliderInt(u8"Насыщенность", &V.Cam.Saturation,  0, 127)) Img.cameraUpdSettings();
 
                         ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
 
 
                     }
 
-                    if (V.Input.Source == 1){
-                        //ImGui::Text(u8"Настройки видео файла:");
-                        //ImGui::InputText(u8"Имя файла", test_text, 64);
-                        //if (ImGui::Button(u8"Открыть файл")) {}
-                        //if (ImGui::Button(u8"Пауза")){}
-                        //ImGui::SameLine();
-                        //if (ImGui::Button(u8"Сначала")){}
-                        Img.capture_file = V.Input.Source;
+                    if (V.Input.Source == SOURCE_VIDEO){
+                        //Img.capture_file = V.Input.Source;
 
                         #warning TODO add video file list here
                         #warning TODO open video file by name
 
-                        ImGui::Text(u8"Свойства видео файла:");
-                        ImGui::Text("%.0f x %.0f", videoPlayer.frameW, videoPlayer.frameH);
+                        ImGui::Text(u8"Свойства видео файла [%s]:", Img.videoFileName.c_str());
+                        ImGui::Text(u8"Разрешение: %.0f x %.0f", videoPlayer.frameW, videoPlayer.frameH);
+                        ImGui::Text(u8"Разрешение: %.0f x %.0f", videoPlayer.frameW, videoPlayer.frameH);
                         //ImGui::Text(u8"с %u до %u", videoPlayer.startFrame, videoPlayer.endFrame);
                         //ImGui::Text(u8"%u, %.2f ms", videoPlayer.playbackMarker, videoPlayer.playbackMs);
                         ImGui::Text(u8"Всего %u кадров, %.1f FPS, %.1f FPS now", videoPlayer.fileLengthFrames, videoPlayer.videoFPS, videoPlayer.fps);
 
+                        ImGui::BeginChild("##player", ImVec2(0,0), 1,0);
+                        //alignCenter(100.0f);
+                        ImGui::Text(u8"Плеер");
                         char pBarBuf[64];
-                        sprintf(pBarBuf, "%i / %i", videoPlayer.playbackMarker - videoPlayer.startFrame, videoPlayer.partLength);
+                        sprintf(pBarBuf, u8"Кадры: %i / %i", videoPlayer.playbackMarker - videoPlayer.startFrame, videoPlayer.partLength);
 
                         ImGui::ProgressBar(videoPlayer.playbackPortion, ImVec2(0.f,0.f), pBarBuf);
                         ImGui::SliderInt(u8"Начало, кадр", &videoPlayer.startFrame, 0, videoPlayer.fileLengthFrames, "%u");
@@ -537,6 +403,7 @@ void GUI_class::drawSettingsBlock(void){
                             if (ImGui::SliderInt(u8"Позиция", &videoPlayer.playbackMarker, videoPlayer.startFrame, videoPlayer.endFrame, "%u"))
                                 videoPlayer.setMarker(videoPlayer.playbackMarker);
                         }
+                        ImGui::EndChild();
                     }
 
                     break;}
@@ -796,34 +663,44 @@ void GUI_class::drawSettingsBlock(void){
                     break;}
 
                 case CAT_COM: {
-                    ImGui::Text(u8"Настройки коммуникации с аппартным обеспечением");
-                    ImGui::Separator();
 
                     static int com_selected = 0;
-                    //static int histo_selected = 0;
-                    if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
-                    GUI.ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
-                    ImGui::Text(u8"Доступные порты:");
-
-                    ImGui::BeginChild("##coms", ImVec2(150, 300), true);
-                    for (int i = 0; i < 16; i++){
-                        if (COM.IsPresent[i] == 1){
-                            char label[128];
-                            sprintf(label, "COM%d", i+1);
-                            if (ImGui::Selectable(label, com_selected == i))
-                            com_selected = i;
-                        }
-                    }
-                    ImGui::EndChild();
-
-                    const char* comspeeds[] = { "9600", "57600", "115200", "250000", "1000000", "2000000"};
+                    const char* comspeeds[] = { "9 600", "57 600", "115 200", "250 000", "1M", "2M"};
                     const long  com_speeds[] = { 9600 ,57600, 115200, 250000, 1000000, 2000000};
                     static int speed_current = 0;
 
-                    ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds));
-                    V.ComPort.Speed = com_speeds[speed_current];
-                    if(!V.ComPort.Connected){if (ImGui::Button(u8"Подключиться")){COM.Open(com_selected);}}
-                    else                {if (ImGui::Button(u8"Отключиться")){COM.Close(com_selected);}}
+                    ImGui::Text(u8"Настройки коммуникации с аппартным обеспечением");
+                    ImGui::Separator();
+
+                    ImGui::BeginChild("##compnelleft", ImVec2(180,250), 0, 0);
+                        if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
+                        GUI.ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
+
+
+                        ImGui::Text(u8"Доступные порты:");
+
+                        ImGui::BeginChild("##coms", ImVec2(150, 200), true);
+                            for (int i = 0; i < 32; i++){
+                                if (COM.IsPresent[i]){
+                                    char label[32];
+                                    sprintf(label, "COM%d", i+1);
+                                    if (ImGui::Selectable(label, com_selected == i))
+                                    com_selected = i;
+                                }
+                            }
+                        ImGui::EndChild();
+                    ImGui::EndChild();
+
+                    ImGui::SameLine(0);
+
+                    ImGui::BeginChild("##compnelright", ImVec2(800,0), 0, 0);
+                        //ImGui::SetNextItemWidth(500);
+                        ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds));
+                        V.ComPort.Speed = com_speeds[speed_current];
+                        if(!COM.isOpen)     {if (ImGui::Button(u8"Подключиться")){COM.Open(com_selected);}}
+                        else                {if (ImGui::Button(u8"Отключиться")){COM.closeCurrent();}}
+                    ImGui::EndChild();
+
                     break;}
 
                 case CAT_UI: {break;}
@@ -864,16 +741,12 @@ void GUI_class::drawSettingsBlock(void){
                     //ImGui::Checkbox(u8"Стоп-кадр", &V.Input.FreezeFrame);
 
                     break;}
+
+
+
                 case CAT_DEBUG: {
                     ImGui::Checkbox("show debug mat", &MatWin[W_MAT_DEBUG].show);
-                    if (ImGui::Button("com port test")) COM.Test();
-                    /*
-                    enum sysStates {STATE_STARTUP, STATE_WAITING, STATE_READY, STATE_ERROR};
-                    enum hwTypeMask {MASK_HWTYPE_MOTOR, MASK_HWTYPE_LAMP, MASK_HWTYPE_LED}; // 4 max!
-                    enum motActMask {MASK_ACT_MOTORRUN, MASK_ACT_MOTORACCEL, MASK_ACT_MOTORSPD}; // 4 max!
-                    enum lampActMask {MASK_ACT_LAMPPWM, MASK_ACT_LAMPONOFF}; // 4 max!
-                    enum ledActMask {MASK_ACT_LEDR, MASK_ACT_LEDG, MASK_ACT_LEDB, MASK_ACT_LEDONOFF}; // 4 max!
-                    */
+
 
                     static int hwTypeMaskHere =0;
                     static int hwActMaskHere =0;
@@ -895,11 +768,11 @@ void GUI_class::drawSettingsBlock(void){
                         ImGui::Combo(u8"hwActMask", &hwActMaskHere, u8"MASK_ACT_PING\0\0");
 
 
-                    ImGui::SliderInt("hw ID", &hwIDhere, 0, 4, "%u");
-                    if(ImGui::SliderInt("parameter", &paramHere, 0, 255, "%u")) COM.setHwState(hwTypeMaskHere, hwIDhere, hwActMaskHere, paramHere);
+                    //ImGui::SliderInt("hw ID", &hwIDhere, 0, 4, "%u");
+                    //if(ImGui::SliderInt("parameter", &paramHere, 0, 255, "%u")) COM.setHwState(hwTypeMaskHere, hwIDhere, hwActMaskHere, paramHere);
 
-                    if (ImGui::Button("send")) COM.setHwState(hwTypeMaskHere, hwIDhere, hwActMaskHere, paramHere);
-                    if (ImGui::Button("shake")) COM.Shake();
+                    //if (ImGui::Button("send")) COM.setHwState(hwTypeMaskHere, hwIDhere, hwActMaskHere, paramHere);
+                    if (ImGui::Button("shake")) COM.tryShake = 1;//COM.Shake();
 
 
                     break;}
@@ -920,9 +793,14 @@ void btnStyleFrac(float frac){
     ImGui::PushStyleColor(ImGuiCol_ButtonActive,    (ImVec4)ImColor::HSV(frac, 0.3f, 0.7f, 1.0f));
 };
 
+void btnStyleOnOff(bool on){
+    ImGui::PushStyleColor(ImGuiCol_Button,          (ImVec4)ImColor::HSV(0.3f*on + 0.0f * !on, 0.7f, 0.7f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,   (ImVec4)ImColor::HSV(0.3f*on + 0.0f * !on, 0.5f, 0.7f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,    (ImVec4)ImColor::HSV(0.3f*on + 0.0f * !on, 0.3f, 0.7f, 1.0f));
+};
+
 void btnStyleColorEnd(void){};
 void btnStylePop(void){ImGui::PopStyleColor(3);};
-
 
 bool testBool = 0;
 
@@ -932,7 +810,7 @@ void GUI_class::drawSettingsBar(void){
         for (int i = 0; i < NR_CAT; i++){
             if (!((V.procType == 0) && (i >= CAT_B_COLOR) && (i <= CAT_B_INFO) ||
                 (V.procType == 1) && (i >= CAT_WF_EDGE) && (i <= CAT_WF_SHOW))) {
-                if (i % 3 == 0) {
+                if (setCats[i].matID != -1) {
                     btnStyleFrac((float)i/NR_CAT);
                         if (ImGui::Button(" ", ImVec2(10.0f, 22.0f))) {}
                     btnStylePop();
@@ -949,7 +827,7 @@ void GUI_class::drawSettingsBar(void){
                 ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.7f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.5f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.3f, 1.0f));
-                if (ImGui::Selectable(settingsCatNames[i].c_str(), catSelected == i))
+                if (ImGui::Selectable(setCats[i].name.c_str(), catSelected == i))
                     catSelected = i;
                 ImGui::PopStyleColor(3);
 
@@ -963,18 +841,47 @@ void GUI_class::drawSettingsBar(void){
         ImGui::EndChild();
 }
 
-ImVec2 mainWinSize = ImVec2(1440, 870);
+//ImVec2 mainWinSize = ImVec2(1920, 1060);
+ImVec2 mainWinSize = ImVec2(1280, 1024 - 25);
+
+//ImVec2 mainWinSize = ImVec2(GUI.ScreenW, GUI.ScreenH - 25);
 
 void GUI_class::drawSettingsWindow(void){
     ImGuiStyle& style = ImGui::GetStyle();
     int spacing = style.ItemSpacing.x;
     ImGui::SetNextWindowSize(mainWinSize, ImGuiCond_Always);
-    if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_NoResize)){
+    ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Always);
+    if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoTitleBar)){
 
         ImGui::BeginChild("##fast", ImVec2(0, 38), 1, 0);
-            if (ImGui::Button(u8"Изображение", ImVec2( ImGui::GetWindowContentRegionWidth()/3-spacing,0))) {} ImGui::SameLine();
-            if (ImGui::Button(u8"Коммуникация", ImVec2(ImGui::GetWindowContentRegionWidth()/3-spacing,0))) {} ImGui::SameLine();
-            if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/3-spacing,0))) {}
+            char btnNameBuf[64] = {0};
+            std::string sourceType;
+            if (V.Input.Source == SOURCE_CAM) sourceType = u8"камера";
+            if (V.Input.Source == SOURCE_VIDEO) sourceType = u8"файл";
+
+            std::string processorType;
+            if (V.procType == PROC_B) processorType = u8"лента";
+            if (V.procType == PROC_WF) processorType = u8"водопад";
+
+            btnStyleOnOff(V.Input.CaptureRun);
+                sprintf(btnNameBuf, u8"Изображение (%s)", sourceType.c_str());
+                if (ImGui::Button(btnNameBuf, ImVec2( ImGui::GetWindowContentRegionWidth()/4,0))) {Img.startCapture();} ImGui::SameLine();
+            btnStylePop();
+
+            btnStyleOnOff(COM.connectionOk);
+                sprintf(btnNameBuf, u8"Коммуникация (COM%u, %u)", V.ComPort.Number+1, V.ComPort.Speed);
+                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {COM.Open(V.ComPort.Number);} ImGui::SameLine();
+            btnStylePop();
+
+            btnStyleOnOff(Img.procRun);
+                sprintf(btnNameBuf, u8"Обработка (%s)", processorType.c_str());
+                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {} ImGui::SameLine();
+            btnStylePop();
+
+            btnStyleOnOff(COM.connectionOk);
+                if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {}
+            btnStylePop();
+
         ImGui::EndChild();
 
         ImGui::BeginChild("##upper", ImVec2(0, mainWinSize.y/2 - 80));
@@ -983,10 +890,14 @@ void GUI_class::drawSettingsWindow(void){
             drawSettingsBlock();
         ImGui::EndChild();
 
-        //ImGui::SameLine();
-
-        ImGui::BeginChild("##lower", ImVec2(0, 0));
+        ImGui::BeginChild("##lower_img", ImVec2(ImGui::GetWindowContentRegionWidth() - 400, 0), 1, 0);
             drawMatBar();
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+
+        ImGui::BeginChild("##lower_console", ImVec2(400 - spacing, 0), 1, 0);
+           drawConsole();
         ImGui::EndChild();
 
     }
@@ -995,6 +906,93 @@ void GUI_class::drawSettingsWindow(void){
 
 }
 
+std::string errorText = "";
+void GUI_class::popupError(std::string text){
+    errorText = text;
+    openPopUpFlags[PU_ERROR] = 1;
+}
+
+
+#include <chrono>
+#include <mutex>
+#include <stdio.h>
+#include <stdarg.h>
+#include <time.h>
+
+std::mutex listAccess;
+
+typedef struct logRecord{
+    std::string text;
+    std::string cat;
+    char timeStr[32];
+    //std::chrono::time_point<std::chrono::system_clock> time;
+    //time_t  rawTime;
+    //struct tm *time;
+};
+
+vector <logRecord> logContent;
+
+void logAdd(std::string category, std::string inText){
+        struct logRecord newRec;
+            newRec.text = inText;
+            newRec.cat = category;
+
+            time_t  rawTime;
+            struct tm *infoTime;
+            time(&rawTime);
+            infoTime = localtime(&rawTime);
+            strftime(newRec.timeStr, sizeof(newRec.timeStr), "%H:%M:%S", infoTime);
+
+            //newRec.time = std::chrono::system_clock::now();
+
+    listAccess.lock();
+        logContent.push_back(newRec);
+    listAccess.unlock();
+};
+
+void logPrint(std::string category, const char *fmt, ...){
+    char buffer[512];
+    va_list args;
+    va_start(args, fmt);
+    int rc = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    struct logRecord newRec;
+        std::string tmp(buffer);
+        newRec.text = tmp;
+        newRec.cat = category;
+
+        time_t  rawTime;
+        struct tm *infoTime;
+        time(&rawTime);
+        infoTime = localtime(&rawTime);
+        strftime(newRec.timeStr, sizeof(newRec.timeStr), "%H:%M:%S", infoTime);
+
+    listAccess.lock();
+        logContent.push_back(newRec);
+    listAccess.unlock();
+};
+
+void testLogAdd(void){
+    logAdd("erroz", "some fckn erro");
+}
+
+void testLogPrint(void){
+    logPrint("randomz", "new random is %u", (rand() % 100));
+}
+
+void drawNewLog(void){
+    static int selected;
+    if (!logContent.empty()){
+        for (size_t i = 0; i < logContent.size(); i++){
+            char buf[512];
+            sprintf(buf, "%s [%s] %s", logContent[i].timeStr, logContent[i].cat.c_str(), logContent[i].text.c_str());
+
+            if (ImGui::Selectable(buf, selected == i))
+                selected = i;
+        }
+    }
+}
 
 
 void GUI_class::Draw(void){
@@ -1002,8 +1000,8 @@ void GUI_class::Draw(void){
     drawMatWindows();
     drawSettingsWindow();
     ImGui::ShowDemoWindow();
-
-    GUI_Log.Draw(u8"Консоль", p_open);
+    drawFileBrowser();
+    drawPopUps();
 
     ImGui::Begin(u8"Изображения", p_open, ImGuiWindowFlags_None);
         for (int cat=0; cat<NR_W_CAT; cat++){
@@ -1018,8 +1016,86 @@ void GUI_class::Draw(void){
     }
     ImGui::End();
 
+
+    if (ImGui::Button("testLogPrint")){
+        testLogPrint();
+    }
+    if (ImGui::Button("testLogAdd")){
+        testLogAdd();
+    }
+
+        if (ImGui::TreeNode("drawNewLog")){
+    drawNewLog();
+       ImGui::TreePop();
+    }
 }
 
+void GUI_class::openPopUp(int id){
+    openPopUpFlags[id] = 1;
+}
+
+
+void GUI_class::drawPopUps(void){
+    if (openPopUpFlags[PU_COMM_STOP]) {ImGui::OpenPopup("popupCommStop"); openPopUpFlags[PU_COMM_STOP] = 0;}
+    ImGui::SetNextWindowSize(ImVec2(300, 150));
+    if (ImGui::BeginPopupModal("popupCommStop", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
+        ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
+            ImGui::Text(u8"Блок правления подключен. Преравть коммуникацию?");
+        ImGui::EndChild();
+
+        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {COM.tryGoodbye(); ImGui::CloseCurrentPopup();}
+        ImGui::SameLine();
+
+        if (ImGui::Button(u8"Нет", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {ImGui::CloseCurrentPopup();}
+        ImGui::EndPopup();
+    }
+
+    if (openPopUpFlags[PU_SOURCE_CLOSE]) {ImGui::OpenPopup("popupSourceClose"); openPopUpFlags[PU_SOURCE_CLOSE] = 0;}
+    ImGui::SetNextWindowSize(ImVec2(300, 150));
+    if (ImGui::BeginPopupModal("popupSourceClose", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
+        ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
+            ImGui::Text(u8"Закрыть источник?");
+        ImGui::EndChild();
+
+        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
+            // stop processing here
+            Img.stopCapture();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(u8"Нет", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {ImGui::CloseCurrentPopup();}
+        ImGui::EndPopup();
+    }
+
+    if (openPopUpFlags[PU_EXIT]) {ImGui::OpenPopup("popupExit"); openPopUpFlags[PU_EXIT] = 0;}
+    ImGui::SetNextWindowSize(ImVec2(300, 150));
+    if (ImGui::BeginPopupModal("popupExit", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
+        ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
+            ImGui::Text(u8"Выйти из программы?");
+        ImGui::EndChild();
+
+        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
+            // stop processing here
+            exitApplication();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(u8"Нет", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {ImGui::CloseCurrentPopup();}
+        ImGui::EndPopup();
+    }
+
+    if (openPopUpFlags[PU_ERROR]) {ImGui::OpenPopup("popupEror"); openPopUpFlags[PU_ERROR] = 0;}
+    ImGui::SetNextWindowSize(ImVec2(300, 150));
+    if (ImGui::BeginPopupModal("popupEror", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
+        ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
+            ImGui::Text(errorText.c_str());
+        ImGui::EndChild();
+
+        if (ImGui::Button("OK", ImVec2(ImGui::GetWindowContentRegionWidth(), 25))) {ImGui::CloseCurrentPopup();}
+        ImGui::EndPopup();
+    }
+
+}
 
 void GUI_class::VarInit(void){
     SetWin[W_SET_IN].title=u8"Настройки: вход";
@@ -1075,31 +1151,66 @@ void GUI_class::VarInit(void){
     MatWin[W_MAT_B_HUD].cat = W_CAT_BELT;
 
     MatWin[W_MAT_B_ACCUM].title=u8"W_MAT_B_ACCUM";
-    MatWin[W_MAT_B_ACCUM].mat = &BeltProcessor.matAlphaMask;
+    MatWin[W_MAT_B_ACCUM].mat = &BeltProcessor.matSatRendered;
     MatWin[W_MAT_B_ACCUM].cat = W_CAT_BELT;
 
-    MatWin[W_MAT_B_RANGED].title=u8"W_MAT_B_RENDERED";
-    MatWin[W_MAT_B_RANGED].mat = &BeltProcessor.matSatRendered;
+    MatWin[W_MAT_B_RANGED].title=u8"matSatRanged";
+    MatWin[W_MAT_B_RANGED].mat = &BeltProcessor.matSatRanged;
     MatWin[W_MAT_B_RANGED].cat = W_CAT_BELT;
 
-    settingsCatNames[CAT_INPUT] = u8"Вход изображения";
-    settingsCatNames[CAT_PROCESSING] = u8"Обработка";
-    settingsCatNames[CAT_WF_EDGE] = u8"- Водопад: Поиск границ";
-    settingsCatNames[CAT_WF_CONTOURS] = u8"- Водопад: Контуры";
-    settingsCatNames[CAT_WF_MORPHO] = u8"- Водопад: Морфология";
-    settingsCatNames[CAT_WF_COLOR] = u8"- Водопад: Цвет";
-    settingsCatNames[CAT_WF_BS] = u8"- Водопад: отделение фона";
-    settingsCatNames[CAT_WF_SHOW] = u8"- Водопад: HUD";
-    settingsCatNames[CAT_COM] = u8"Коммуникация";
-    settingsCatNames[CAT_UI] = u8"Интерфейс";
-    settingsCatNames[CAT_DEBUG] = u8"Debug";
-    settingsCatNames[CAT_STATS] = u8"Статистика";
-    settingsCatNames[CAT_B_COLOR] = u8"- Ремень: Цвет";
-    settingsCatNames[CAT_B_SIZE] = u8"- Ремень: Размеры";
-    settingsCatNames[CAT_B_MORPH] = u8"- Ремень: Морфология";
-    settingsCatNames[CAT_B_BLUR] = u8"- Ремень: Размытие";
-    settingsCatNames[CAT_B_ACCUM] = u8"- Ремень: Аккумулятор";
-    settingsCatNames[CAT_B_INFO] = u8"- Ремень: Статистика";
+    setCats[CAT_INPUT].name = u8"Вход изображения";
+    setCats[CAT_INPUT].matID = W_MAT_IN;
+
+    setCats[CAT_PROCESSING].name = u8"Обработка";
+    setCats[CAT_PROCESSING].matID = W_MAT_PP_HUD;
+
+    setCats[CAT_WF_EDGE].name = u8"- Водопад: Поиск границ";
+    setCats[CAT_WF_EDGE].matID = W_MAT_WF_CONTOUR;
+
+    setCats[CAT_WF_CONTOURS].name = u8"- Водопад: Контуры";
+    setCats[CAT_WF_CONTOURS].matID = W_MAT_WF_MASK;
+
+    setCats[CAT_WF_MORPHO].name = u8"- Водопад: Морфология";
+    setCats[CAT_WF_MORPHO].matID = W_MAT_WF_MORPH;
+
+    setCats[CAT_WF_COLOR].name = u8"- Водопад: Цвет";
+    setCats[CAT_WF_COLOR].matID = -1;
+
+    setCats[CAT_WF_BS].name = u8"- Водопад: отделение фона";
+    setCats[CAT_WF_BS].matID = W_MAT_WF_MOG;
+
+    setCats[CAT_WF_SHOW].name = u8"- Водопад: HUD";
+    setCats[CAT_WF_SHOW].matID = W_MAT_WF_OUT;
+
+    setCats[CAT_COM].name = u8"Коммуникация";
+    setCats[CAT_COM].matID = -1;
+
+    setCats[CAT_UI].name = u8"Интерфейс";
+    setCats[CAT_UI].matID = -1;
+
+    setCats[CAT_DEBUG].name = u8"Debug";
+    setCats[CAT_DEBUG].matID = -1;
+
+    setCats[CAT_STATS].name = u8"Статистика";
+    setCats[CAT_STATS].matID = -1;
+
+    setCats[CAT_B_COLOR].name = u8"- Ремень: Цвет";
+    setCats[CAT_B_COLOR].matID = -1;
+
+    setCats[CAT_B_SIZE].name = u8"- Ремень: Размеры";
+    setCats[CAT_B_SIZE].matID = W_MAT_B_RANGED;
+
+    setCats[CAT_B_MORPH].name = u8"- Ремень: Морфология";
+    setCats[CAT_B_MORPH].matID = -1;
+
+    setCats[CAT_B_BLUR].name = u8"- Ремень: Размытие";
+    setCats[CAT_B_BLUR].matID = -1;
+
+    setCats[CAT_B_ACCUM].name = u8"- Ремень: Аккумулятор";
+    setCats[CAT_B_ACCUM].matID = W_MAT_B_ACCUM;
+
+    setCats[CAT_B_INFO].name = u8"- Ремень: HUD";
+    setCats[CAT_B_INFO].matID = W_MAT_B_HUD;
 }
 
 void GUI_class::Fill_Textures(void){
@@ -1119,8 +1230,6 @@ void GUI_class::Fill_Textures(void){
         //}
     }
 }
-
-
 
 
 

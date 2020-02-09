@@ -75,6 +75,8 @@
 		<Unit filename="gui/ImGuiFileDialog.h" />
 		<Unit filename="gui/imguifilesystem.cpp" />
 		<Unit filename="gui/imguifilesystem.h" />
+		<Unit filename="gui_tools.cpp" />
+		<Unit filename="gui_tools.h" />
 		<Unit filename="img.cpp" />
 		<Unit filename="img.h" />
 		<Unit filename="imgui/imgui-SFML.cpp" />

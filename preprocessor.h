@@ -18,7 +18,7 @@ public:
     float  contrast = 1.35;
     float  saturation = 3.5;
     int    sharpTimes = 1;
-    int     rotation = -1;
+    int    rotation = -1;
 
     cv::Mat     HUD;
     cv::Mat     out;

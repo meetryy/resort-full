@@ -8,17 +8,16 @@
 
 #include <SFML/System/Clock.hpp>
 
-extern cv::Mat img_gray;
-extern cv::Mat img_canny;
-extern cv::Mat img_output;
-extern cv::Mat1b img_quad;
-extern cv::Mat img_contours;
-extern cv::Mat img_mask;
+//extern cv::Mat img_gray;
+//extern cv::Mat img_canny;
+//extern cv::Mat img_output;
+//extern cv::Mat1b img_quad;
+//extern cv::Mat img_contours;
+//extern cv::Mat img_mask;
 
 enum morphAlias {MORPH_CURRENT_RECT, MORPH_CURRENT_ELLIPSE, MORPH_CURRENT_CROSS};
 enum procTypes {PROC_WF, PROC_B};
-
-#include "omp.h"
+enum {PMODE_INIT, PMODE_BELT_STOP, PMODE_BELT_RUN, PMODE_WF_STOP, PMODE_WF_RUN, PMODE_CALIB_DIST, PMODE_CALIB_DIM};
 
 class Image_class{
 private:
@@ -30,8 +29,6 @@ public:
     cv::Scalar avg_color_hsv;
     char str[200];
     float avg_time = 0;
-    int ScalarInRange (cv::Scalar input, cv::Scalar compare_to, cv::Scalar delta, bool useHSV);
-    cv::Scalar BGR2HSV(cv::Scalar inBGR);
 
     bool input_correction_on;
     cv::Scalar hsv_input_correction;
@@ -39,10 +36,9 @@ public:
 
     float   time1;
     float   time2;
-    //V.Info.fps_avg_counter;
 
-    sf::Clock FPS_Clock;
-    float fps_accumulated = 0;
+    sf::Clock   FPS_Clock;
+    float       fps_accumulated = 0;
 
     long    info_total_contours;
     long    useful_contours;
@@ -52,25 +48,13 @@ public:
     float   bs_knn_thresh;
     bool    bs_knn_shadows;
     bool    bs_knn_learning;
-    int     bs_gsoc_mc;
-    int     bs_gsoc_samples;
-    float   bs_gsoc_reprate;
-    float   bs_gsoc_proprate;
-    int     bs_gsoc_hits_thresh;
-    float   bs_gsoc_alpha;
-    float   bs_gsoc_beta;
-    float   bs_gsoc_bs_decay;
-    float   bs_gsoc_bs_mul;
-    float   bs_gsoc_noise_bg;
-    float   bs_gsoc_noise_fg;
-    bool    bs_gsoc_learning;
     float   bs_knn_lrate;
-    float   bs_gsoc_lrate;
 
-    bool    capture_file = 0;
-    bool    show_particle_number = 0;
-    int     show_mat_upd_counter = 0;
-    int     show_mat_upd_target = 2;
+    //bool    capture_file = 0;
+    //bool    show_particle_number = 0;
+
+    int     matLimiterCounter = 0;
+    int     matLimiterTarget = 2;
 
     cv::Mat img_in;
     cv::Mat img_mog_output;
@@ -85,28 +69,36 @@ public:
     cv::Mat img_contours;
     cv::Mat img_debug;
 
-    omp_lock_t img_roi_lock;
-    omp_lock_t img_output_lock;
-    omp_lock_t max_cont_lock;
-    omp_lock_t img_wholemask_lock;
+    int ScalarInRange (cv::Scalar input, cv::Scalar compare_to, cv::Scalar delta, bool useHSV);
+    cv::Scalar BGR2HSV(cv::Scalar inBGR);
 
-
+    void BS_Init(int bs_algo);
     void ProcessImg(void);
-    void MOG_Init(void);
-    void cam_open(void);
-    void cam_close(void);
-    void cam_update(void);
+
+    void cameraOpen(void);
+    void cameraClose(void);
+    void cameraUpdSettings(void);
+
+    void stopCapture();
+    void startCapture();
+
     void start_video_rec(void);
     void stop_video_rec(void);
-    void video_open(void);
-    void video_close(void);
+
+    std::string videoFileName;
+
+    //void videoOpen(std::string fileName);
+    //void videoClose(void);
 
     void ImgProcessor (void);
-    void BS_Init(int bs_algo);
+
     void FPS_Routine(void);
     void RunProcessor(void);
     void WaterfallProcessor(cv::Mat img_in);
+    void limitMatWinFPS(void);
 
+    int procState = PMODE_INIT;
+    int procRun = 1;
 };
 
 extern Image_class Img;

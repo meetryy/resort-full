@@ -6,6 +6,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
 #include <mutex>
+#include <thread>
 //#include <variant>
 
 enum ProcessorParams{   PARAM_MARKERH, PARAM_MARKERUPPERMARGIN, PARAM_FRAMELOWERMARGIN,
@@ -56,7 +57,7 @@ public:
     float beltSpeedMm = 100.0;
 
     int ejectorDecZoneW = 1;
-    int ejectorDecZoneX = 500;
+    int ejectorDecZoneX = 200;
 
     bool drawHUD = 1;
     std::vector<std::vector<cv::Point>> contoursHSV;
@@ -66,6 +67,8 @@ public:
     cv::Mat matAlphaMaskShifted;
     cv::Mat matAlphaMaskAccum;
     cv::Mat matSatRanged;
+
+
 
     cv::Mat outMat;
     cv::Rect cropRect, mainRect;

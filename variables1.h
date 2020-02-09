@@ -2,17 +2,10 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-//using namespace cv;
-
 enum ColorspaceAlias {BGR, HSV};
-enum FrameShowAlias {SHOW_NOTHING, SHOW_INPUT, SHOW_CANNY, SHOW_SCHARR, SHOW_MASK, SHOW_OUTPUT, SHOW_QUAD};
 
-extern bool err;
-extern std::string err_text;
 extern float time1;
 extern float time2;
-
-extern int show_frame;
 
 struct V_t{
     struct {
@@ -80,9 +73,11 @@ struct V_t{
     } Show;
 
     struct {
-        bool Connected;
-        int  Number;
-        long Speed;
+        int     Number = 0;
+        long    Speed = 9600;
+        int     shakeTimeout = 500;
+        std::string shakeQuery;
+        std::string shakeAnswer;
     } ComPort;
 
     struct {
@@ -130,7 +125,8 @@ struct V_t{
     } Info;
 
     struct {
-        bool Fullscreen;
+        bool Fullscreen = 0;
+        int guiFPS = 30;
     } UI;
 
     bool comTest = 0;

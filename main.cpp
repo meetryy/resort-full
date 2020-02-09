@@ -46,50 +46,37 @@ void    comport_thread(void);
 void    image_thread(void);
 void    ProcessImg(void);
 
-bool    FullscreenChanged =0;
-sf::Window window;
+bool        FullscreenChanged = 1;
+sf::Window  window;
 
 V_t V;
 
-std::string WindowName = "ReSort v0.1";
+std::string WindowName = "ReSort v0.25";
 
 int main(int argc, const char *argv[])
 {
-    GUI.Init();
-    GUI.VarInit();
-
     File.ReadConfig("settings.ini");
     File.SaveConfig("settings.ini");
 
+    GUI.Init();
+    GUI.VarInit();
+
     COM.List();
-    std::thread t1(comport_thread);
-    t1.detach();
+    COM.startThread();
 
     V.Input.CaptureRun = 0;
 
     Img.BS_Init(BS_MOG);
 
-    omp_set_num_threads(32);
-
-    //thread ImgProcessor_t(ImgProcessor);
-    //ImgProcessor_t.detach();
-
-
     Img.RunProcessor();
-
     GUI.Worker();
-
-
-
 }
 
-void comport_thread(void){
-    std::cout << "com thread started" << std::endl;
-    while(1){
-        //std::cout << "task1 says:";
-        //cv::waitKey(100);
-        if (V.ComPort.Connected) {COM.listen();}
-    }
+void exitApplication(void){
+    Img.procRun = 0;
+    Img.stopCapture();
+    COM.tryGoodbye();
+    ImGui::SFML::Shutdown();
 }
 
 

@@ -1,13 +1,14 @@
+#include <Windows.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include <thread>
-#include <omp.h>
 
 #include "belt_processor.h"
 #include "video_player.h"
 #include "preprocessor.h"
+#include "COM_port.h"
 
 using namespace cv;
 using namespace std;
@@ -57,7 +58,6 @@ cv::Mat imageProcessor_t::Result(cv::Mat &Input){
         ejHUD =                 cv::Mat(preprocessor.out.rows, 500, CV_8UC3);
 
         startTimeThread();
-
         initDone = 1;
     }
 
@@ -99,9 +99,9 @@ cv::Mat imageProcessor_t::Result(cv::Mat &Input){
         cv::addWeighted(matAlphaMaskShifted, saturationWeight, matAlphaMaskAccum, 1.0-saturationWeight, 0, matAlphaMaskAccum);
         shiftMat(matAlphaMaskAccum, matAlphaMaskAccum, (int)pixShiftPerFrame, 0);
 
-
         cvtColor(matAlphaMaskAccum, matSatRendered,COLOR_BGRA2GRAY);
         inRange(matSatRendered, Scalar(satRangeMin), Scalar(satRangeMax), matSatRanged);
+
         vector<vector<Point> >  contoursSat;
         vector<Vec4i>           hierarchySat;
         cv::findContours(matSatRanged, contoursSat, hierarchySat, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -192,8 +192,12 @@ cv::Mat imageProcessor_t::Result(cv::Mat &Input){
                 if (!Ejector.Zone[zone].tasks.empty()){
                     char text[16] = {0};
                     sprintf (text, "%.2f ms", Ejector.Zone[zone].tasks[Ejector.Zone[zone].tasks.size()].timeLeftMs);
-                    putText(ejHUD, text, Point(200, zoneY+80), FONT_HERSHEY_PLAIN, 1.0, Scalar(255,255,255), 1, 4, 0);
+                    putText(ejHUD, text, Point(260, zoneY + ejHUD.rows/Ejector.numZones/2 + 5), FONT_HERSHEY_PLAIN, 1.0, Scalar(255,255,255), 1, 4, 0);
                 }
+
+                char buf[16] = {0};
+                sprintf (buf, "%u", zone);
+                putText(ejHUD, buf, Point(220, zoneY + ejHUD.rows/Ejector.numZones/2 + 5), FONT_HERSHEY_PLAIN, 1.0, Scalar(255,255,255), 2, 4, 0);
 
             }
 
@@ -207,58 +211,50 @@ cv::Mat imageProcessor_t::Result(cv::Mat &Input){
     }
 }
 
+#include <chrono>
+#include <thread>
 
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
 
 
 void imageProcessor_t::ejTaskExc(void){
     std::cout << "ejTaskExc running..."<< std::endl;
     while (1){
         if (timerTheradRun){
+            for (int zone = 0; zone<Ejector.numZones; zone++){
+                if (Ejector.Zone[zone].tasks.size() > 0){
+                    for (unsigned i = 0; i < Ejector.Zone[zone].tasks.size(); i++) {
+                        if (!Ejector.Zone[zone].tasks[i].done){
+                            auto timeNow = chrono::high_resolution_clock::now();
+                            auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(Ejector.Zone[zone].tasks[i].time - timeNow);
+                            float msToTask = (float)milliseconds.count();
+                            Ejector.Zone[zone].tasks[i].timeLeftMs = msToTask;
+                            //std::cout << i << " = " << msToTask << " ms" << std::endl;
+                            if (msToTask < 0.2f) {
+                                msToTask = 0;
+                                // TODO: finish overlap!
+                                if ((Ejector.Zone[zone].State == 1) && (Ejector.Zone[zone].tasks[i].newState == 1))
+                                    Ejector.Zone[zone].overlap = 1;
 
-        for (int zone = 0; zone<Ejector.numZones; zone++){
-            if (Ejector.Zone[zone].tasks.size() > 0){
-            for (unsigned i = 0; i < Ejector.Zone[zone].tasks.size(); i++) {
-                if (!Ejector.Zone[zone].tasks[i].done){
-                    auto timeNow = chrono::high_resolution_clock::now();
-                    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(Ejector.Zone[zone].tasks[i].time - timeNow);
-                    float msToTask = (float)milliseconds.count();
-                    Ejector.Zone[zone].tasks[i].timeLeftMs = msToTask;
-                    //std::cout << i << " = " << msToTask << " ms" << std::endl;
-                    if (msToTask < 0.2f) {
-                        msToTask = 0;
-                        // TODO: finish overlap!
-                        if ((Ejector.Zone[zone].State == 1) && (Ejector.Zone[zone].tasks[i].newState == 1))
-                            Ejector.Zone[zone].overlap = 1;
+                                Ejector.Zone[zone].State = Ejector.Zone[zone].tasks[i].newState;
+                                if (COM.connectionOk) COM.sendZoneState();
+                                Ejector.Zone[zone].tasks[i].done = 1;
+                            }
+                        }
+                        else {
+                                //std::cout << i << " to be removed" << std::endl;
+                                Ejector.Zone[zone].taskLock.lock();
+                                Ejector.Zone[zone].tasks.erase(Ejector.Zone[zone].tasks.begin() + i);
+                                Ejector.Zone[zone].taskLock.unlock();
 
-                        Ejector.Zone[zone].State = Ejector.Zone[zone].tasks[i].newState;
-                        Ejector.Zone[zone].tasks[i].done = 1;
+                        }
                     }
                 }
-                else {
-                        //std::cout << i << " to be removed" << std::endl;
-                        Ejector.Zone[zone].taskLock.lock();
-                        Ejector.Zone[zone].tasks.erase(Ejector.Zone[zone].tasks.begin() + i);
-                        Ejector.Zone[zone].taskLock.unlock();
-
-                }
             }
-        }
-
-        /*
-            if (!Ejector.Zone[zone].taskDone){
-                auto timeNow = chrono::high_resolution_clock::now();
-                auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(Ejector.Zone[zone].timeTarget - timeNow);
-                Ejector.Zone[zone].msToTask = (float)milliseconds.count();
-
-                if (Ejector.Zone[zone].msToTask < 0.01) {
-                    Ejector.Zone[zone].msToTask = 0;
-                    //Ejector.Zone[zone].timeTarget = std::chrono::nanoseconds::zero();
-                    Ejector.Zone[zone].taskDone = 1;
-                }
-            }
-            */
-        }
+        sleep_for(milliseconds(1));
     }
+    else sleep_for(milliseconds(100));
     }
 }
 

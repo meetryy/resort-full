@@ -1917,6 +1917,9 @@ static size_t ImFormatString(char* buf, size_t buf_size, const char* fmt, ...)
 const char* ChooseFileMainMethod(Dialog& ist,const char* directory,const bool _isFolderChooserDialog,const bool _isSaveFileDialog,const char* _saveFileName,const char* fileFilterExtensionString,const char* windowTitle,const ImVec2& windowSize,const ImVec2& windowPos,const float windowAlpha) {
     //-----------------------------------------------------------------------------
     Internal& I = *ist.internal;
+    I.allowKnownDirectoriesSection = 0;
+    I.allowFiltering = 0;
+
     char* rv = I.chosenPath;rv[0] = '\0';
     //-----------------------------------------------------
     bool& isSelectFolderDialog = I.isSelectFolderDialog = _isFolderChooserDialog;
@@ -2382,6 +2385,9 @@ const char* ChooseFileMainMethod(Dialog& ist,const char* directory,const bool _i
 
     // Start collapsable regions----------------------------------------------------------
     // User Known directories-------------------------------------------------------------
+
+
+
     if (I.allowKnownDirectoriesSection && pUserKnownDirectories->size()>0)  {
         ImGui::Separator();
 
@@ -2424,13 +2430,13 @@ const char* ChooseFileMainMethod(Dialog& ist,const char* directory,const bool _i
         ImGui::Separator();
         bool mustCreate = false;
 
-        if (ImGui::CollapsingHeader("New Directory##imguifs_allowDirectoryCreation"))  {
+        if (ImGui::CollapsingHeader(u8"Создать папку##imguifs_allowDirectoryCreation"))  {
             static int id;
             ImGui::PushID(&id);
 
             ImGui::InputText("##createNewFolderName",&I.newDirectoryName[0],MAX_FILENAME_BYTES);
             ImGui::SameLine();
-            mustCreate = ImGui::Button("CREATE");
+            mustCreate = ImGui::Button(u8"Создать");
 
             ImGui::PopID();
         }

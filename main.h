@@ -12,4 +12,5 @@ extern bool exit_program;
 extern std::vector<double> points;
 void GUI_FullscreenSwitch(void);
 
+void exitApplication(void);
 extern bool FullscreenChanged;

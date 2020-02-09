@@ -40,6 +40,7 @@ public:
                         W_MAT_PP_IN, W_MAT_PP_HUD,
                         W_MAT_B_HUD, W_MAT_B_ACCUM, W_MAT_B_RANGED,
                         W_MAT_DEBUG, W_MAT_NR};
+
     enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, W_SET_COM, W_SET_HW, W_SET_INFO,W_SET_OUT,
                         W_SELF_COLORS, W_SELF_LOG, W_SET_FILE,
                         W_SET_NR};
@@ -53,8 +54,7 @@ public:
     sf::Sprite sprite[W_MAT_NR];
     sf::Texture texture[W_MAT_NR];
 
-    enum BrowseAlias {BROWSE_SAVE, BROWSE_LOAD};
-    bool BrowseMode = 0;
+
 
     struct mat_window_t MatWin[W_MAT_NR];
     struct set_window_t SetWin[W_SET_NR];
@@ -62,16 +62,27 @@ public:
     sf::RenderWindow window;
     sf::Clock deltaClock;
     std::string WindowName = "ReSort v0.25";
-    long ScreenW = 0;
-    long ScreenH = 0;
+
+    long ScreenW = 1920;
+    long ScreenH = 1080;
+
+
+    enum {PU_COMM_STOP, PU_SOURCE_CLOSE, PU_EXIT, PU_ERROR, PU_NR};
+    bool openPopUpFlags[PU_NR];
+    void drawPopUps(void);
+    void openPopUp(int id);
 
     void StartWorker(void);
     void Worker(void);
     void VarInit(void);
     void FileDialogue(void);
+    void openFileBrowser(int type);
+
     void Fill_Textures(void);
     static void ShowHelpMarker(const char* desc);
     void ConsoleOut (std::string InString);
+    void ConsoleOut (const char *fmt, ...);
+
     void Draw(void);
     void Init(void);
     void LoadFont(void);
@@ -80,13 +91,14 @@ public:
 
     void drawMenuBar(void);
     void drawMatWindows(void);
-
-    //void drawSettingsWindowOld(void);
+    void drawFileBrowser(void);
 
     void drawSettingsWindow(void);
     void drawMatBar(void);
     void drawSettingsBar(void);
     void drawSettingsBlock(void);
+    void popupError(std::string text);
+
 
     //void drawWaterfallSetingsWindow(void);
     enum settingsCats { CAT_INPUT, CAT_PROCESSING,
@@ -96,10 +108,18 @@ public:
                         CAT_WF_SHOW,
                         CAT_B_COLOR, CAT_B_SIZE, CAT_B_MORPH, CAT_B_BLUR, CAT_B_ACCUM, CAT_B_INFO,
                         CAT_COM, CAT_UI,
+                        //CAT_FILES,
                         CAT_STATS,
                         CAT_DEBUG,
                         NR_CAT};
-    std::string settingsCatNames[NR_CAT];
+
+    //std::string settingsCatNames[NR_CAT];
+
+    struct {
+        int matID;
+        std::string name;
+    } setCats[NR_CAT];
+
 };
 
 extern GUI_class GUI;

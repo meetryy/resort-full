@@ -14,18 +14,31 @@ enum miscActMask {MASK_ACT_PING}; // 4 max!
 class COM_class{
 public:
     enum com_status {COM_ERROR, COM_OK};
-    bool IsPresent[16];
-    char TxBuffer[RS232_BUFFERSIZE];
+    bool IsPresent[16] = {0};
+    char TxBuffer[RS232_BUFFERSIZE]  = {0};
+    bool tryShake = 0;
+    int shakeTimout = 500;
+    bool connectionOk = 0;
+    bool isOpen = 0;
+
 
     int Open(int port_number);
     int Close(int port_number);
+    int closeCurrent(void);
     int List(void);
     int Shake(void);
     int Test(void);
-    int setHwState(uint8_t hwType, uint8_t hwID, uint8_t hwAction, uint8_t parameter);
+    //int setHwState(uint8_t hwType, uint8_t hwID, uint8_t hwAction, uint8_t parameter);
+    int sendCmd(uint8_t hwType, int16_t prarmValue);
     int setZoneState(int* zoneArray, int arrLen);
     void listen(void);
+    void comThread(void);
+    void startThread(void);
+    void sendZoneState(void);
+    void sendZoneTest(void);
 
+    void tryGoodbye(void);
+    void tryConnect(void);
 };
 
 extern COM_class COM;
