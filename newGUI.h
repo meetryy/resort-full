@@ -8,8 +8,8 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
-class GUI_class{
-private:
+struct GUI_t{
+//private:
     int a = 0;
     sf::Event event;
     bool    FullscreenChanged = 0;
@@ -34,15 +34,15 @@ private:
 
 
 
-public:
+//public:
     enum MatWinAlias {  W_MAT_IN,
                         W_MAT_WF_BG, W_MAT_WF_CONTOUR, W_MAT_WF_MOG, W_MAT_WF_MORPH, W_MAT_WF_OUT, W_MAT_WF_MASK,
                         W_MAT_PP_IN, W_MAT_PP_HUD,
                         W_MAT_B_HUD, W_MAT_B_ACCUM, W_MAT_B_RANGED,
                         W_MAT_DEBUG, W_MAT_NR};
 
-    enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, W_SET_COM, W_SET_HW, W_SET_INFO,W_SET_OUT,
-                        W_SELF_COLORS, W_SELF_LOG, W_SET_FILE,
+    enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, W_SET_COM, W_SET_HW, W_SET_INFO, W_SET_OUT,
+                        W_SELF_COLORS, W_SELF_LOG,
                         W_SET_NR};
 
     enum matwins {W_CAT_NONE, W_CAT_INPUT, W_CAT_PP, W_CAT_WF, W_CAT_BELT, NR_W_CAT};
@@ -67,7 +67,7 @@ public:
     long ScreenH = 1080;
 
 
-    enum {PU_COMM_STOP, PU_SOURCE_CLOSE, PU_EXIT, PU_ERROR, PU_NR};
+    enum {PU_COMM_STOP, PU_SOURCE_CLOSE, PU_EXIT, PU_ERROR, PU_PROC_STOP, PU_SEPAR_STOP, PU_NR};
     bool openPopUpFlags[PU_NR];
     void drawPopUps(void);
     void openPopUp(int id);
@@ -99,6 +99,11 @@ public:
     void drawSettingsBlock(void);
     void popupError(std::string text);
 
+    void shortcutCapture(void);
+    void shortcutConnect(void);
+    void shortcutProcessing(void);
+    void shortcutSeparation(void);
+
 
     //void drawWaterfallSetingsWindow(void);
     enum settingsCats { CAT_INPUT, CAT_PROCESSING,
@@ -108,7 +113,7 @@ public:
                         CAT_WF_SHOW,
                         CAT_B_COLOR, CAT_B_SIZE, CAT_B_MORPH, CAT_B_BLUR, CAT_B_ACCUM, CAT_B_INFO,
                         CAT_COM, CAT_UI,
-                        //CAT_FILES,
+                        CAT_HW,
                         CAT_STATS,
                         CAT_DEBUG,
                         NR_CAT};
@@ -122,4 +127,4 @@ public:
 
 };
 
-extern GUI_class GUI;
+extern GUI_t GUI;

@@ -85,6 +85,11 @@ public:
     void start_video_rec(void);
     void stop_video_rec(void);
 
+
+    void initProcessor(int newProcType);
+    void startProcessing(void);
+    void stopProcessing(void);
+
     std::string videoFileName;
 
     //void videoOpen(std::string fileName);

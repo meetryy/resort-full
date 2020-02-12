@@ -38,7 +38,7 @@ using namespace ImGui;
 std::string FilePath(void);
 
 bool* p_open;
-void GUI_class::ShowHelpMarker(const char* desc){
+void GUI_t::ShowHelpMarker(const char* desc){
     ImGui::SameLine();
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())
@@ -51,7 +51,7 @@ void GUI_class::ShowHelpMarker(const char* desc){
     }
 }
 
-void GUI_class::Init(void){
+void GUI_t::Init(void){
     ScreenW = sf::VideoMode::getDesktopMode().width;
     ScreenH = sf::VideoMode::getDesktopMode().height;
 
@@ -64,10 +64,55 @@ void GUI_class::Init(void){
 
     ImGui::SFML::Init(window, false);
     LoadFont();
+    /*
+    ImVec4* colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.20f, 0.21f, 0.22f, 0.54f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.40f, 0.40f, 0.40f, 0.40f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.18f, 0.18f, 0.18f, 0.67f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.94f, 0.94f, 0.94f, 1.00f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.86f, 0.86f, 0.86f, 1.00f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.44f, 0.44f, 0.44f, 0.40f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.46f, 0.47f, 0.48f, 1.00f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(0.42f, 0.42f, 0.42f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.70f, 0.70f, 0.70f, 0.31f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.70f, 0.70f, 0.70f, 0.80f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(0.48f, 0.50f, 0.52f, 1.00f);
+    colors[ImGuiCol_Separator]              = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.72f, 0.72f, 0.72f, 0.78f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.91f, 0.91f, 0.91f, 0.25f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.81f, 0.81f, 0.81f, 0.67f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(0.73f, 0.60f, 0.15f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.87f, 0.87f, 0.87f, 0.35f);
+    colors[ImGuiCol_ModalWindowDarkening]   = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_NavHighlight]           = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    */
 }
 
 
-void GUI_class::Worker(void){
+void GUI_t::Worker(void){
     sf::Clock deltaClock;
     sf::Event event;
 
@@ -105,7 +150,7 @@ void GUI_class::Worker(void){
 }
 
 
-void GUI_class::LoadFont(void){
+void GUI_t::LoadFont(void){
     ImFontConfig font_config;
     font_config.OversampleH = 1; //or 2 is the same
     font_config.OversampleV = 1;
@@ -134,7 +179,7 @@ void GUI_class::LoadFont(void){
 ImVec4 ColorOn = ImColor(0.0f,1.0f,0.0f,1.0f);
 ImVec4 ColorOff = ImColor(1.0f,0.0f,0.0f,1.0f);
 
-void GUI_class::StatedText(string Input, bool state){
+void GUI_t::StatedText(string Input, bool state){
     if (state) ImGui::PushStyleColor(ImGuiCol_Text, ColorOn);
     else    ImGui::PushStyleColor(ImGuiCol_Text, ColorOff);
 
@@ -143,25 +188,30 @@ void GUI_class::StatedText(string Input, bool state){
 }
 
 
-void GUI_class::drawMenuBar(void){
+void GUI_t::drawMenuBar(void){
     if (ImGui::BeginMainMenuBar()){
 
         ImGui::Text(WindowName.c_str());
         ImGui::Separator();
 
-        ImGui::Text(u8"Конфигурация: settings.ini");
-        if (ImGui::MenuItem(u8"Загрузить")) openFileBrowser(BROWSE_LOAD_CFG);
-        if (ImGui::MenuItem(u8"Сохранить")) openFileBrowser(BROWSE_SAVE_CFG);
+        static char fileMenuName[64] = {0};
+        sprintf(fileMenuName, u8"Конфигурация: %s", V.settingsFileName.c_str());
+
+        if (ImGui::BeginMenu(fileMenuName)){
+                if (ImGui::MenuItem(u8"Загрузить")) openFileBrowser(BROWSE_LOAD_CFG);
+                if (ImGui::MenuItem(u8"Сохранить")) openFileBrowser(BROWSE_SAVE_CFG);
+            ImGui::EndMenu();
+        };
+
         ImGui::Separator();
 
-        if(ImGui::MenuItem(u8"Полный экран", NULL, &V.UI.Fullscreen)) {FullscreenChanged=1;}
+        if(ImGui::MenuItem(u8"Полный экран", NULL, &V.UI.Fullscreen)) {FullscreenChanged = 1;}
 
         ImGui::Separator();
         ImGui::Text("GUI %.1f FPS",ImGui::GetIO().Framerate);
 
         ImGui::Separator();
         ImGui::Text(u8"Обработка %.1f FPS", V.Info.FPS);
-
 
         static time_t now;
         now = time(NULL);
@@ -180,7 +230,7 @@ void GUI_class::drawMenuBar(void){
     }
 }
 
-void GUI_class::drawMatWindows(void){
+void GUI_t::drawMatWindows(void){
     for(int i=0; i<W_MAT_NR; i++){
         if (MatWin[i].show){
             if(!MatWin[i].mat_show.empty()){
@@ -238,7 +288,7 @@ void alignCenter(float width){
 
 int catSelected = 0;
 
-void GUI_class::drawMatBar(void){
+void GUI_t::drawMatBar(void){
     ImGuiStyle& style = ImGui::GetStyle();
 
     int i = setCats[catSelected].matID;
@@ -292,14 +342,36 @@ void popNextDisabledIf(bool isOff){
     }
 }
 
-void GUI_class::drawSettingsBlock(void){
+
+void GUI_t::shortcutCapture(void){
+    if  (!V.Input.CaptureRun) Img.startCapture();
+    else openPopUp(PU_SOURCE_CLOSE);
+}
+
+void GUI_t::shortcutConnect(void){
+    if (!COM.isOpen && !COM.connectionOk) COM.tryConnect();
+    if (COM.isOpen && !COM.connectionOk) COM.Shake();
+    if (COM.isOpen && COM.connectionOk) openPopUp(PU_COMM_STOP);
+
+}
+
+void GUI_t::shortcutProcessing(void){
+    if (!Img.procRun) Img.startProcessing();
+    else openPopUp(PU_PROC_STOP);
+}
+
+void GUI_t::shortcutSeparation(void){
+
+}
+
+
+void GUI_t::drawSettingsBlock(void){
     ImGui::BeginGroup();
             ImGui::BeginChild("##wfitems", ImVec2(0, 0), 1, 0);
             switch (catSelected) {
                 case CAT_INPUT: {
                     ImGui::Text(u8"Настройки источника изображения");
                     ImGui::Separator();
-
                         if  (!V.Input.CaptureRun) {
                                 if (ImGui::Button(u8"Открыть", ImVec2(60,22))) {
                                     Img.startCapture();
@@ -742,6 +814,78 @@ void GUI_class::drawSettingsBlock(void){
 
                     break;}
 
+                case CAT_HW: {
+                    static ImVec2 diagramSize = ImVec2(ImGui::GetWindowContentRegionMax().x - 10, ImGui::GetWindowContentRegionMax().y - 10);
+                    static float padding = 5.0f;
+
+
+
+                    ImDrawList* dList = ImGui::GetWindowDrawList();
+                    ImVec2 p = ImGui::GetCursorScreenPos();
+                    float x = p.x + 4.0f, y = p.y + 4.0f;
+                    static ImVec4 colf = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
+                    const ImU32 col = ImColor(colf);
+
+                    static ImVec2 diagramBox[2] = {ImVec2(p.x, p.y), ImVec2(p.x + diagramSize.x, p.y + diagramSize.y)};
+
+                    static float hopperW = (diagramSize.x - padding*4) / 3;
+                    static float hopperH = 120;
+                    static ImVec2 hopperBox[2] = {ImVec2(p.x +padding , p.y+padding), ImVec2(p.x + hopperW + padding, p.y + hopperH+padding)};
+
+                    //static float feederW = 100;
+                    static float feederH = 50;
+                    static ImVec2 feederBox[2] = {ImVec2(hopperBox[0].x, hopperBox[1].y+padding), ImVec2(hopperBox[1].x, hopperBox[1].y+padding + feederH)};
+
+                    static float vertCamW = hopperW;
+                    static ImVec2 vertCamBox[2] = {ImVec2(feederBox[1].x + padding, hopperBox[0].y), ImVec2(feederBox[1].x + padding + vertCamW, feederBox[1].y)};
+
+                    //static ImVec2 vertScreenBox[2] = {ImVec2(, ), ImVec2(,)};
+
+                    static float ejH = 50;
+                    static float ejW = hopperW;
+                    static ImVec2 ejectorBox[2] = {ImVec2(vertCamBox[1].x+padding, vertCamBox[1].y - ejH), ImVec2(vertCamBox[1].x+padding + ejW, vertCamBox[1].y)};
+
+                    static float transpH = 50;
+                    static ImVec2 transpBox[2] = {ImVec2(p.x+padding,feederBox[1].y+padding), ImVec2(ejectorBox[1].x,ejectorBox[1].y+padding + transpH)};
+
+                    static float horScreenW= 20.0f;
+                    static float horCamH = 100.0f;
+
+
+
+                    static ImVec2 horCamBox[2] = {  ImVec2(p.x + padding,                           transpBox[1].y + padding),
+                                                    ImVec2(transpBox[1].x - horScreenW - padding,   transpBox[1].y+padding + horCamH)};
+
+                    static ImVec2 horScreenBox[2] = {ImVec2(transpBox[1].x - horScreenW, horCamBox[0].y), ImVec2(transpBox[1].x,horCamBox[1].y)};
+
+                    static float nozW = ejW;
+                    static float nozH = 50;
+                    static ImVec2 nozzleBox[2] = {  ImVec2(horScreenBox[1].x-nozW, horScreenBox[1].y + padding),
+                                                    ImVec2(horScreenBox[1].x,horScreenBox[1].y + padding + nozH)};
+
+
+                    dList->AddRect(diagramBox[0], diagramBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(hopperBox[0], hopperBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(feederBox[0], feederBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(vertCamBox[0], vertCamBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(ejectorBox[0], ejectorBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+
+                    //dList->AddRect(vertScreenBox[0], ejectorBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(transpBox[0], transpBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(horCamBox[0], horCamBox[1], col, 0.0f, ImDrawCornerFlags_All, 2);
+                    dList->AddRect(horScreenBox[0], horScreenBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(nozzleBox[0], nozzleBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+
+
+                    ImGui::BeginChild("##hopper", ImVec2(hopperW, hopperH), true);
+
+                    ImGui::EndChild();
+                    //ImGui::Button("TEST");
+                    //p = ImGui::GetCursorScreenPos();
+                    //dList->AddRect(ImVec2(x, y), ImVec2(x + 20, y + 20), col, 10.0f, ImDrawCornerFlags_All, 2);
+
+                    break;}
+
 
 
                 case CAT_DEBUG: {
@@ -797,6 +941,7 @@ void btnStyleOnOff(bool on){
     ImGui::PushStyleColor(ImGuiCol_Button,          (ImVec4)ImColor::HSV(0.3f*on + 0.0f * !on, 0.7f, 0.7f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered,   (ImVec4)ImColor::HSV(0.3f*on + 0.0f * !on, 0.5f, 0.7f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive,    (ImVec4)ImColor::HSV(0.3f*on + 0.0f * !on, 0.3f, 0.7f, 1.0f));
+
 };
 
 void btnStyleColorEnd(void){};
@@ -804,7 +949,7 @@ void btnStylePop(void){ImGui::PopStyleColor(3);};
 
 bool testBool = 0;
 
-void GUI_class::drawSettingsBar(void){
+void GUI_t::drawSettingsBar(void){
     ImGuiStyle& style = ImGui::GetStyle();
      ImGui::BeginChild("##wfsettingsleft", ImVec2(210/*ImGui::GetWindowWidth()/3.8f*/, 0), true);
         for (int i = 0; i < NR_CAT; i++){
@@ -846,12 +991,16 @@ ImVec2 mainWinSize = ImVec2(1280, 1024 - 25);
 
 //ImVec2 mainWinSize = ImVec2(GUI.ScreenW, GUI.ScreenH - 25);
 
-void GUI_class::drawSettingsWindow(void){
+void GUI_t::drawSettingsWindow(void){
     ImGuiStyle& style = ImGui::GetStyle();
     int spacing = style.ItemSpacing.x;
     ImGui::SetNextWindowSize(mainWinSize, ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Always);
-    if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoTitleBar)){
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+    if (ImGui::Begin(u8"Настройки", p_open, ImGuiWindowFlags_NoResize|
+                                            ImGuiWindowFlags_NoCollapse|
+                                            ImGuiWindowFlags_NoTitleBar|
+                                            ImGuiWindowFlags_NoBringToFrontOnFocus)){
 
         ImGui::BeginChild("##fast", ImVec2(0, 38), 1, 0);
             char btnNameBuf[64] = {0};
@@ -865,21 +1014,21 @@ void GUI_class::drawSettingsWindow(void){
 
             btnStyleOnOff(V.Input.CaptureRun);
                 sprintf(btnNameBuf, u8"Изображение (%s)", sourceType.c_str());
-                if (ImGui::Button(btnNameBuf, ImVec2( ImGui::GetWindowContentRegionWidth()/4,0))) {Img.startCapture();} ImGui::SameLine();
+                if (ImGui::Button(btnNameBuf, ImVec2( ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutCapture();} ImGui::SameLine();
             btnStylePop();
 
             btnStyleOnOff(COM.connectionOk);
                 sprintf(btnNameBuf, u8"Коммуникация (COM%u, %u)", V.ComPort.Number+1, V.ComPort.Speed);
-                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {COM.Open(V.ComPort.Number);} ImGui::SameLine();
+                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutConnect();} ImGui::SameLine();
             btnStylePop();
 
             btnStyleOnOff(Img.procRun);
                 sprintf(btnNameBuf, u8"Обработка (%s)", processorType.c_str());
-                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {} ImGui::SameLine();
+                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutProcessing();} ImGui::SameLine();
             btnStylePop();
 
             btnStyleOnOff(COM.connectionOk);
-                if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {}
+                if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutSeparation();}
             btnStylePop();
 
         ImGui::EndChild();
@@ -902,12 +1051,13 @@ void GUI_class::drawSettingsWindow(void){
 
     }
     ImGui::End();
+    ImGui::PopStyleVar();
 
 
 }
 
 std::string errorText = "";
-void GUI_class::popupError(std::string text){
+void GUI_t::popupError(std::string text){
     errorText = text;
     openPopUpFlags[PU_ERROR] = 1;
 }
@@ -995,7 +1145,7 @@ void drawNewLog(void){
 }
 
 
-void GUI_class::Draw(void){
+void GUI_t::Draw(void){
     drawMenuBar();
     drawMatWindows();
     drawSettingsWindow();
@@ -1030,20 +1180,32 @@ void GUI_class::Draw(void){
     }
 }
 
-void GUI_class::openPopUp(int id){
+void GUI_t::openPopUp(int id){
     openPopUpFlags[id] = 1;
 }
 
+struct Separator_t{
+    void stopSeparation(void);
+};
 
-void GUI_class::drawPopUps(void){
+Separator_t Sep;
+
+
+void Separator_t::stopSeparation(void){
+};
+
+void GUI_t::drawPopUps(void){
     if (openPopUpFlags[PU_COMM_STOP]) {ImGui::OpenPopup("popupCommStop"); openPopUpFlags[PU_COMM_STOP] = 0;}
     ImGui::SetNextWindowSize(ImVec2(300, 150));
     if (ImGui::BeginPopupModal("popupCommStop", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
         ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
-            ImGui::Text(u8"Блок правления подключен. Преравть коммуникацию?");
+            ImGui::Text(u8"Блок правления подключен. Преравть коммуникацию?\nСепарация также будет прервана!");
         ImGui::EndChild();
 
-        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {COM.tryGoodbye(); ImGui::CloseCurrentPopup();}
+        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
+            Sep.stopSeparation();
+            COM.tryGoodbye();
+            ImGui::CloseCurrentPopup();}
         ImGui::SameLine();
 
         if (ImGui::Button(u8"Нет", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {ImGui::CloseCurrentPopup();}
@@ -1054,7 +1216,7 @@ void GUI_class::drawPopUps(void){
     ImGui::SetNextWindowSize(ImVec2(300, 150));
     if (ImGui::BeginPopupModal("popupSourceClose", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
         ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
-            ImGui::Text(u8"Закрыть источник?");
+            ImGui::Text(u8"Закрыть источник?\nОбработка и сепарация будут остановлены!");
         ImGui::EndChild();
 
         if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
@@ -1084,6 +1246,8 @@ void GUI_class::drawPopUps(void){
         ImGui::EndPopup();
     }
 
+
+
     if (openPopUpFlags[PU_ERROR]) {ImGui::OpenPopup("popupEror"); openPopUpFlags[PU_ERROR] = 0;}
     ImGui::SetNextWindowSize(ImVec2(300, 150));
     if (ImGui::BeginPopupModal("popupEror", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
@@ -1095,9 +1259,43 @@ void GUI_class::drawPopUps(void){
         ImGui::EndPopup();
     }
 
+    if (openPopUpFlags[PU_PROC_STOP]) {ImGui::OpenPopup("popupProcStop"); openPopUpFlags[PU_PROC_STOP] = 0;}
+    ImGui::SetNextWindowSize(ImVec2(300, 150));
+    if (ImGui::BeginPopupModal("popupProcStop", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
+        ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
+            ImGui::Text(u8"Остановить обработку?\nСепарация также будет остановлена!");
+        ImGui::EndChild();
+
+        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
+            // stop processing here
+            Img.stopProcessing();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(u8"Нет", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {ImGui::CloseCurrentPopup();}
+        ImGui::EndPopup();
+    }
+
+    if (openPopUpFlags[PU_SEPAR_STOP]) {ImGui::OpenPopup("popupSepStop"); openPopUpFlags[PU_SEPAR_STOP] = 0;}
+    ImGui::SetNextWindowSize(ImVec2(300, 150));
+    if (ImGui::BeginPopupModal("popupSepStop", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
+        ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
+            ImGui::Text(u8"Остановить сепарацию?");
+        ImGui::EndChild();
+
+        if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
+            // stop processing here
+            //Img.stopProcessing();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(u8"Нет", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {ImGui::CloseCurrentPopup();}
+        ImGui::EndPopup();
+    }
+
 }
 
-void GUI_class::VarInit(void){
+void GUI_t::VarInit(void){
     SetWin[W_SET_IN].title=u8"Настройки: вход";
     SetWin[W_SET_BG].title=u8"Настройки: вычитание фона";
     SetWin[W_SET_CONTOUR].title=u8"Настройки: контуры";
@@ -1185,6 +1383,9 @@ void GUI_class::VarInit(void){
     setCats[CAT_COM].name = u8"Коммуникация";
     setCats[CAT_COM].matID = -1;
 
+    setCats[CAT_HW].name = u8"Оборудование";
+    setCats[CAT_HW].matID = -1;
+
     setCats[CAT_UI].name = u8"Интерфейс";
     setCats[CAT_UI].matID = -1;
 
@@ -1213,7 +1414,7 @@ void GUI_class::VarInit(void){
     setCats[CAT_B_INFO].matID = W_MAT_B_HUD;
 }
 
-void GUI_class::Fill_Textures(void){
+void GUI_t::Fill_Textures(void){
     for(int i=0; i<W_MAT_NR; i++){
         //if (MatWin[i].show){
             MatWin[i].write.lock();

@@ -202,11 +202,13 @@ int COM_class::Shake(void){
 
 
 void COM_class::tryConnect(void){
-
+    GUI.ConsoleOut(u8"ѕытаюсь наладить соединение...");
+    Open(V.ComPort.Number);
+    if (isOpen) Shake();
 };
 
 void COM_class::tryGoodbye(void){
-    if (isOpen){
+    if (isOpen && connectionOk){
         sendCmd(CMD_BYE, 0xBEEF);
 
         sleep_for(milliseconds(V.ComPort.shakeTimeout));

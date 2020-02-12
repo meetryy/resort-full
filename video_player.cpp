@@ -8,27 +8,31 @@
 using namespace cv;
 using namespace std;
 
-void  videoPlayer_t::Start(std::string FlieName, int StartFrame, int EndFrame, int Rotate){
+int  videoPlayer_t::Start(std::string FlieName, int StartFrame, int EndFrame, int Rotate){
+    int toReturn = 1;
     cap.open(FlieName);
     cout << "opening " << FlieName << endl;
     if(!cap.isOpened()) {cout << "Error opening video stream or file" << endl;}
-    if (EndFrame < 0) endFrame = cap.get(CAP_PROP_FRAME_COUNT);
-    else endFrame = EndFrame;
-    startFrame = StartFrame;
-    Rotation = Rotate;
-    partLength = EndFrame - StartFrame;
+    else{
+        if (EndFrame < 0) endFrame = cap.get(CAP_PROP_FRAME_COUNT);
+        else endFrame = EndFrame;
+        startFrame = StartFrame;
+        Rotation = Rotate;
+        partLength = EndFrame - StartFrame;
 
-    cap.set(CAP_PROP_POS_FRAMES, StartFrame);
-    frameH = cap.get(CAP_PROP_FRAME_HEIGHT);
-    frameW = cap.get(CAP_PROP_FRAME_WIDTH);
-    playbackMarker = cap.get(CAP_PROP_POS_FRAMES);
-    playbackMs = cap.get(CAP_PROP_POS_MSEC);
+        cap.set(CAP_PROP_POS_FRAMES, StartFrame);
+        frameH = cap.get(CAP_PROP_FRAME_HEIGHT);
+        frameW = cap.get(CAP_PROP_FRAME_WIDTH);
+        playbackMarker = cap.get(CAP_PROP_POS_FRAMES);
+        playbackMs = cap.get(CAP_PROP_POS_MSEC);
 
-    videoFPS = cap.get(CAP_PROP_FPS);
-    fileLengthFrames =  cap.get(CAP_PROP_FRAME_COUNT);
-    fileLengthMs = fileLengthFrames / videoFPS;
-
-    cout << "frameH = " << frameH << " frameW = " << frameW << "marker = " <<playbackMarker<< endl;
+        videoFPS = cap.get(CAP_PROP_FPS);
+        fileLengthFrames =  cap.get(CAP_PROP_FRAME_COUNT);
+        fileLengthMs = fileLengthFrames / videoFPS;
+        cout << "frameH = " << frameH << " frameW = " << frameW << "marker = " <<playbackMarker<< endl;
+        toReturn = 0;
+    }
+    return toReturn;
 }
 
 cv::Mat videoPlayer_t::getFrame(void){

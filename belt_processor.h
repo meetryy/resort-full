@@ -144,6 +144,7 @@ public:
     void startTimeThread(void);
     void stopTimeThread(void);
 
+
 private:
     std::thread timerThread;
     void ejTaskExc(void);

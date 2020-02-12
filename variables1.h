@@ -130,6 +130,7 @@ struct V_t{
     } UI;
 
     bool comTest = 0;
+    std::string settingsFileName = "settings.ini";
 
 };
 

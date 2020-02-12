@@ -36,19 +36,18 @@ int nthOccurrence(const std::string& str, const std::string& findMe, int nth){
 void File_class::ReadConfig(string filename){
     ifstream in;            // Create an input file stream.
     in.open(filename);
-    if (!in) GUI.ConsoleOut(u8"ОШИБКА: Указанный файл конфигурации не найден!");
+    if (!in) GUI.ConsoleOut(u8"ОШИБКА: Файл конфигурации %s не найден!", filename.c_str());
 
     else
     {
-        GUI.ConsoleOut(u8"ФАЙЛ: Файл конфигурации найден");
+        std::size_t found = filename.find_last_of("/\\");
+        V.settingsFileName = filename.substr(found+1);
+
+        GUI.ConsoleOut(u8"ФАЙЛ: Файл конфигурации %s найден", filename.c_str());
         string str;
         getline(in, str);  // Get the frist line from the file, if any.
         while (in) {  // Continue if the line was sucessfully read.
             if (str.find("#") == string::npos){
-                //input
-
-                //ProcessLineBool(str, &input_correction_on, "input_correction_on");
-                //ProcessLineScalar(str, &hsv_input_correction, "hsv_input_correction");
 
                 ProcessLine(str, &V.Input.Source, "V.Input.Source");
                 ProcessLine(str, &preprocessor.brightness, "preprocessor.brightness");
@@ -158,8 +157,6 @@ void File_class::ReadConfig(string filename){
                 ProcessLine(str, &BeltProcessor.morphArea, "BeltProcessor.morphArea");
 
 
-
-
                 //misc
                 ProcessLine(str, &pix_per_100mm, "pix_per_100mm");
                 ProcessLine(str, &V.Morph.Type, "V.Morph.Type");
@@ -171,7 +168,8 @@ void File_class::ReadConfig(string filename){
                 ProcessLine(str, &GUI.ScreenH, "GUI.ScreenH");
                 ProcessLine(str, &GUI.ScreenW, "GUI.ScreenW");
                 ProcessLine(str, &Img.matLimiterTarget, "Img.matLimiterTarget");
-                ProcessLine(str, &Img.videoFileName, "mg.videoFileName");
+                ProcessLine(str, &Img.videoFileName, "Img.videoFileName");
+                ProcessLine(str, &V.settingsFileName, "V.lastSettingsFileName");
 
 
             }
@@ -181,142 +179,11 @@ void File_class::ReadConfig(string filename){
     }
 }
 
-int File_class::ProcessLine(string str, long *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-        std::string::size_type sz;     // alias of size_t
-        *parameter = std::stoi (value,&sz);  //string to int
-        cout << "reading long " << paramname << " = " << *parameter << " OK!"<< endl;
-        to_return = RESULT_OK;
-        //cout << paramname << " found in line" << endl;
-        //GUI.ConsoleOut("%s = %lu", paramname, parameter);
-    }
-    return to_return;
-}
-
-int File_class::ProcessLine(string str, float *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-        std::string::size_type sz;     // alias of size_t
-        *parameter = std::stof (value,&sz);  //string to int
-        cout << "reading float " << paramname << " = " << *parameter << " OK!"<< endl;
-        to_return = RESULT_OK;
-        //cout << paramname << " found in line" << endl;
-    }
-    //else {cout << paramname << " NOT found in line" << endl;}
-    return to_return;
-}
-
-int File_class::ProcessLine(string str, double *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-        std::string::size_type sz;     // alias of size_t
-        *parameter = std::stof (value,&sz);  //string to int
-        cout << "reading double " << paramname << " = " << *parameter << " OK!"<< endl;
-        to_return = RESULT_OK;
-        //cout << paramname << " found in line" << endl;
-    }
-    //else {cout << paramname << " NOT found in line" << endl;}
-    return to_return;
-}
-
-int File_class::ProcessLine(string str, int *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-        std::string::size_type sz;     // alias of size_t
-        *parameter = std::stoi (value,&sz);  //string to int
-        cout << "reading int " << paramname << " = " << *parameter << " OK!"<< endl;
-        to_return = RESULT_OK;
-    }
-    return to_return;
-}
-
-int File_class::ProcessLine(string str, bool *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-        //cout << "bool value = " << value << endl;
-        std::string::size_type sz;     // alias of size_t
-        *parameter = std::stoi (value,nullptr,2);;  //string to int
-        cout << "reading bool " << paramname << " = " << *parameter << " OK!"<< endl;
-        //cout << paramname << " FOUND in line" << endl;
-        to_return = RESULT_OK;
-    }
-    //else{cout << paramname << " NOT found in line" << endl;}
-    return to_return;
-}
-
-int File_class::ProcessLine(string str, string *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-        if (!value.empty()) value.pop_back();
-        *parameter = value;
-        cout << "reading string " << paramname << " = " << *parameter << " OK!"<< endl;
-        //cout << paramname << " FOUND in line" << endl;
-        to_return = RESULT_OK;
-    }
-    //else{cout << paramname << " NOT found in line" << endl;}
-    return to_return;
-}
-
-
-int File_class::ProcessLine(string str, Scalar *parameter, string paramname){
-    int to_return = RESULT_FAIL;
-    //hsv_input_correction=(50.0,100.0,150.0);
-    int position = str.find(paramname);         //find a variable name
-    if (position != string::npos) {             //if exist
-        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
-
-        int comma1 = nthOccurrence(value, ",", 1);
-        int comma2 = nthOccurrence(value, ",", 2);
-        int comma3 = nthOccurrence(value, ",", 3);
-
-        int from = value.find("[")+1;
-        int len =  comma1 - from;
-        string subvalue1 = value.substr(from, len);  //save value as string
-        std::string::size_type sz;     // alias of size_t
-        double val0 = std::stof (subvalue1,&sz);  //string to int
-
-        from = comma1 +1;
-        len = comma2 - from;
-        string subvalue2 = value.substr(from, len);  //save value as string
-        double val1 = std::stof (subvalue2,&sz);  //string to int
-
-        from = comma2 +1;
-        len = comma3 - from;
-        string subvalue3 = value.substr(from, len);  //save value as string
-        double val2 = std::stof (subvalue3,&sz);  //string to in
-
-        //string subvalue4 = value.substr(value.find_last_of(",")+1, value.find(",0]")-2);  //save value as string
-        //cout << subvalue3 << endl;
-        double val3 = 0;//std::stof (subvalue3,&sz);  //string to int
-
-        *parameter = Scalar(val0,val1,val2,val3);
-        cout << "reading scalar " << paramname << " = " << *parameter << " OK!"<< endl;
-        to_return = RESULT_OK;
-
-
-    }
-    //else {cout << paramname << " NOT found in line" << endl;}
-    return to_return;
-}
-
 
 void File_class::SaveConfig(string filename){
     ofstream file;
     file.open(filename,  fstream::out);
-    GUI.ConsoleOut(u8"ФАЙЛ: Начинаем запись конфигурации");
+    GUI.ConsoleOut(u8"ФАЙЛ: Начинаем запись конфигурации %s", filename.c_str());
 
     file << "# input\n";
     file << "V.Input.Source=" << V.Input.Source <<";\n";
@@ -476,9 +343,150 @@ void File_class::SaveConfig(string filename){
     file << "GUI.screenW=" << GUI.ScreenW<<";\n";
     file << "GUI.screenH=" << GUI.ScreenH<<";\n";
     file << "Img.matLimiterTarget=" << Img.matLimiterTarget<<";\n";
+    file << "V.settingsFileName =" << V.settingsFileName <<";\n";
 
 
 
     file.close();
     GUI.ConsoleOut(u8"ФАЙЛ: Сохранение конфигурации завершено");
 }
+
+
+
+
+
+
+
+
+
+int File_class::ProcessLine(string str, long *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+        std::string::size_type sz;     // alias of size_t
+        *parameter = std::stoi (value,&sz);  //string to int
+        cout << "reading long " << paramname << " = " << *parameter << " OK!"<< endl;
+        to_return = RESULT_OK;
+        //cout << paramname << " found in line" << endl;
+        //GUI.ConsoleOut("%s = %lu", paramname, parameter);
+    }
+    return to_return;
+}
+
+int File_class::ProcessLine(string str, float *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+        std::string::size_type sz;     // alias of size_t
+        *parameter = std::stof (value,&sz);  //string to int
+        cout << "reading float " << paramname << " = " << *parameter << " OK!"<< endl;
+        to_return = RESULT_OK;
+        //cout << paramname << " found in line" << endl;
+    }
+    //else {cout << paramname << " NOT found in line" << endl;}
+    return to_return;
+}
+
+int File_class::ProcessLine(string str, double *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+        std::string::size_type sz;     // alias of size_t
+        *parameter = std::stof (value,&sz);  //string to int
+        cout << "reading double " << paramname << " = " << *parameter << " OK!"<< endl;
+        to_return = RESULT_OK;
+        //cout << paramname << " found in line" << endl;
+    }
+    //else {cout << paramname << " NOT found in line" << endl;}
+    return to_return;
+}
+
+int File_class::ProcessLine(string str, int *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+        std::string::size_type sz;     // alias of size_t
+        *parameter = std::stoi (value,&sz);  //string to int
+        cout << "reading int " << paramname << " = " << *parameter << " OK!"<< endl;
+        to_return = RESULT_OK;
+    }
+    return to_return;
+}
+
+int File_class::ProcessLine(string str, bool *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+        //cout << "bool value = " << value << endl;
+        std::string::size_type sz;     // alias of size_t
+        *parameter = std::stoi (value,nullptr,2);;  //string to int
+        cout << "reading bool " << paramname << " = " << *parameter << " OK!"<< endl;
+        //cout << paramname << " FOUND in line" << endl;
+        to_return = RESULT_OK;
+    }
+    //else{cout << paramname << " NOT found in line" << endl;}
+    return to_return;
+}
+
+int File_class::ProcessLine(string str, string *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+        if (!value.empty()) value.pop_back();
+        *parameter = value;
+        cout << "reading string " << paramname << " = " << *parameter << " OK!"<< endl;
+        //cout << paramname << " FOUND in line" << endl;
+        to_return = RESULT_OK;
+    }
+    //else{cout << paramname << " NOT found in line" << endl;}
+    return to_return;
+}
+
+
+int File_class::ProcessLine(string str, Scalar *parameter, string paramname){
+    int to_return = RESULT_FAIL;
+    //hsv_input_correction=(50.0,100.0,150.0);
+    int position = str.find(paramname);         //find a variable name
+    if (position != string::npos) {             //if exist
+        string value = str.substr(str.find("=")+1, str.find(";"));  //save value as string
+
+        int comma1 = nthOccurrence(value, ",", 1);
+        int comma2 = nthOccurrence(value, ",", 2);
+        int comma3 = nthOccurrence(value, ",", 3);
+
+        int from = value.find("[")+1;
+        int len =  comma1 - from;
+        string subvalue1 = value.substr(from, len);  //save value as string
+        std::string::size_type sz;     // alias of size_t
+        double val0 = std::stof (subvalue1,&sz);  //string to int
+
+        from = comma1 +1;
+        len = comma2 - from;
+        string subvalue2 = value.substr(from, len);  //save value as string
+        double val1 = std::stof (subvalue2,&sz);  //string to int
+
+        from = comma2 +1;
+        len = comma3 - from;
+        string subvalue3 = value.substr(from, len);  //save value as string
+        double val2 = std::stof (subvalue3,&sz);  //string to in
+
+        //string subvalue4 = value.substr(value.find_last_of(",")+1, value.find(",0]")-2);  //save value as string
+        //cout << subvalue3 << endl;
+        double val3 = 0;//std::stof (subvalue3,&sz);  //string to int
+
+        *parameter = Scalar(val0,val1,val2,val3);
+        cout << "reading scalar " << paramname << " = " << *parameter << " OK!"<< endl;
+        to_return = RESULT_OK;
+
+
+    }
+    //else {cout << paramname << " NOT found in line" << endl;}
+    return to_return;
+}
+

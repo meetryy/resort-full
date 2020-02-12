@@ -19,7 +19,7 @@ static bool openFileDialog;
 
 int BrowseMode = 0;
 
-void GUI_class::openFileBrowser(int type){
+void GUI_t::openFileBrowser(int type){
     BrowseMode = type;
     browseButtonPressed = 1;
     openFileDialog = 1;
@@ -28,7 +28,7 @@ void GUI_class::openFileBrowser(int type){
 
 ImVec2 fileDlgSize = ImVec2(500, 400);
 
-void GUI_class::drawFileBrowser(void){
+void GUI_t::drawFileBrowser(void){
     if (openFileDialog){
         static ImGuiFs::Dialog dlg;
         ImVec2 fileDlgPos = ImVec2((GUI.ScreenW - fileDlgSize.x)/2,(GUI.ScreenH - fileDlgSize.y)/2);
@@ -67,8 +67,7 @@ void GUI_class::drawFileBrowser(void){
 };
 
 
-struct LogWidget_t
-{
+struct LogWidget_t{
     ImGuiTextBuffer     Buf;
     ImGuiTextFilter     Filter;
     ImVector<int>       LineOffsets;        // Index to lines offset
@@ -76,8 +75,7 @@ struct LogWidget_t
 
     void    Clear()     { Buf.clear(); LineOffsets.clear(); }
 
-    void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
-    {
+    void    AddLog(const char* fmt, ...) IM_FMTARGS(2){
         int old_size = Buf.size();
         va_list args;
         va_start(args, fmt);
@@ -89,8 +87,7 @@ struct LogWidget_t
         ScrollToBottom = true;
     }
 
-    void    Draw(const char* title, bool* p_open = NULL)
-    {
+    void    Draw(const char* title, bool* p_open = NULL){
         if (ImGui::Button(u8"Очистить")) Clear();
         ImGui::SameLine();
         bool copy = ImGui::Button(u8"Копировать");
@@ -138,8 +135,8 @@ void drawConsole(void){
      GUI_Log.Draw(u8"Консоль", consoleOpen);
 }
 
-//void GUI_class::ConsoleOut (std::string InString){
-void GUI_class::ConsoleOut (const char *fmt, ...){
+//void GUI_t::ConsoleOut (std::string InString){
+void GUI_t::ConsoleOut (const char *fmt, ...){
     time_t now;
     char the_date[32];
     the_date[0] = '\0';
@@ -160,7 +157,7 @@ void GUI_class::ConsoleOut (const char *fmt, ...){
   //  }
 }
 
-void GUI_class::ConsoleOut (std::string InString){
+void GUI_t::ConsoleOut (std::string InString){
     time_t now;
     char the_date[32];
     the_date[0] = '\0';

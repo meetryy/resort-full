@@ -40,16 +40,11 @@
 using namespace cv;
 using namespace std;
 
-GUI_class GUI;
-
-void    comport_thread(void);
-void    image_thread(void);
-void    ProcessImg(void);
+GUI_t GUI;
 
 bool        FullscreenChanged = 1;
 sf::Window  window;
-
-V_t V;
+V_t         V;
 
 std::string WindowName = "ReSort v0.25";
 
@@ -64,7 +59,7 @@ int main(int argc, const char *argv[])
     COM.List();
     COM.startThread();
 
-    V.Input.CaptureRun = 0;
+    Img.stopCapture();
 
     Img.BS_Init(BS_MOG);
 

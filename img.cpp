@@ -140,9 +140,7 @@ void Image_class::WaterfallProcessor(cv::Mat img_in){
                 Rect roi = boundingRect(contours[i]);
                 long diameter = roi.width;
 
-
                 img_in(roi).copyTo(img_roi, img_wholemask(roi));
-
 
                 double PartOfColor = ((contourArea(contours[i])) / boundingRect(contours[i]).area());
 
@@ -190,21 +188,20 @@ void Image_class::limitMatWinFPS(void){
 }
 
 
-void initProcessor(int newProcType){
+void Image_class::initProcessor(int newProcType){
     switch (newProcType){
         case PROC_B: {break;}
         case PROC_WF: {break;}
     }
 };
 
-void startProcessing(void){
+void Image_class::startProcessing(void){
 };
 
-void stopProcessing(void){
+void Image_class::stopProcessing(void){
 };
 
 void Image_class::ImgProcessor(void){
-
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
     while (1){
         if (V.Input.CaptureRun){
@@ -231,7 +228,6 @@ void Image_class::ImgProcessor(void){
             }
 
             limitMatWinFPS();
-
         }
         videoPlayer.fpsStop();
     }
@@ -337,12 +333,13 @@ void Image_class::cameraOpen(void){
     }
     else{
          GUI.ConsoleOut(u8"ОШИБКА: Не могу открыть камеру!");
+         GUI.popupError(u8"Ошибка открытия камеры");
     }
 }
 
 void Image_class::cameraClose(void){
-    V.Input.CaptureRun = 0;
     camera.release();
+    GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Камера закрыта");
 }
 
 /*
@@ -371,11 +368,12 @@ void Image_class::cameraUpdSettings(void){
         camera.set(cv::CAP_PROP_BRIGHTNESS ,V.Cam.Brightness);
         camera.set(cv::CAP_PROP_SATURATION ,V.Cam.Saturation);
         camera.set(cv::CAP_PROP_EXPOSURE ,V.Cam.Exposure);
-        //camera.set(cv::CAP_PROP_GAMMA   ,V.Cam.Hue);
         GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Параметры камеры обновлены");
     }
     else{
         GUI.ConsoleOut(u8"ОШИБКА: Камера закрыта!");
+        GUI.popupError(u8"Ошибка обновления параметров камеры\nЗначения не поддерживаются, или камера закрыта");
+
     }
 
 }
@@ -411,22 +409,33 @@ void Image_class::stop_video_rec(void){
 
 
 void Image_class::startCapture(void){
-    if (V.Input.Source == SOURCE_CAM) Img.cameraOpen();
-        if (V.Input.Source == SOURCE_VIDEO){
-            videoPlayer.Start(Img.videoFileName, videoPlayer.startFrame, -1, -1);
-            //BeltProcessor.Init();
-            //BeltProcessor.initDone = 0;
-            V.Input.CaptureRun = 1;
-            //Img.videoOpen();
-        }
+    GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Начинаю захват...");
+    if (V.Input.Source == SOURCE_CAM)
+        Img.cameraOpen();
+
+
+    if (V.Input.Source == SOURCE_VIDEO) {
+            if (videoPlayer.Start(Img.videoFileName, videoPlayer.startFrame, -1, -1) == RESULT_OK)
+                V.Input.CaptureRun = 1;
+
+            else {
+                GUI.ConsoleOut(u8"ОШИБКА: Невозможно открыть файл");
+                GUI.popupError(u8"Ошибка открытия файла!");
+            }
+    }
+
+
 }
 
 void Image_class::stopCapture(void){
-    if (V.Input.Source == SOURCE_CAM) Img.cameraClose();
+    if (V.Input.CaptureRun){
+        if (V.Input.Source == SOURCE_CAM) Img.cameraClose();
         if (V.Input.Source == SOURCE_VIDEO){
-            videoPlayer.Stop();
-            V.Input.CaptureRun = 0;
-            //BeltProcessor.initDone = 0;
+                videoPlayer.Stop();
         }
+        V.Input.CaptureRun = 0;
+        GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Захват остановлен");
+
+    }
 }
 

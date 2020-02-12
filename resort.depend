@@ -1725,7 +1725,7 @@
 1544123028 d:\codeblocks\projects\resort-full\bgsubcnt.h
 	"opencv2/video.hpp"
 
-1581275839 source:d:\codeblocks\projects\resort-full\com_port.cpp
+1581539068 source:d:\codeblocks\projects\resort-full\com_port.cpp
 	<iostream>
 	<fstream>
 	<stdexcept>
@@ -1760,14 +1760,14 @@
 	<fstream>
 	<stdexcept>
 
-1581248328 d:\codeblocks\projects\resort-full\variables1.h
+1581545827 d:\codeblocks\projects\resort-full\variables1.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
 
 1536939805 d:\codeblocks\projects\resort-full\ui.h
 
-1581265205 source:d:\codeblocks\projects\resort-full\file.cpp
+1581546618 source:d:\codeblocks\projects\resort-full\file.cpp
 	<iostream>
 	<fstream>
 	<Windows.h>
@@ -1788,7 +1788,7 @@
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
 
-1581266604 d:\codeblocks\projects\resort-full\main.h
+1581536740 d:\codeblocks\projects\resort-full\main.h
 	<iostream>
 	<fstream>
 	<stdexcept>
@@ -1797,7 +1797,7 @@
 	<opencv2/imgproc/imgproc.hpp>
 	<SFML/Graphics/Texture.hpp>
 
-1581264821 source:d:\codeblocks\projects\resort-full\img.cpp
+1581538576 source:d:\codeblocks\projects\resort-full\img.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -1821,7 +1821,7 @@
 	"preprocessor.h"
 	"belt_processor.h"
 
-1581264821 d:\codeblocks\projects\resort-full\img.h
+1581538576 d:\codeblocks\projects\resort-full\img.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -1844,7 +1844,7 @@
 	<iostream>
 	"opencv2/opencv.hpp"
 
-1581275167 d:\codeblocks\projects\resort-full\newgui.h
+1581546618 d:\codeblocks\projects\resort-full\newgui.h
 	<string>
 	<SFML/Graphics/RenderWindow.hpp>
 	<SFML/System/Clock.hpp>
@@ -2037,7 +2037,7 @@
 	<errno.h>
 	<limits.h>
 
-1581275941 source:d:\codeblocks\projects\resort-full\newgui.cpp
+1581545946 source:d:\codeblocks\projects\resort-full\newgui.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<iostream>
@@ -2088,7 +2088,7 @@
 1511356394 source:d:\codeblocks\projects\resort-full\rs232.c
 	"rs232.h"
 
-1581266790 source:d:\codeblocks\projects\resort-full\main.cpp
+1581532833 source:d:\codeblocks\projects\resort-full\main.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -2203,13 +2203,13 @@
 	<opencv2/highgui/highgui.hpp>
 	<string>
 
-1568418572 d:\codeblocks\projects\resort-full\video_player.h
+1581536740 d:\codeblocks\projects\resort-full\video_player.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
 	<string>
 
-1568471090 source:d:\codeblocks\projects\resort-full\video_player.cpp
+1581536740 source:d:\codeblocks\projects\resort-full\video_player.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -2232,7 +2232,7 @@
 	<chrono>
 	<thread>
 
-1580595070 d:\codeblocks\projects\resort-full\belt_processor.h
+1581539834 d:\codeblocks\projects\resort-full\belt_processor.h
 	<opencv2/core/core.hpp>
 	<opencv2/imgproc/imgproc.hpp>
 	<opencv2/highgui/highgui.hpp>
@@ -2248,7 +2248,7 @@
 
 1581251796 d:\codeblocks\projects\resort-full\gui_tools.h
 
-1581267690 source:d:\codeblocks\projects\resort-full\gui_tools.cpp
+1581532627 source:d:\codeblocks\projects\resort-full\gui_tools.cpp
 	<iostream>
 	<fstream>
 	<string>

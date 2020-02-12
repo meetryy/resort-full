@@ -33,7 +33,7 @@ public:
     int fileLengthFrames;// =  cap.get(CAP_PROP_FRAME_COUNT);
     float fileLengthMs;// = (float)fileLengthFrames / videoFPS;
 
-    void Start(std::string FlieName, int StartFrame, int EndFrame, int Rotate);
+    int Start(std::string FlieName, int StartFrame, int EndFrame, int Rotate);
     void Stop(void);
     void Pause(void);
 

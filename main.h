@@ -14,3 +14,5 @@ void GUI_FullscreenSwitch(void);
 
 void exitApplication(void);
 extern bool FullscreenChanged;
+
+enum results{RESULT_OK, RESULT_ERROR};
