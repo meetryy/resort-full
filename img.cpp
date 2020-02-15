@@ -176,11 +176,11 @@ Mat videofileFrame;
 void Image_class::limitMatWinFPS(void){
     matLimiterCounter++;
     if (matLimiterCounter >= matLimiterTarget){
-        for (int i=0; i<GUI.W_MAT_NR; i++){
-            if (GUI.MatWin[i].show && !GUI.MatWin[i].mat->empty()){
-                GUI.MatWin[i].write.lock();
-                    GUI.MatWin[i].mat->copyTo(GUI.MatWin[i].mat_show);
-                GUI.MatWin[i].write.unlock();
+        for (int i=0; i<GUI.NR_CAT; i++){
+            if ((GUI.setCats[i].matID != -1) && !GUI.setCats[i].mat->empty()){
+                GUI.setCats[i].write.lock();
+                    GUI.setCats[i].mat -> copyTo(GUI.setCats[i].matToShow);
+                GUI.setCats[i].write.unlock();
             }
         }
     matLimiterCounter = 0;
@@ -190,16 +190,30 @@ void Image_class::limitMatWinFPS(void){
 
 void Image_class::initProcessor(int newProcType){
     switch (newProcType){
-        case PROC_B: {break;}
-        case PROC_WF: {break;}
+        case PROC_B: {
+                BeltProcessor.initDone = 0;
+            break;}
+
+        case PROC_WF: {
+
+            break;}
+
+        case PROC_CALIB: {
+                //Calib.Init();
+            break;}
     }
 };
 
 void Image_class::startProcessing(void){
+    initProcessor(V.procType);
+    procRun = 1;
 };
 
 void Image_class::stopProcessing(void){
+    procRun = 0;
 };
+
+#include "calibration.h"
 
 void Image_class::ImgProcessor(void){
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Запуск процессора изображения");
@@ -208,22 +222,35 @@ void Image_class::ImgProcessor(void){
             FPS_Routine();
             switch (V.Input.Source){
                 case SOURCE_CAM: { // camera
-                    if (!V.Input.FreezeFrame) camera >> img_in;
+                    Mat camFrame;
+                    //if (!V.Input.FreezeFrame)
+                        camera >> camFrame;
+                    if (preprocessor.isOn) img_in = preprocessor.Result(camFrame);
+                    else img_in = camFrame;
                     break;}
 
                 case SOURCE_VIDEO: { // video
                     videoPlayer.fpsStart();
                     Mat videoFrame = videoPlayer.getFrame();
-                    //if (preprocessor.isOn)
-                    img_in = preprocessor.Result(videoFrame);
-                    //else img_in = videoFrame;
+                    //std::cout << "frame get "<< std::endl:
+                    if (preprocessor.isOn) img_in = preprocessor.Result(videoFrame);
+
+                    else img_in = videoFrame;
+                    //std::cout << "frame get "<< std::endl:
                     break;}
+            }
+
+
+            if (Calib.undistIsOn && Calib.dataReady) {
+                    Mat matDistorted = img_in.clone();
+                    cv::remap(matDistorted, img_in, Calib.calibData.map1, Calib.calibData.map2, INTER_LINEAR);
             }
 
             if (procRun){
                 switch (V.procType){
                     case PROC_WF:   {WaterfallProcessor(img_in);    break;}
                     case PROC_B:    {BeltProcessor.Result(img_in);  break;}
+                    case PROC_CALIB:{Calib.processFrame(img_in);    break;}
                 }
             }
 
@@ -323,11 +350,18 @@ void Image_class::cameraOpen(void){
     camera.open(V.Cam.Number);
     if (camera.isOpened()){
         camera.set(cv::CAP_PROP_FOURCC ,cv::VideoWriter::fourcc('M', 'J', 'P', 'G') );
-        camera.set(cv::CAP_PROP_FPS, V.Cam.FPS);
+        //camera.set(cv::CAP_PROP_FPS, V.Cam.FPS);
         camera.set(cv::CAP_PROP_FRAME_WIDTH, V.Cam.Width);
         camera.set(cv::CAP_PROP_FRAME_HEIGHT, V.Cam.Height);
-        cameraUpdSettings();
+        //cameraUpdSettings();
         GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Камера открыта");
+
+        //std::cout << "CAP_PROP_CONTRAST" << camera.get(cv::CAP_PROP_CONTRAST) << std::endl;
+        //std::cout << "CAP_PROP_GAIN" << camera.get(cv::CAP_PROP_GAIN) << std::endl;
+        //std::cout << "CAP_PROP_BRIGHTNESS" << camera.get(cv::CAP_PROP_BRIGHTNESS) << std::endl;
+        //std::cout << "CAP_PROP_SATURATION" << camera.get(cv::CAP_PROP_SATURATION) << std::endl;
+        //std::cout << "CAP_PROP_EXPOSURE" << camera.get(cv::CAP_PROP_EXPOSURE) << std::endl;
+
         V.Input.CaptureRun = 1;
         camera >> img_in;
     }
@@ -338,7 +372,7 @@ void Image_class::cameraOpen(void){
 }
 
 void Image_class::cameraClose(void){
-    camera.release();
+    if (camera.isOpened()) camera.release();
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Камера закрыта");
 }
 
@@ -378,6 +412,7 @@ void Image_class::cameraUpdSettings(void){
 
 }
 
+/*
 void Image_class::start_video_rec(void){
     time_t now;
     char the_date[32];
@@ -407,6 +442,7 @@ void Image_class::stop_video_rec(void){
    }
 }
 
+*/
 
 void Image_class::startCapture(void){
     GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Начинаю захват...");
@@ -429,11 +465,13 @@ void Image_class::startCapture(void){
 
 void Image_class::stopCapture(void){
     if (V.Input.CaptureRun){
+        V.Input.CaptureRun = 0;
+
         if (V.Input.Source == SOURCE_CAM) Img.cameraClose();
         if (V.Input.Source == SOURCE_VIDEO){
                 videoPlayer.Stop();
         }
-        V.Input.CaptureRun = 0;
+
         GUI.ConsoleOut(u8"ИЗОБРАЖЕНИЕ: Захват остановлен");
 
     }

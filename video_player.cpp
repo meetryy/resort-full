@@ -36,22 +36,24 @@ int  videoPlayer_t::Start(std::string FlieName, int StartFrame, int EndFrame, in
 }
 
 cv::Mat videoPlayer_t::getFrame(void){
-    Mat tempMat;
-    playbackMarker = cap.get(CAP_PROP_POS_FRAMES);
-    playbackMs = cap.get(CAP_PROP_POS_MSEC);
+    if(cap.isOpened()) {
+        Mat tempMat;
+        playbackMarker = cap.get(CAP_PROP_POS_FRAMES);
+        playbackMs = cap.get(CAP_PROP_POS_MSEC);
 
-    partLength = endFrame - startFrame;
-    playbackPortion = (float)(playbackMarker - startFrame) / (float)partLength;
-    if (playbackMarker >= endFrame) cap.set(CAP_PROP_POS_FRAMES, startFrame);
+        partLength = endFrame - startFrame;
+        playbackPortion = (float)(playbackMarker - startFrame) / (float)partLength;
+        if (playbackMarker >= endFrame) cap.set(CAP_PROP_POS_FRAMES, startFrame);
 
-    if (!pause) {
-            cap >> tempMat;
-            lastMat = tempMat.clone();
+        if (!pause) {
+                cap >> tempMat;
+                lastMat = tempMat.clone();
+        }
+        else {tempMat = lastMat.clone();}
+        if (Rotation >= 0) cv::rotate(tempMat, tempMat, Rotation);
+
+        return tempMat;
     }
-    else {tempMat = lastMat.clone();}
-    if (Rotation >= 0) cv::rotate(tempMat, tempMat, Rotation);
-
-    return tempMat;
 }
 
 void videoPlayer_t::setMarker(double Position){

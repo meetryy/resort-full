@@ -16,7 +16,7 @@
 //extern cv::Mat img_mask;
 
 enum morphAlias {MORPH_CURRENT_RECT, MORPH_CURRENT_ELLIPSE, MORPH_CURRENT_CROSS};
-enum procTypes {PROC_WF, PROC_B};
+enum procTypes {PROC_WF, PROC_B, PROC_CALIB};
 enum {PMODE_INIT, PMODE_BELT_STOP, PMODE_BELT_RUN, PMODE_WF_STOP, PMODE_WF_RUN, PMODE_CALIB_DIST, PMODE_CALIB_DIM};
 
 class Image_class{
@@ -103,7 +103,7 @@ public:
     void limitMatWinFPS(void);
 
     int procState = PMODE_INIT;
-    int procRun = 1;
+    int procRun = 0;
 };
 
 extern Image_class Img;

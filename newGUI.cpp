@@ -31,6 +31,9 @@
 #include "video_player.h"
 #include "preprocessor.h"
 #include "belt_processor.h"
+#include "calibration.h"
+#include "hardware.h"
+
 
 using namespace std;
 using namespace ImGui;
@@ -230,36 +233,63 @@ void GUI_t::drawMenuBar(void){
     }
 }
 
+int catSelected = 0;
+
 void GUI_t::drawMatWindows(void){
-    for(int i=0; i<W_MAT_NR; i++){
-        if (MatWin[i].show){
-            if(!MatWin[i].mat_show.empty()){
-                    MatWin[i].write.lock();
-                    if (MatWin[i].mat_show.type() == 16){cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGR2RGBA);}
-                    else if (MatWin[i].mat_show.type() == 0){cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_GRAY2RGBA);}
-                    MatWin[i].write.unlock();
+    for(int i=0; i < NR_CAT; i++){
+            if (setCats[i].p_open){
+                if((!setCats[i].matToShow.empty()) && (setCats[i].matID != -1)){
+                    setCats[i].write.lock();
+                    switch (setCats[i].matToShow.type()) {
+                        case 0:  {cv::cvtColor(setCats[i].matToShow, frameRGBA[i], cv::COLOR_GRAY2RGBA); break;}
+                        case 16: {cv::cvtColor(setCats[i].matToShow, frameRGBA[i], cv::COLOR_BGR2RGBA); break;}
+                        case 24: {cv::cvtColor(setCats[i].matToShow, frameRGBA[i], cv::COLOR_BGRA2RGBA); break;}
+                    }
+                    setCats[i].write.unlock();
+
                     image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
+                    texture[i].setSmooth(true);
                     texture[i].loadFromImage(image[i]);
-                    sprite[i].setTexture(texture[i]);
-                ImGuiWindowFlags MatWinFlags = ImGuiWindowFlags_None;//ImGuiWindowFlags_AlwaysAutoResize;
 
-                float initSizeX = texture[i].getSize().x;
-                float initSizeY = texture[i].getSize().y;
-                float aspRatio =  initSizeX / initSizeY;
+                    float initSizeX = texture[i].getSize().x;
+                    float initSizeY = texture[i].getSize().y;
+                    float aspRatio =  initSizeX / initSizeY;
 
-                ImGui::Begin(MatWin[i].title.c_str(), p_open, MatWinFlags);
-                    //ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().x, ImGui::GetWindowContentRegionMax().y-40));//}
-                    ImGui::Image(texture[i], ImVec2(ImGui::GetWindowContentRegionMax().y*aspRatio, ImGui::GetWindowContentRegionMax().y-40));//}
-                ImGui::End();
+                    float videoW, videoH;
+
+                    //ImGui::SetNextWindowSizeConstraints()
+                    ImGui::Begin(setCats[i].name.c_str(), &setCats[i].p_open , 0);
+                        float winAspRatio = ImGui::GetWindowContentRegionMax().x / ImGui::GetWindowContentRegionMax().y;
+
+                        if (winAspRatio < aspRatio){
+                            videoW = ImGui::GetWindowContentRegionMax().x - ImGui::GetStyle().ItemSpacing.x*2;
+                            videoH = videoW / aspRatio;
+                        }
+
+                        else {
+                            videoH = ImGui::GetWindowContentRegionMax().y - ImGui::GetStyle().ItemSpacing.y*2;
+                            videoW = videoH * aspRatio;
+                        }
+
+                        ImGui::Image(texture[i], ImVec2(videoW, videoH));
+
+                    ImGui::End();
+
+
             }
-            else{
-                ImGui::Begin(MatWin[i].title.c_str(), p_open, /*ImGuiWindowFlags_MenuBar|*/ImGuiWindowFlags_AlwaysAutoResize);
-                    ImGui::Text(u8"Изображение отсутстует!");
-                    ImGui::Text(u8"(обоработка не начата)");
-                ImGui::End();
+
+                else {
+                    ImGui::Begin(setCats[i].name.c_str(), &setCats[i].p_open, ImGuiWindowFlags_AlwaysAutoResize);
+                        ImGui::Text(u8"Изображение отсутстует!");
+                        ImGui::Text(u8"(обоработка не начата)");
+                    ImGui::End();
+                }
             }
-        }
+
+
     }
+
+    ImGui::Text("empty = %u, id = %i, open = %u", setCats[catSelected].matToShow.empty(), setCats[catSelected].matID, setCats[catSelected].p_open);
 
 }
 
@@ -286,22 +316,19 @@ void alignCenter(float width){
     ImGui::SameLine(ImGui::GetWindowContentRegionMax().x / 2 - width / 2);
 }
 
-int catSelected = 0;
 
 void GUI_t::drawMatBar(void){
     ImGuiStyle& style = ImGui::GetStyle();
+    int i = catSelected;
 
-    int i = setCats[catSelected].matID;
-    MatWin[i].show = 1;
-
-    if((!MatWin[i].mat_show.empty()) && (i != -1)){
-        MatWin[i].write.lock();
-        switch (MatWin[i].mat_show.type()) {
-            case 0:  {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_GRAY2RGBA); break;}
-            case 16: {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGR2RGBA); break;}
-            case 24: {cv::cvtColor(MatWin[i].mat_show, frameRGBA[i], cv::COLOR_BGRA2RGBA); break;}
+    if((!setCats[i].matToShow.empty()) && (setCats[i].matID != -1)){
+        setCats[i].write.lock();
+        switch (setCats[i].matToShow.type()) {
+            case 0:  {cv::cvtColor(setCats[i].matToShow, frameRGBA[i], cv::COLOR_GRAY2RGBA); break;}
+            case 16: {cv::cvtColor(setCats[i].matToShow, frameRGBA[i], cv::COLOR_BGR2RGBA); break;}
+            case 24: {cv::cvtColor(setCats[i].matToShow, frameRGBA[i], cv::COLOR_BGRA2RGBA); break;}
         }
-        MatWin[i].write.unlock();
+        setCats[i].write.unlock();
 
         image[i].create(frameRGBA[i].cols, frameRGBA[i].rows, frameRGBA[i].ptr());
         texture[i].setSmooth(true);
@@ -356,8 +383,10 @@ void GUI_t::shortcutConnect(void){
 }
 
 void GUI_t::shortcutProcessing(void){
-    if (!Img.procRun) Img.startProcessing();
-    else openPopUp(PU_PROC_STOP);
+    if (V.Input.CaptureRun){
+        if (!Img.procRun) Img.startProcessing();
+        else openPopUp(PU_PROC_STOP);
+    }
 }
 
 void GUI_t::shortcutSeparation(void){
@@ -484,21 +513,23 @@ void GUI_t::drawSettingsBlock(void){
                     ImGui::Text(u8"Настройки обработки изображения");
                     ImGui::Separator();
 
-                    ImGui::Combo(u8"Основной алгоритм работы", &V.procType, u8"Водопад\0Ремень\0\0");
+                    ImGui::Combo(u8"Основной алгоритм работы", &V.procType, u8"Водопад\0Ремень\0Калибровка\0\0");
                     ImGui::Separator();
 
                     ImGui::Text(u8"Настройки препроцессора изображения:");
-                    ImGui::Checkbox("on", &preprocessor.isOn);
+                    pushNextDisabledIf(Img.procRun);
+                            if (ImGui::Checkbox("on", &preprocessor.isOn)) Img.initProcessor(V.procType);
 
-                    const char* items[] = { u8"0", u8"90 ЧС", u8"180", u8"90 ПЧС"};
-                    static int item_current = 0;
-                    ImGui::Combo(u8"Поворот", &item_current, items, IM_ARRAYSIZE(items));
-                    preprocessor.rotation = item_current - 1;
+                        const char* items[] = { u8"0", u8"90 ЧС", u8"180", u8"90 ПЧС"};
+                        static int item_current = 0;
+                        ImGui::Combo(u8"Поворот", &item_current, items, IM_ARRAYSIZE(items));
+                        preprocessor.rotation = item_current - 1;
+                    popNextDisabledIf(Img.procRun);
 
-                    ImGui::SliderInt("marginLeft", &preprocessor.marginLeft, 0, (int)videoPlayer.frameW/2-1, "%u pix");
-                    ImGui::SliderInt("marginRight", &preprocessor.marginRight, 0, (int)videoPlayer.frameW/2-1, "%u pix");
-                    ImGui::SliderInt("marginUp", &preprocessor.marginUp, 0, (int)videoPlayer.frameH/2-1, "%u pix");
-                    ImGui::SliderInt("marginDown", &preprocessor.marginDown, 0, (int)videoPlayer.frameH/2-1, "%u pix");
+                    ImGui::SliderInt("marginLeft", &preprocessor.marginLeft, 0, preprocessor.frameW/2-1, "%u pix");
+                    ImGui::SliderInt("marginRight", &preprocessor.marginRight, 0, preprocessor.frameW/2-1, "%u pix");
+                    ImGui::SliderInt("marginUp", &preprocessor.marginUp, 0, preprocessor.frameH/2-1, "%u pix");
+                    ImGui::SliderInt("marginDown", &preprocessor.marginDown, 0, preprocessor.frameH/2-1, "%u pix");
 
                     ImGui::SliderFloat("brightness", &preprocessor.brightness, 0.0f, 5.0f, "%.2f");
                     ImGui::SliderFloat("contrast", &preprocessor.contrast, 0.0f, 5.0f, "%.2f");
@@ -736,43 +767,60 @@ void GUI_t::drawSettingsBlock(void){
 
                 case CAT_COM: {
 
+                    ImGui::BeginChild("##commain", ImVec2(ImGui::GetWindowContentRegionWidth()*0.8, -1), true);
+
                     static int com_selected = 0;
-                    const char* comspeeds[] = { "9 600", "57 600", "115 200", "250 000", "1M", "2M"};
-                    const long  com_speeds[] = { 9600 ,57600, 115200, 250000, 1000000, 2000000};
-                    static int speed_current = 0;
 
                     ImGui::Text(u8"Настройки коммуникации с аппартным обеспечением");
                     ImGui::Separator();
 
-                    ImGui::BeginChild("##compnelleft", ImVec2(180,250), 0, 0);
-                        if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
-                        GUI.ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
+                    if (COM.isOpen) ImGui::Text(u8"Порт: открыт");
+                    else ImGui::Text(u8"Порт: закрыт");
 
+                    if (COM.connectionOk) ImGui::Text(u8"Соединение с блоком управления: есть");
+                    else ImGui::Text(u8"Соединение с блоком управления: нет");
+                    ImGui::Separator();
 
-                        ImGui::Text(u8"Доступные порты:");
+                    pushNextDisabledIf(COM.isOpen);
+                            if (ImGui::Button(u8"Сканировать порты")) {COM.List();}
+                            GUI.ShowHelpMarker(u8"Вывести список первых 16 доступных портов");
 
-                        ImGui::BeginChild("##coms", ImVec2(150, 200), true);
-                            for (int i = 0; i < 32; i++){
-                                if (COM.IsPresent[i]){
-                                    char label[32];
-                                    sprintf(label, "COM%d", i+1);
-                                    if (ImGui::Selectable(label, com_selected == i))
-                                    com_selected = i;
+                            static char lastPortName[16];
+                            sprintf(lastPortName, "COM%d", V.ComPort.Number+1);
+
+                            if (ImGui::BeginCombo(u8"Порт", lastPortName, 0)){
+                                for (int n = 0; n < 16; n++){
+                                        if (COM.IsPresent[n]){
+                                            char label[32];
+                                            sprintf(label, "COM%d", n+1);
+                                            if (ImGui::Selectable(label, com_selected == n)){
+                                                com_selected = n;
+                                                V.ComPort.Number = com_selected;
+                                            }
+                                        }
                                 }
+                                ImGui::EndCombo();
                             }
-                        ImGui::EndChild();
+
+                        const char* comspeeds[] = { "9 600", "57 600", "115 200", "250 000", "1M", "2M"};
+                        const long  com_speeds[] = { 9600 ,57600, 115200, 250000, 1000000, 2000000};
+                        static int speed_current = 0;
+
+                            if (ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds)))
+                                V.ComPort.Speed = com_speeds[speed_current];
+                        popNextDisabledIf(COM.isOpen);
+
+
+                        if(!COM.isOpen)     {if (ImGui::Button(u8"Подключиться")){COM.tryConnect();}}
+                        else                {if (ImGui::Button(u8"Отключиться")){openPopUp(PU_COMM_STOP);}}
+
                     ImGui::EndChild();
 
-                    ImGui::SameLine(0);
+                    ImGui::SameLine();
 
-                    ImGui::BeginChild("##compnelright", ImVec2(800,0), 0, 0);
-                        //ImGui::SetNextItemWidth(500);
-                        ImGui::Combo(u8"Скорость", &speed_current, comspeeds, IM_ARRAYSIZE(com_speeds));
-                        V.ComPort.Speed = com_speeds[speed_current];
-                        if(!COM.isOpen)     {if (ImGui::Button(u8"Подключиться")){COM.Open(com_selected);}}
-                        else                {if (ImGui::Button(u8"Отключиться")){COM.closeCurrent();}}
+                    ImGui::BeginChild("##comsonsole", ImVec2(-1, -1), true);
+                        drawComConsole();
                     ImGui::EndChild();
-
                     break;}
 
                 case CAT_UI: {break;}
@@ -814,75 +862,280 @@ void GUI_t::drawSettingsBlock(void){
 
                     break;}
 
+                case CAT_CALIB: {
+                    ImGui::Text(u8"Калибровка камеры");
+                    ImGui::Separator();
+
+                    pushNextDisabledIf(!Calib.dataReady);
+                        ImGui::Checkbox(u8"Включить коррекцию искажений", &Calib.undistIsOn);
+                    popNextDisabledIf(!Calib.dataReady);
+
+                    ImGui::Separator();
+
+                    ImGui::Text(u8"Параметры калибровочного поля:");
+                    ImGui::InputInt(u8"Углов по горизонтали", &Calib.calibData.numCornersHor);
+                    ImGui::InputInt(u8"Углов по вертикали", &Calib.calibData.numCornersHor);
+                    ImGui::InputFloat(u8"Размер по горизонтали, мм", &Calib.calibData.boardXmm, 0.1f, .1f, "%.1f", 0);
+                    ImGui::InputFloat(u8"Размер по вертикали, мм", &Calib.calibData.boardYmm, 0.1f, .1f, "%.1f", 0);
+                    ImGui::InputInt(u8"numBoards", &Calib.numBoards);
+
+                    ImGui::Separator();
+
+
+                    ImGui::Text(u8"Инструкция по калибровке:\n 1. Для первого снимка размещать табличку в середине кадра\n 2. Для дальнейших снимков размещать табличку во всех углах кадра");
+                    ImGui::Separator();
+
+                    ImGui::Text(u8"Результаты калибровки:");
+                    ImGui::Text(u8"Разрашение:\nX = %.3f mm/pix\nY = %.3f mm/pix\nX\Y = %.3f%%",     Calib.calibData.resolutionX,
+                                                                                        Calib.calibData.resolutionY,
+                                                                                        (Calib.calibData.resolutionX / Calib.calibData.resolutionY)*100.0f
+                    );
+
+                    //char textBuf[32];
+                    //sprintf(textBuf, u8"Записано изображений: %u из %u", Calib.successes, Calib.numBoards);
+                    ImGui::ProgressBar(((float)Calib.successes/(float)Calib.numBoards));
+
+                    //if (ImGui::Button(u8"Начать калибровку")) Calib.
+
+                    if (Calib.chessFound){
+                        if (ImGui::Button(u8"Следующая точка")) Calib.calibNext = 1;
+                    }
+
+
+                    break;}
+
                 case CAT_HW: {
-                    static ImVec2 diagramSize = ImVec2(ImGui::GetWindowContentRegionMax().x - 10, ImGui::GetWindowContentRegionMax().y - 10);
-                    static float padding = 5.0f;
+                    //ImVec2 diagramSize = ImVec2(ImGui::GetWindowContentRegionMax().x - 10, ImGui::GetWindowContentRegionMax().y - 10);
 
 
-
+                    /*
                     ImDrawList* dList = ImGui::GetWindowDrawList();
                     ImVec2 p = ImGui::GetCursorScreenPos();
                     float x = p.x + 4.0f, y = p.y + 4.0f;
-                    static ImVec4 colf = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-                    const ImU32 col = ImColor(colf);
+                    const ImU32 col = ImColor(ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-                    static ImVec2 diagramBox[2] = {ImVec2(p.x, p.y), ImVec2(p.x + diagramSize.x, p.y + diagramSize.y)};
+                    ImVec2 diagramBox[2] = {ImVec2(p.x, p.y), ImVec2(p.x + diagramSize.x, p.y + diagramSize.y)};
 
-                    static float hopperW = (diagramSize.x - padding*4) / 3;
-                    static float hopperH = 120;
-                    static ImVec2 hopperBox[2] = {ImVec2(p.x +padding , p.y+padding), ImVec2(p.x + hopperW + padding, p.y + hopperH+padding)};
+                    float hopperW = (diagramSize.x - padding*4) / 3;
+                    float hopperH = (diagramSize.y - padding*6) * 0.3;
+                    ImVec2 hopperBox[2] = {ImVec2(p.x +padding , p.y+padding), ImVec2(p.x + hopperW + padding, p.y + hopperH+padding)};
 
                     //static float feederW = 100;
-                    static float feederH = 50;
-                    static ImVec2 feederBox[2] = {ImVec2(hopperBox[0].x, hopperBox[1].y+padding), ImVec2(hopperBox[1].x, hopperBox[1].y+padding + feederH)};
+                    float feederH = (diagramSize.y - padding*6) * 0.1;
+                    ImVec2 feederBox[2] = {ImVec2(hopperBox[0].x, hopperBox[1].y+padding), ImVec2(hopperBox[1].x, hopperBox[1].y+padding + feederH)};
 
-                    static float vertCamW = hopperW;
-                    static ImVec2 vertCamBox[2] = {ImVec2(feederBox[1].x + padding, hopperBox[0].y), ImVec2(feederBox[1].x + padding + vertCamW, feederBox[1].y)};
-
-                    //static ImVec2 vertScreenBox[2] = {ImVec2(, ), ImVec2(,)};
-
-                    static float ejH = 50;
-                    static float ejW = hopperW;
-                    static ImVec2 ejectorBox[2] = {ImVec2(vertCamBox[1].x+padding, vertCamBox[1].y - ejH), ImVec2(vertCamBox[1].x+padding + ejW, vertCamBox[1].y)};
-
-                    static float transpH = 50;
-                    static ImVec2 transpBox[2] = {ImVec2(p.x+padding,feederBox[1].y+padding), ImVec2(ejectorBox[1].x,ejectorBox[1].y+padding + transpH)};
-
-                    static float horScreenW= 20.0f;
-                    static float horCamH = 100.0f;
+                    float vertCamW = hopperW;
+                    ImVec2 vertCamBox[2] = {ImVec2(feederBox[1].x + padding, hopperBox[0].y), ImVec2(feederBox[1].x + padding + vertCamW, feederBox[1].y)};
 
 
 
-                    static ImVec2 horCamBox[2] = {  ImVec2(p.x + padding,                           transpBox[1].y + padding),
+                    float ejH = (diagramSize.y - padding*6) * 0.1;
+                    float ejW = hopperW;
+                    ImVec2 ejectorBox[2] = {ImVec2(vertCamBox[1].x+padding, vertCamBox[1].y - ejH), ImVec2(vertCamBox[1].x + padding + ejW, vertCamBox[1].y)};
+
+                    float transpH = (diagramSize.y - padding*6) * 0.2;
+                    ImVec2 transpBox[2] = { ImVec2(feederBox[1].x + padding - (feederBox[1].x - feederBox[0].x)/2, feederBox[1].y+padding),
+                                            ImVec2(ejectorBox[1].x,ejectorBox[1].y+padding + transpH)};
+
+
+
+                    float horScreenW= 20.0f;
+                    float horCamH = (diagramSize.y - padding*6) * 0.3;
+
+                    ImVec2 vertScreenBox[2] = { ImVec2(vertCamBox[0].x, transpBox[0].y + padding),
+                                                ImVec2(vertCamBox[1].x, transpBox[0].y + padding + horScreenW)};
+
+                    ImVec2 horCamBox[2] = {  ImVec2(ejectorBox[0].x,                           transpBox[1].y + padding),
                                                     ImVec2(transpBox[1].x - horScreenW - padding,   transpBox[1].y+padding + horCamH)};
 
-                    static ImVec2 horScreenBox[2] = {ImVec2(transpBox[1].x - horScreenW, horCamBox[0].y), ImVec2(transpBox[1].x,horCamBox[1].y)};
+                    ImVec2 horScreenBox[2] = {ImVec2(transpBox[1].x - horScreenW, horCamBox[0].y), ImVec2(transpBox[1].x,horCamBox[1].y)};
 
-                    static float nozW = ejW;
-                    static float nozH = 50;
-                    static ImVec2 nozzleBox[2] = {  ImVec2(horScreenBox[1].x-nozW, horScreenBox[1].y + padding),
-                                                    ImVec2(horScreenBox[1].x,horScreenBox[1].y + padding + nozH)};
+                    float nozW = ejW;
+                    float nozH = (diagramSize.y - padding*6) * 0.1;
+                    ImVec2 nozzleBox[2] = {  ImVec2(horScreenBox[1].x-nozW, horScreenBox[1].y + padding),
+                                                    ImVec2(horCamBox[1].x, horScreenBox[1].y + padding + nozH)};
 
 
                     dList->AddRect(diagramBox[0], diagramBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
                     dList->AddRect(hopperBox[0], hopperBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                        const ImU32 hopperCol = ImColor(ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+                        dList->AddRect(hopperBox[0], ImVec2(hopperBox[1].x, hopperBox[1].y*0.9), hopperCol, 0.0f,  ImDrawCornerFlags_All, 2);
+
+                        dList->AddLine(ImVec2(hopperBox[0].x,  hopperBox[1].y * 0.9),
+                                       ImVec2(hopperBox[0].x+(hopperBox[1].x-hopperBox[0].x)/2, hopperBox[1].y), hopperCol, 2);
+
+                        dList->AddLine(ImVec2(hopperBox[0].x+(hopperBox[1].x-hopperBox[0].x)/2, hopperBox[1].y),
+                                       ImVec2(hopperBox[1].x, hopperBox[1].y*0.9), hopperCol, 2);
+
                     dList->AddRect(feederBox[0], feederBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                        const ImU32 feederCol = ImColor(ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+                        dList->AddLine(feederBox[0], ImVec2(feederBox[0].x, feederBox[1].y), feederCol, 2);
+                        dList->AddLine(ImVec2(feederBox[0].x, feederBox[1].y), feederBox[1], feederCol, 2);
+                        dList->AddLine(feederBox[0], ImVec2(feederBox[1].x, feederBox[1].y*0.9), feederCol, 2);
+                        dList->AddLine(ImVec2(feederBox[1].x, feederBox[1].y*0.9), feederBox[1], feederCol, 2);
+                        //ImGui::SetCursorPos(ImVec2(feederBox[0].x - p.x, feederBox[0].y - p.y));
+                        //ImGui::Button ("testing");
+
                     dList->AddRect(vertCamBox[0], vertCamBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                        const ImU32 camCol = ImColor(ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+                        ImVec2 camStartPt = ImVec2(vertCamBox[0].x + (vertCamBox[1].x - vertCamBox[0].x)/2, vertCamBox[0].y);
+
+                        dList->AddLine(camStartPt, ImVec2(camStartPt.x - 20, camStartPt.y+50), camCol, 2);
+                        dList->AddLine(camStartPt, ImVec2(camStartPt.x + 20, camStartPt.y+50), camCol, 2);
+                        dList->AddLine(ImVec2(camStartPt.x - 20, camStartPt.y+50), ImVec2(camStartPt.x + 20, camStartPt.y+50), camCol, 2);
+
                     dList->AddRect(ejectorBox[0], ejectorBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
 
-                    //dList->AddRect(vertScreenBox[0], ejectorBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                    dList->AddRect(vertScreenBox[0], vertScreenBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
                     dList->AddRect(transpBox[0], transpBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
-                    dList->AddRect(horCamBox[0], horCamBox[1], col, 0.0f, ImDrawCornerFlags_All, 2);
+                        const ImU32 transpCol = ImColor(ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+                        float circRadius = (transpBox[1].y - transpBox[0].y) / 2;
+                        dList->AddCircle(ImVec2(transpBox[0].x + circRadius, transpBox[0].y + circRadius), circRadius, transpCol, 32, 3);
+                        dList->AddCircle(ImVec2(transpBox[1].x - circRadius - horScreenW - padding, transpBox[1].y - circRadius), circRadius, transpCol, 32, 3);
+                        dList->AddLine( ImVec2(transpBox[0].x + circRadius, transpBox[0].y),
+                                        ImVec2(transpBox[1].x - circRadius -  horScreenW - padding, transpBox[0].y), camCol, 2);
+
+                        dList->AddLine( ImVec2(transpBox[0].x + circRadius, transpBox[1].y),
+                                        ImVec2(transpBox[1].x - circRadius  - horScreenW - padding, transpBox[1].y), camCol, 2);
+
+                    dList->AddRect(horCamBox[0], horCamBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+                        camStartPt = ImVec2(horCamBox[0].x, horCamBox[0].y + (horCamBox[1].y - horCamBox[0].y)/2);
+
+                        dList->AddLine(camStartPt, ImVec2(camStartPt.x + 50, camStartPt.y+20), camCol, 2);
+                        dList->AddLine(camStartPt, ImVec2(camStartPt.x + 50, camStartPt.y-20), camCol, 2);
+                        dList->AddLine(ImVec2(camStartPt.x + 50, camStartPt.y-20),
+                                       ImVec2(camStartPt.x + 50, camStartPt.y+20), camCol, 2);
+
                     dList->AddRect(horScreenBox[0], horScreenBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
+
                     dList->AddRect(nozzleBox[0], nozzleBox[1], col, 0.0f, ImDrawCornerFlags_All, 1);
 
 
-                    ImGui::BeginChild("##hopper", ImVec2(hopperW, hopperH), true);
+                    */
+
+
+                    static float padding = ImGui::GetStyle().ItemSpacing.y;
+
+                    float groupW = (ImGui::GetWindowContentRegionMax().x - 10 - padding*5) / 5;
+                    static float testF;
+
+                    ImGui::BeginChild("##hopper", ImVec2(groupW, -1), true);
+                        ImGui::Text("hopper");
+
+                        if (ImGui::SliderFloat("##speed1", &hw.State.hopper.speedRevMin, 0.0f, 100.0f, "%.1f rev/min", 1.0)){
+                            hw.State.hopper.speedSteps =    hw.State.hopper.microstepDivider *
+                                                            ((hw.State.hopper.speedRevMin / 60.0f) * 200.0f);
+                        }
+                        if (ImGui::SliderInt("##speed2", &hw.State.hopper.speedSteps, 0, 1000, "%u steps/sec")){
+                            hw.State.hopper.speedRevMin =   (float)hw.State.hopper.speedSteps /
+                                                            (float)hw.State.hopper.microstepDivider / 200.0f * 60.0f;
+                        }
+
+                        static int hopperMicro;
+                        if(ImGui::Combo("microstepping", &hopperMicro, "1\0 2\0 4\0 8\0 16\0 32\0\0")){
+                            hw.State.hopper.microstepDivider = pow(2, hopperMicro);
+
+                            hw.State.hopper.speedSteps =    hw.State.hopper.microstepDivider *
+                                                            ((hw.State.hopper.speedRevMin / 60.0f) * 200.0f);
+
+                            hw.State.hopper.speedRevMin =   (float)hw.State.hopper.speedSteps /
+                                                            (float)hw.State.hopper.microstepDivider / 200.0f * 60.0f;
+
+                        }
+
+                        if (ImGui::Checkbox("run", &hw.State.hopper.run)){
+
+                        }
+                        if (ImGui::Checkbox("dir", &hw.State.hopper.dir)){
+
+                        }
+
+                        /*
+                        const long  resol[] = {320,240,640,480,800,600,1024,768,1280,720,1920,1080};
+                        static int reso_curr;
+
+                        pushNextDisabledIf(V.Input.CaptureRun);
+                            if(ImGui::Combo(u8"Разрешение", &reso_curr, " 320x240\0 640x480\0 800x600\0 1024x768\0 1280x720\0 1920x1080 \0\0")){
+                        */
 
                     ImGui::EndChild();
-                    //ImGui::Button("TEST");
-                    //p = ImGui::GetCursorScreenPos();
-                    //dList->AddRect(ImVec2(x, y), ImVec2(x + 20, y + 20), col, 10.0f, ImDrawCornerFlags_All, 2);
+                    ImGui::SameLine();
+
+                    ImGui::BeginChild("##feeder", ImVec2(groupW, -1), true);
+                        ImGui::Text("feeder");
+
+
+
+                    ImGui::EndChild();
+                    ImGui::SameLine();
+
+                    ImGui::BeginChild("##transp", ImVec2(groupW, -1), true);
+                        ImGui::Text("transp");
+
+                        ImGui::SliderFloat("pulleyDiam", &hw.State.transp.pulleyDiamMm , 0.0f, 100.0f, "%.1f mm", 1.0);
+
+                        if (ImGui::SliderFloat("##speedT1", &hw.State.transp.speedMmS, 0.0f, 300.0f, "%.1f mm/sec", 1.0)){
+                            hw.State.transp.speedSteps = hw.State.transp.speedMmS / (3.14159f * hw.State.transp.pulleyDiamMm) *
+                                                         200 * hw.State.transp.microstepDivider;
+                        }
+
+
+                        if (ImGui::SliderInt("##speedT2", &hw.State.transp.speedSteps, 0, 1000, "%u steps/sec")){
+                            hw.State.transp.speedMmS =   (float)hw.State.transp.speedSteps /
+                                                        (float)hw.State.transp.microstepDivider / 200.0f * (3.14159f * hw.State.transp.pulleyDiamMm);
+                        }
+
+                        static int transpMicro;
+                        if(ImGui::Combo("microstepping", &transpMicro, "1\0 2\0 4\0 8\0 16\0 32\0\0")){
+                            hw.State.transp.microstepDivider = pow(2, transpMicro);
+
+                            hw.State.transp.speedMmS =   (float)hw.State.transp.speedSteps /
+                                                        (float)hw.State.transp.microstepDivider / 200.0f * (3.14159f * hw.State.transp.pulleyDiamMm);
+                            hw.State.transp.speedSteps = hw.State.transp.speedMmS / (3.14159f * hw.State.transp.pulleyDiamMm) *
+                                                         200 * hw.State.transp.microstepDivider;
+
+                        }
+
+                        if (ImGui::Checkbox("run", &hw.State.transp.run)){
+
+                        }
+
+
+                    ImGui::EndChild();
+                    ImGui::SameLine();
+
+                    ImGui::BeginChild("##nozzles", ImVec2(groupW, -1), true);
+                        ImGui::Text("nozzles");
+
+                        ImVec2 btnSize = {  (ImGui::GetWindowContentRegionWidth() - ImGui::GetStyle().ItemSpacing.x * 2),
+                                            (ImGui::GetWindowContentRegionMax().y - 35 - ImGui::GetStyle().ItemSpacing.y * 17) / 16};
+
+                        ImGui::BeginChild("##zones", ImVec2(ImGui::GetWindowContentRegionWidth()*0.3f, -1), true);
+                            char buf[16] = {0};
+
+                            for (int i=0; i < 16; i++){
+
+                                ImGui::Text("%02u", i);
+                                ImGui::SameLine();
+
+                                if (hw.State.nozzles.state[i])
+                                    ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_ButtonActive]);
+
+                                    if (ImGui::Button(buf, btnSize)) {}
+
+                                if (hw.State.nozzles.state[i])
+                                    ImGui::PopStyleColor();
+                            }
+                        ImGui::EndChild();
+
+                        ImGui::SameLine();
+                        ImGui::BeginGroup();
+                            if (ImGui::Button("all on")) {}
+                            if (ImGui::Button("all off")) {}
+                        ImGui::EndGroup();
+
+                    ImGui::EndChild();
+                    ImGui::SameLine();
 
                     break;}
 
@@ -951,19 +1204,20 @@ bool testBool = 0;
 
 void GUI_t::drawSettingsBar(void){
     ImGuiStyle& style = ImGui::GetStyle();
-     ImGui::BeginChild("##wfsettingsleft", ImVec2(210/*ImGui::GetWindowWidth()/3.8f*/, 0), true);
+     ImGui::BeginChild("##wfsettingsleft", ImVec2(180/*ImGui::GetWindowWidth()/3.8f*/, 0), true);
         for (int i = 0; i < NR_CAT; i++){
-            if (!((V.procType == 0) && (i >= CAT_B_COLOR) && (i <= CAT_B_INFO) ||
-                (V.procType == 1) && (i >= CAT_WF_EDGE) && (i <= CAT_WF_SHOW))) {
+            if (!   (   (V.procType == PROC_WF)     && (i >= CAT_B_COLOR) && (i <= CAT_B_INFO)  ||
+                        (V.procType == PROC_B)      && (i >= CAT_WF_EDGE) && (i <= CAT_WF_SHOW) ||
+                        (V.procType == PROC_CALIB)  && (i >= CAT_WF_EDGE) && (i <= CAT_B_INFO) )) {
+
                 if (setCats[i].matID != -1) {
                     btnStyleFrac((float)i/NR_CAT);
-                        if (ImGui::Button(" ", ImVec2(10.0f, 22.0f))) {}
+                        pushNextDisabledIf(setCats[i].matToShow.empty());
+                            char txt[16];
+                            sprintf(txt, "##btnI%u", i);
+                            if (ImGui::Button(txt, ImVec2(10.0f, 22.0f))) setCats[i].p_open = !setCats[i].p_open;
+                        popNextDisabledIf(setCats[i].matToShow.empty());
                     btnStylePop();
-
-                   // chkColorSet();
-                   //     ImGui::Checkbox("##a", &testBool);
-                   // chkColorPop();
-
                     ImGui::SameLine();
                 }
 
@@ -972,8 +1226,10 @@ void GUI_t::drawSettingsBar(void){
                 ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.7f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.5f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV((float)i/NR_CAT, 0.7f, 0.3f, 1.0f));
-                if (ImGui::Selectable(setCats[i].name.c_str(), catSelected == i))
+                if (ImGui::Selectable(setCats[i].name.c_str(), catSelected == i)){
                     catSelected = i;
+                    setCats[i].show = 1;
+                }
                 ImGui::PopStyleColor(3);
 
                 //ImGui::SameLine();
@@ -1011,6 +1267,7 @@ void GUI_t::drawSettingsWindow(void){
             std::string processorType;
             if (V.procType == PROC_B) processorType = u8"лента";
             if (V.procType == PROC_WF) processorType = u8"водопад";
+            if (V.procType == PROC_CALIB) processorType = u8"калибровка";
 
             btnStyleOnOff(V.Input.CaptureRun);
                 sprintf(btnNameBuf, u8"Изображение (%s)", sourceType.c_str());
@@ -1022,14 +1279,18 @@ void GUI_t::drawSettingsWindow(void){
                 if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutConnect();} ImGui::SameLine();
             btnStylePop();
 
-            btnStyleOnOff(Img.procRun);
-                sprintf(btnNameBuf, u8"Обработка (%s)", processorType.c_str());
-                if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutProcessing();} ImGui::SameLine();
-            btnStylePop();
+            pushNextDisabledIf(!V.Input.CaptureRun);
+                btnStyleOnOff(Img.procRun);
+                    sprintf(btnNameBuf, u8"Обработка (%s)", processorType.c_str());
+                    if (ImGui::Button(btnNameBuf, ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutProcessing();} ImGui::SameLine();
+                btnStylePop();
+            popNextDisabledIf(!V.Input.CaptureRun);
 
-            btnStyleOnOff(COM.connectionOk);
-                if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutSeparation();}
-            btnStylePop();
+            pushNextDisabledIf(!Img.procRun);
+                btnStyleOnOff(COM.connectionOk);
+                    if (ImGui::Button(u8"Сепарация", ImVec2(ImGui::GetWindowContentRegionWidth()/4,0))) {shortcutSeparation();}
+                btnStylePop();
+            popNextDisabledIf(!Img.procRun);
 
         ImGui::EndChild();
 
@@ -1154,17 +1415,19 @@ void GUI_t::Draw(void){
     drawPopUps();
 
     ImGui::Begin(u8"Изображения", p_open, ImGuiWindowFlags_None);
-        for (int cat=0; cat<NR_W_CAT; cat++){
-            if (ImGui::TreeNode(matWinCats[cat].c_str())){
-                for (int win=0; win<W_MAT_NR; win++){
-                    if (MatWin[win].cat == cat){
-                        ImGui::Checkbox(MatWin[win].title.c_str(), &MatWin[win].show);
-                    }
-                }
-                ImGui::TreePop();
+
+
+            for (int win=0; win<NR_CAT; win++){
+               // if (setCats[win].name == cat){
+                    ImGui::Checkbox(setCats[win].name.c_str(), &setCats[win].show);
+                //}
             }
-    }
+
+
+
     ImGui::End();
+
+
 
 
     if (ImGui::Button("testLogPrint")){
@@ -1199,7 +1462,8 @@ void GUI_t::drawPopUps(void){
     ImGui::SetNextWindowSize(ImVec2(300, 150));
     if (ImGui::BeginPopupModal("popupCommStop", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoTitleBar)){
         ImGui::BeginChild("##popupper2", ImVec2(0, 100), 0, 0);
-            ImGui::Text(u8"Блок правления подключен. Преравть коммуникацию?\nСепарация также будет прервана!");
+            if (COM.connectionOk) ImGui::Text(u8"Блок правления подключен");
+            ImGui::Text(u8"Преравть коммуникацию?\nСепарация также будет остановлена!");
         ImGui::EndChild();
 
         if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
@@ -1221,7 +1485,12 @@ void GUI_t::drawPopUps(void){
 
         if (ImGui::Button(u8"Да", ImVec2(ImGui::GetWindowContentRegionWidth()/2-4, 25))) {
             // stop processing here
+
+            Sep.stopSeparation();
+            Img.stopProcessing();
+
             Img.stopCapture();
+
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
@@ -1296,124 +1565,91 @@ void GUI_t::drawPopUps(void){
 }
 
 void GUI_t::VarInit(void){
-    SetWin[W_SET_IN].title=u8"Настройки: вход";
-    SetWin[W_SET_BG].title=u8"Настройки: вычитание фона";
-    SetWin[W_SET_CONTOUR].title=u8"Настройки: контуры";
-    SetWin[W_SET_MASK].title=u8"Настройки: маска";
-    SetWin[W_SET_COLOR].title=u8"Настройки: цвета";
-    SetWin[W_SET_OUT].title=u8"Настройки: выход";
-    SetWin[W_SET_COM].title=u8"Настройки: коммуникации";
-    SetWin[W_SET_INFO].title=u8"Настройки: информация";
-    SetWin[W_SET_HW].title=u8"Управление оборудованием";
-    SetWin[W_SELF_COLORS].title=u8"Настройки программы: интерфейс";
+    int i = CAT_INPUT;
+    setCats[i].name = u8"Вход изображения";
+    setCats[i].matID = W_MAT_IN;
+    setCats[i].mat = &Img.img_in;
 
-    MatWin[W_MAT_IN].title=u8"Вход";
-    MatWin[W_MAT_IN].mat = &Img.img_in;
-    MatWin[W_MAT_IN].cat = W_CAT_INPUT;
+    i = CAT_PROCESSING;
+    setCats[i].name = u8"Обработка";
+    setCats[i].matID = W_MAT_PP_HUD;
+    setCats[i].mat = &Img.img_in;
 
-    MatWin[W_MAT_WF_CONTOUR].title=u8"Контуры";
-    MatWin[W_MAT_WF_CONTOUR].mat = &Img.img_canny_output;
-    MatWin[W_MAT_WF_CONTOUR].cat = W_CAT_WF;
+    i = CAT_WF_EDGE;
+    setCats[i].name = u8"- Водопад: Поиск границ";
+    setCats[i].mat = &Img.img_canny_output;
 
-    MatWin[W_MAT_WF_MASK].title=u8"Маска";
-    MatWin[W_MAT_WF_MASK].mat = &Img.img_wholemask;
-    MatWin[W_MAT_WF_MASK].cat = W_CAT_WF;
+    i = CAT_WF_CONTOURS;
+    setCats[i].name = u8"- Водопад: Контуры";
+    setCats[i].mat = &Img.img_wholemask;
 
-    MatWin[W_MAT_WF_BG].title=u8"Модель фона";
-    MatWin[W_MAT_WF_BG].mat = &Img.img_bs_back;
-    MatWin[W_MAT_WF_BG].cat = W_CAT_WF;
+    i = CAT_WF_MORPHO;
+    setCats[i].name = u8"- Водопад: Морфология";
+   setCats[i].mat = &Img.img_morph_out;
 
-    MatWin[W_MAT_WF_MOG].title=u8"Результат вычитания фона";
-    MatWin[W_MAT_WF_MOG].mat = &Img.img_mog_output;
-    MatWin[W_MAT_WF_MOG].cat = W_CAT_WF;
+    i = CAT_WF_COLOR;
+    setCats[i].name = u8"- Водопад: Цвет";
+    setCats[i].matID = -1;
 
-    MatWin[W_MAT_WF_MORPH].title=u8"Морфология";
-    MatWin[W_MAT_WF_MORPH].mat = &Img.img_morph_out;
-    MatWin[W_MAT_WF_MORPH].cat = W_CAT_WF;
+    i = CAT_WF_BS;
+    setCats[i].name = u8"- Водопад: отделение фона";
+    setCats[i].mat = &Img.img_mog_output;
 
-    MatWin[W_MAT_WF_OUT].title=u8"Выход";
-    MatWin[W_MAT_WF_OUT].mat = &Img.img_output;
-    MatWin[W_MAT_WF_OUT].cat = W_CAT_WF;
+    i = CAT_WF_SHOW;
+    setCats[i].name = u8"- Водопад: HUD";
+    setCats[i].mat = &Img.img_output;
 
-    MatWin[W_MAT_DEBUG].mat = &Img.img_debug;
-    MatWin[W_MAT_DEBUG].title=u8"W_MAT_DEBUG";
-    MatWin[W_MAT_DEBUG].cat = W_CAT_NONE;
-    MatWin[W_MAT_DEBUG].show = 1;
+    i = CAT_COM;
+    setCats[i].name = u8"Коммуникация";
+    setCats[i].matID = -1;
 
-    MatWin[W_MAT_PP_HUD].title=u8"HUD";
-    MatWin[W_MAT_PP_HUD].mat = &preprocessor.HUD;
-    MatWin[W_MAT_PP_HUD].cat = W_CAT_PP;
+    i = CAT_HW;
+    setCats[i].name = u8"Оборудование";
+    setCats[i].matID = -1;
 
-    MatWin[W_MAT_B_HUD].title=u8"HUD";
-    MatWin[W_MAT_B_HUD].mat = &BeltProcessor.ejHUD;
-    MatWin[W_MAT_B_HUD].cat = W_CAT_BELT;
+    i = CAT_UI;
+    setCats[i].name = u8"Интерфейс";
+    setCats[i].matID = -1;
 
-    MatWin[W_MAT_B_ACCUM].title=u8"W_MAT_B_ACCUM";
-    MatWin[W_MAT_B_ACCUM].mat = &BeltProcessor.matSatRendered;
-    MatWin[W_MAT_B_ACCUM].cat = W_CAT_BELT;
+    i = CAT_DEBUG;
+    setCats[i].name = u8"Debug";
+    setCats[i].matID = -1;
 
-    MatWin[W_MAT_B_RANGED].title=u8"matSatRanged";
-    MatWin[W_MAT_B_RANGED].mat = &BeltProcessor.matSatRanged;
-    MatWin[W_MAT_B_RANGED].cat = W_CAT_BELT;
+    i = CAT_STATS;
+    setCats[i].name = u8"Статистика";
+    setCats[i].matID = -1;
 
-    setCats[CAT_INPUT].name = u8"Вход изображения";
-    setCats[CAT_INPUT].matID = W_MAT_IN;
+    i = CAT_B_COLOR;
+    setCats[i].name = u8"- Ремень: Цвет";
+    setCats[i].matID = -1;
 
-    setCats[CAT_PROCESSING].name = u8"Обработка";
-    setCats[CAT_PROCESSING].matID = W_MAT_PP_HUD;
+    i = CAT_B_SIZE;
+    setCats[i].name = u8"- Ремень: Размеры";
+    setCats[i].mat = &BeltProcessor.matSatRanged;
 
-    setCats[CAT_WF_EDGE].name = u8"- Водопад: Поиск границ";
-    setCats[CAT_WF_EDGE].matID = W_MAT_WF_CONTOUR;
+    i = CAT_B_MORPH;
+    setCats[i].name = u8"- Ремень: Морфология";
+    setCats[i].matID = -1;
 
-    setCats[CAT_WF_CONTOURS].name = u8"- Водопад: Контуры";
-    setCats[CAT_WF_CONTOURS].matID = W_MAT_WF_MASK;
+    i = CAT_B_BLUR;
+    setCats[i].name = u8"- Ремень: Размытие";
+    setCats[i].matID = -1;
 
-    setCats[CAT_WF_MORPHO].name = u8"- Водопад: Морфология";
-    setCats[CAT_WF_MORPHO].matID = W_MAT_WF_MORPH;
+    i = CAT_B_ACCUM;
+    setCats[i].name = u8"- Ремень: Аккумулятор";
+    setCats[i].mat = &BeltProcessor.matSatRendered;
 
-    setCats[CAT_WF_COLOR].name = u8"- Водопад: Цвет";
-    setCats[CAT_WF_COLOR].matID = -1;
+    i = CAT_B_INFO;
+    setCats[i].name = u8"- Ремень: HUD";
+    setCats[i].mat = &BeltProcessor.ejHUD;
 
-    setCats[CAT_WF_BS].name = u8"- Водопад: отделение фона";
-    setCats[CAT_WF_BS].matID = W_MAT_WF_MOG;
-
-    setCats[CAT_WF_SHOW].name = u8"- Водопад: HUD";
-    setCats[CAT_WF_SHOW].matID = W_MAT_WF_OUT;
-
-    setCats[CAT_COM].name = u8"Коммуникация";
-    setCats[CAT_COM].matID = -1;
-
-    setCats[CAT_HW].name = u8"Оборудование";
-    setCats[CAT_HW].matID = -1;
-
-    setCats[CAT_UI].name = u8"Интерфейс";
-    setCats[CAT_UI].matID = -1;
-
-    setCats[CAT_DEBUG].name = u8"Debug";
-    setCats[CAT_DEBUG].matID = -1;
-
-    setCats[CAT_STATS].name = u8"Статистика";
-    setCats[CAT_STATS].matID = -1;
-
-    setCats[CAT_B_COLOR].name = u8"- Ремень: Цвет";
-    setCats[CAT_B_COLOR].matID = -1;
-
-    setCats[CAT_B_SIZE].name = u8"- Ремень: Размеры";
-    setCats[CAT_B_SIZE].matID = W_MAT_B_RANGED;
-
-    setCats[CAT_B_MORPH].name = u8"- Ремень: Морфология";
-    setCats[CAT_B_MORPH].matID = -1;
-
-    setCats[CAT_B_BLUR].name = u8"- Ремень: Размытие";
-    setCats[CAT_B_BLUR].matID = -1;
-
-    setCats[CAT_B_ACCUM].name = u8"- Ремень: Аккумулятор";
-    setCats[CAT_B_ACCUM].matID = W_MAT_B_ACCUM;
-
-    setCats[CAT_B_INFO].name = u8"- Ремень: HUD";
-    setCats[CAT_B_INFO].matID = W_MAT_B_HUD;
+    i = CAT_CALIB;
+    setCats[i].name = u8"Калибровка";
+    setCats[i].mat = &Calib.matHUD;
 }
 
+
+/*
 void GUI_t::Fill_Textures(void){
     for(int i=0; i<W_MAT_NR; i++){
         //if (MatWin[i].show){
@@ -1431,6 +1667,8 @@ void GUI_t::Fill_Textures(void){
         //}
     }
 }
+
+*/
 
 
 

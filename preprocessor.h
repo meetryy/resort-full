@@ -20,6 +20,10 @@ public:
     int    sharpTimes = 1;
     int    rotation = -1;
 
+    int frameH = 0;
+    int frameW = 0;
+
+
     cv::Mat     HUD;
     cv::Mat     out;
     cv::Size    matSize;

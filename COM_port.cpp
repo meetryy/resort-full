@@ -156,7 +156,7 @@ void COM_class::listen(void){
     if(n > 0){
       buf[n] = 0;   /* always put a "null" at the end of a string! */
         std::string str(buf, buf + sizeof buf / sizeof buf[0]);
-        GUI.ConsoleOut(std::string("Rx: " + str));
+        GUI.comConsoleOut(std::string("Rx: " + str));
 
         if (!connectionOk && str.compare("startup")) tryShake = 1;
 
@@ -167,7 +167,7 @@ void COM_class::listen(void){
 
 int COM_class::Shake(void){
     if (isOpen){
-        GUI.ConsoleOut("Tx: " + V.ComPort.shakeQuery);
+        GUI.comConsoleOut("Tx: " + V.ComPort.shakeQuery);
         RS232_cputs(V.ComPort.Number, V.ComPort.shakeQuery.c_str());
 
         sleep_for(milliseconds(V.ComPort.shakeTimeout));
@@ -208,38 +208,40 @@ void COM_class::tryConnect(void){
 };
 
 void COM_class::tryGoodbye(void){
-    if (isOpen && connectionOk){
-        sendCmd(CMD_BYE, 0xBEEF);
+    if (isOpen){
+        if (connectionOk){
+            sendCmd(CMD_BYE, 0xBEEF);
 
-        sleep_for(milliseconds(V.ComPort.shakeTimeout));
+            sleep_for(milliseconds(V.ComPort.shakeTimeout));
 
-        unsigned char rxBuf[32] = {0};
-        int n = RS232_PollComport(V.ComPort.Number, rxBuf, 32);
+            unsigned char rxBuf[32] = {0};
+            int n = RS232_PollComport(V.ComPort.Number, rxBuf, 32);
 
-        if(n > 0){
-            rxBuf[n] = 0;
-            std::string str(rxBuf, rxBuf + sizeof rxBuf / sizeof rxBuf[0]);
+            if(n > 0){
+                rxBuf[n] = 0;
+                std::string str(rxBuf, rxBuf + sizeof rxBuf / sizeof rxBuf[0]);
 
-            if (str.find("goodbye") != std::string::npos) {
-                 GUI.ConsoleOut("Goodbye OK");
-                 connectionOk = 0;
+                if (str.find("goodbye") != std::string::npos) {
+                     GUI.ConsoleOut("Goodbye OK");
+                     connectionOk = 0;
 
+                }
+                else {
+                    GUI.ConsoleOut("Goodbye failed! (wrong answer)");
+                    GUI.popupError("Goodbye failed! (wrong answer)");
+                    connectionOk = 0;
+                    //GUI.popupError("Handshake failed! (wrong answer)");
+                }
+
+
+                GUI.comConsoleOut("Rx: " + str);
             }
             else {
-                GUI.ConsoleOut("Goodbye failed! (wrong answer)");
-                GUI.popupError("Goodbye failed! (wrong answer)");
+                GUI.ConsoleOut("Goodbye failed! (no Rx)");
+                GUI.popupError("Goodbye failed! (no Rx)");
                 connectionOk = 0;
-                //GUI.popupError("Handshake failed! (wrong answer)");
+                //GUI.popupError("Handshake failed! (no Rx)");
             }
-
-
-            GUI.ConsoleOut("Rx: " + str);
-        }
-        else {
-            GUI.ConsoleOut("Goodbye failed! (no Rx)");
-            GUI.popupError("Goodbye failed! (no Rx)");
-            connectionOk = 0;
-            //GUI.popupError("Handshake failed! (no Rx)");
         }
 
         //GUI.ConsoleOut("Port closed");

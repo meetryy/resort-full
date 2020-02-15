@@ -34,6 +34,7 @@
 #include "gui/ImGuiFileDialog.h"
 #include "belt_processor.h"
 #include "omp.h"
+#include "calibration.h"
 
 #define FPS_AVERAGE 50
 
@@ -52,12 +53,14 @@ int main(int argc, const char *argv[])
 {
     File.ReadConfig("settings.ini");
     File.SaveConfig("settings.ini");
+    Calib.readData();
 
     GUI.Init();
     GUI.VarInit();
 
     COM.List();
     COM.startThread();
+
 
     Img.stopCapture();
 

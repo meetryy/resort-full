@@ -9,6 +9,7 @@
 #include "video_player.h"
 #include "preprocessor.h"
 #include "COM_port.h"
+#include "hardware.h"
 
 using namespace cv;
 using namespace std;
@@ -55,7 +56,7 @@ cv::Mat imageProcessor_t::Result(cv::Mat &Input){
         matAlphaMask =          cv::Mat(Input.rows, Input.cols, CV_8UC4);
         matAlphaMaskShifted =   cv::Mat(Input.rows, Input.cols, CV_8UC4);
         matAlphaMaskAccum =     cv::Mat(Input.rows, Input.cols, CV_8UC4);
-        ejHUD =                 cv::Mat(preprocessor.out.rows, 500, CV_8UC3);
+        ejHUD =                 cv::Mat(Input.rows, 500, CV_8UC3);
 
         startTimeThread();
         initDone = 1;
@@ -238,6 +239,7 @@ void imageProcessor_t::ejTaskExc(void){
                                     Ejector.Zone[zone].overlap = 1;
 
                                 Ejector.Zone[zone].State = Ejector.Zone[zone].tasks[i].newState;
+                                hw.State.nozzles.state[zone] = Ejector.Zone[zone].State;
                                 if (COM.connectionOk) COM.sendZoneState();
                                 Ejector.Zone[zone].tasks[i].done = 1;
                             }

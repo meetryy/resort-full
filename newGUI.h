@@ -39,6 +39,7 @@ struct GUI_t{
                         W_MAT_WF_BG, W_MAT_WF_CONTOUR, W_MAT_WF_MOG, W_MAT_WF_MORPH, W_MAT_WF_OUT, W_MAT_WF_MASK,
                         W_MAT_PP_IN, W_MAT_PP_HUD,
                         W_MAT_B_HUD, W_MAT_B_ACCUM, W_MAT_B_RANGED,
+                        W_MAT_CALIB,
                         W_MAT_DEBUG, W_MAT_NR};
 
     enum SetWinAlias {  W_SET_IN, W_SET_BG, W_SET_CONTOUR, W_SET_MASK, W_SET_COLOR, W_SET_COM, W_SET_HW, W_SET_INFO, W_SET_OUT,
@@ -82,6 +83,8 @@ struct GUI_t{
     static void ShowHelpMarker(const char* desc);
     void ConsoleOut (std::string InString);
     void ConsoleOut (const char *fmt, ...);
+    void comConsoleOut (const char *fmt, ...);
+    void comConsoleOut (std::string InString);
 
     void Draw(void);
     void Init(void);
@@ -114,6 +117,7 @@ struct GUI_t{
                         CAT_B_COLOR, CAT_B_SIZE, CAT_B_MORPH, CAT_B_BLUR, CAT_B_ACCUM, CAT_B_INFO,
                         CAT_COM, CAT_UI,
                         CAT_HW,
+                        CAT_CALIB,
                         CAT_STATS,
                         CAT_DEBUG,
                         NR_CAT};
@@ -121,8 +125,14 @@ struct GUI_t{
     //std::string settingsCatNames[NR_CAT];
 
     struct {
-        int matID;
+        //int matID;
         std::string name;
+        cv::Mat *mat;
+        cv::Mat matToShow;
+        std::mutex write;
+        bool show = 0;
+        int matID = 0;
+        bool p_open;
     } setCats[NR_CAT];
 
 };

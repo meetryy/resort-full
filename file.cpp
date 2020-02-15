@@ -12,6 +12,7 @@
 #include "newGUI.h"
 #include "preprocessor.h"
 #include "belt_processor.h"
+#include "calibration.h"
 
 using namespace cv;
 using namespace std;
@@ -170,6 +171,15 @@ void File_class::ReadConfig(string filename){
                 ProcessLine(str, &Img.matLimiterTarget, "Img.matLimiterTarget");
                 ProcessLine(str, &Img.videoFileName, "Img.videoFileName");
                 ProcessLine(str, &V.settingsFileName, "V.lastSettingsFileName");
+
+                //calib
+                ProcessLine(str, &Calib.calibData.boardXmm, "Calib.boardXmm");
+                ProcessLine(str, &Calib.calibData.boardYmm, "Calib.boardYmm");
+                ProcessLine(str, &Calib.calibData.resolutionX, "Calib.resolutionX");
+                ProcessLine(str, &Calib.calibData.resolutionY, "Calib.resolutionY");
+                ProcessLine(str, &Calib.undistIsOn, "Calib.undistIsOn");
+                ProcessLine(str, &Calib.numBoards, "Calib.numBoards");
+
 
 
             }
@@ -345,7 +355,13 @@ void File_class::SaveConfig(string filename){
     file << "Img.matLimiterTarget=" << Img.matLimiterTarget<<";\n";
     file << "V.settingsFileName =" << V.settingsFileName <<";\n";
 
-
+    file << "\n# calibration\n";
+    file << "Calib.undistIsOn=" << Calib.undistIsOn <<";\n";
+    file << "Calib.resolutionX=" << Calib.calibData.resolutionX <<";\n";
+    file << "Calib.resolutionY=" << Calib.calibData.resolutionY <<";\n";
+    file << "Calib.boardXmm=" << Calib.calibData.boardXmm <<";\n";
+    file << "Calib.boardYmm=" << Calib.calibData.boardYmm <<";\n";
+    file << "Calib.numBoards=" << Calib.numBoards <<";\n";
 
     file.close();
     GUI.ConsoleOut(u8"ФАЙЛ: Сохранение конфигурации завершено");

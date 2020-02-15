@@ -12,8 +12,10 @@ using namespace std;
 cv::Mat preprocessor_t::Result(cv::Mat &input){
     if (isOn){
         Mat in = input.clone();
+        if (in.empty()) std::cout << "in.empty()" << std::endl;
 
-
+        frameW = in.cols;
+        frameH = in.rows;
         //out;
 
         //0 <= roi.x && 0 <= roi.width &&
@@ -24,15 +26,20 @@ cv::Mat preprocessor_t::Result(cv::Mat &input){
         int fixedML = marginLeft;
         int fixedMU = marginUp;
 
-        cropRect = Rect(fixedML, fixedMU, (int)videoPlayer.frameW-marginRight-marginLeft, (int)videoPlayer.frameH-marginDown-marginUp);
+        cropRect = Rect(fixedML, fixedMU, in.cols-marginRight-marginLeft, in.rows-marginDown-marginUp);
+
 
         // divide and create mats
         out = in(cropRect).clone();
         matSize = Size(cropRect.width, cropRect.height);
+        //std::cout << "cropRect = " << cropRect << std::endl;
+        //std::cout << "matSize = " << matSize << std::endl;
+        //if (out.empty()) std::cout << "out.empty()" << std::endl;
 
         // adjust brightness and contrast
         out.convertTo(out, -1, contrast, brightness);
         Mat matHSV;
+
         cvtColor(out, matHSV, COLOR_BGR2HSV);
 
         // adjust saturation

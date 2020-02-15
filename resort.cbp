@@ -68,6 +68,8 @@
 		<Unit filename="belt_processor.h" />
 		<Unit filename="bgsubcnt.cpp" />
 		<Unit filename="bgsubcnt.h" />
+		<Unit filename="calibration.cpp" />
+		<Unit filename="calibration.h" />
 		<Unit filename="dirent_portable.h" />
 		<Unit filename="file.cpp" />
 		<Unit filename="file.h" />
@@ -77,6 +79,8 @@
 		<Unit filename="gui/imguifilesystem.h" />
 		<Unit filename="gui_tools.cpp" />
 		<Unit filename="gui_tools.h" />
+		<Unit filename="hardware.cpp" />
+		<Unit filename="hardware.h" />
 		<Unit filename="img.cpp" />
 		<Unit filename="img.h" />
 		<Unit filename="imgui/imgui-SFML.cpp" />

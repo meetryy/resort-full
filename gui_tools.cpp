@@ -69,11 +69,29 @@ void GUI_t::drawFileBrowser(void){
 
 struct LogWidget_t{
     ImGuiTextBuffer     Buf;
+    ImGuiTextBuffer     comBuf;
     ImGuiTextFilter     Filter;
+    ImGuiTextFilter     comFilter;
+    ImVector<int>       comLineOffsets;        // Index to lines offset
     ImVector<int>       LineOffsets;        // Index to lines offset
     bool                ScrollToBottom;
+    bool                comScrollToBottom;
 
     void    Clear()     { Buf.clear(); LineOffsets.clear(); }
+
+    void    comClear()     { comBuf.clear(); LineOffsets.clear(); }
+
+    void    comAddLog(const char* fmt, ...) IM_FMTARGS(2){
+        int old_size = comBuf.size();
+        va_list args;
+        va_start(args, fmt);
+        comBuf.appendfv(fmt, args);
+        va_end(args);
+        for (int new_size = comBuf.size(); old_size < new_size; old_size++)
+            if (comBuf[old_size] == '\n')
+                comLineOffsets.push_back(old_size);
+        ScrollToBottom = true;
+    }
 
     void    AddLog(const char* fmt, ...) IM_FMTARGS(2){
         int old_size = Buf.size();
@@ -124,6 +142,24 @@ struct LogWidget_t{
         ImGui::EndChild();
         //ImGui::End();
     }
+
+    void    comDraw(const char* title){
+        //if (ImGui::Button(u8"Очистить")) Clear();
+        ImGui::SameLine();
+        //Filter.Draw(u8"Фильтр", -100.0f);
+
+        ImGui::Separator();
+        ImGui::BeginChild("scrollingCom", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+        ImGui::TextUnformatted(comBuf.begin());
+
+        if (comScrollToBottom)
+            ImGui::SetScrollHereY(1.0f);
+        comScrollToBottom = false;
+        ImGui::EndChild();
+        //ImGui::End();
+    }
+
 };
 
 
@@ -131,8 +167,13 @@ struct LogWidget_t{
 static LogWidget_t GUI_Log;
 
 bool* consoleOpen;
+
 void drawConsole(void){
      GUI_Log.Draw(u8"Консоль", consoleOpen);
+}
+
+void drawComConsole(void){
+     GUI_Log.comDraw("comConsole");
 }
 
 //void GUI_t::ConsoleOut (std::string InString){
@@ -157,6 +198,27 @@ void GUI_t::ConsoleOut (const char *fmt, ...){
   //  }
 }
 
+void GUI_t::comConsoleOut (const char *fmt, ...){
+    time_t now;
+    char the_date[32];
+    the_date[0] = '\0';
+    now = time(NULL);
+    strftime(the_date, 32, "%H:%M:%S", gmtime(&now));
+
+    char buffer[512];
+    va_list args;
+    va_start(args, fmt);
+    int rc = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    std::string tmp(buffer);
+    GUI_Log.comAddLog("%s: %s\n", the_date, tmp.c_str());
+   // }
+    //else{
+   //     cout << the_date << " " << InString <<endl;
+  //  }
+}
+
 void GUI_t::ConsoleOut (std::string InString){
     time_t now;
     char the_date[32];
@@ -168,5 +230,14 @@ void GUI_t::ConsoleOut (std::string InString){
     GUI_Log.AddLog("%s: %s\n", the_date, InString.c_str());
 }
 
+void GUI_t::comConsoleOut (std::string InString){
+    time_t now;
+    char the_date[32];
+    the_date[0] = '\0';
+    now = time(NULL);
+    strftime(the_date, 32, "%H:%M:%S", gmtime(&now));
 
+
+    GUI_Log.comAddLog("%s: %s\n", the_date, InString.c_str());
+}
 
